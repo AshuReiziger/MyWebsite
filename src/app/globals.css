@@ -8,7 +8,7 @@
   --color-line: #e4e2dc;
   --color-accent: #ff4b1f;
 
-  --font-display: var(--font-fraunces);
+  --font-display: var(--font-montserrat);
   --font-body: var(--font-inter);
 }
 
@@ -42,7 +42,7 @@ h1,
 h2,
 h3,
 h4 {
-  font-family: var(--font-display), Georgia, serif;
+  font-family: var(--font-display), Arial, Helvetica, sans-serif;
 }
 
 h1 {

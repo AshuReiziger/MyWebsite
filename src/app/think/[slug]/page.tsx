@@ -36,7 +36,7 @@ export default async function ThinkArticlePage({ params }: PageProps<"/think/[sl
               day: "numeric",
             })}
           </p>
-          <h1 className="mt-3 font-display text-4xl font-semibold tracking-tight md:text-5xl">
+          <h1 className="mt-3 font-display text-4xl font-bold tracking-tight md:text-5xl">
             {entry.frontmatter.title}
           </h1>
           <p className="mt-4 text-lg text-muted">{entry.frontmatter.excerpt}</p>

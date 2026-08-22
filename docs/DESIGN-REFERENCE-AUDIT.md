@@ -550,7 +550,7 @@ Reviewed against the site as built. Status of each takeaway above:
 | # | Takeaway | Status |
 |---|---|---|
 | 1 | Dark-canvas-plus-accent palette | **Not applied.** Kept the existing warm paper/ink/orange palette — it already fits the brand's warmer "educator" register better than a nightlife-agency palette, and changing it would undo a deliberate choice already made in the strategy doc. |
-| 2 | Serif display + sans body | **Applied.** Swapped `font-display` from Space Grotesk to **Fraunces** (variable, with `opsz`/`SOFT`/`WONK` axes and italic), kept Inter for body. See `src/app/layout.tsx`, `globals.css`. |
+| 2 | Serif display + sans body | **Applied, then reverted.** Initially swapped `font-display` from Space Grotesk to Fraunces (serif). Per explicit follow-up direction, replaced again with **Montserrat** (sans, weights 400–800 + italic) — a deliberate user call to go sans-serif rather than a rollback of a mistake. Gilroy (also requested) isn't available via `next/font/google`; Montserrat was used instead. Inter stays as body font either way. |
 | 3 | Grayscale→color image hover | **Applied.** `WorkCard.tsx` thumbnail: `grayscale` → `group-hover:grayscale-0`, 500ms transition. |
 | 4 | One secondary accent used sparingly | **Not applied.** The site's single-accent (orange) system is intentionally simpler than Iknite's two-accent system — no clear second "delight" moment identified yet that would justify a second hue. Revisit if/when a specific UI moment calls for it. |
 | 5 | Ulevus's sparse, manifesto-style About structure | **Noted, not changed.** The current About page (per `WEBSITE-STRATEGY.md`) already sits closer to this end of the spectrum (narrative + timeline + values, no dense grid) — no change needed. |
@@ -564,3 +564,10 @@ scroll-and-load entrance-animation system (`src/components/Reveal.tsx`,
 `HeroReveal.tsx`), finally putting the previously-unused `framer-motion`
 dependency to work, using the exact easing curve
 (`cubic-bezier(0.2, 1, 1, 1)`) confirmed in studio.design's own CSS.
+
+**Follow-up changes (direct user request, not from this audit):** a
+client-logos strip below the hero (`ClientLogos.tsx`, currently generic
+placeholders) and a homepage testimonials section using the previously-
+built-but-unused `Testimonial` component (placeholder quotes) — both per
+`docs/WEBSITE-STRATEGY.md` §3.7's spec, now actually wired up on the
+homepage rather than just documented.

@@ -69,20 +69,31 @@ needed):
 - `muted` — secondary text
 - `line` — borders/dividers
 - `accent` — CTAs, eyebrows, highlights (bold orange)
-- `font-display` (Fraunces, variable) for headings, `font-body` (Inter) for
-  body text. `h1` gets `-0.02em` letter-spacing globally
-  (`src/app/globals.css`) — large/bold display type should always be
-  tracked tighter, not looser.
+- `font-display` (Montserrat, weights 400/500/600/700/800 + italic) for
+  headings, `font-body` (Inter) for body text. `h1` gets `-0.02em`
+  letter-spacing globally (`src/app/globals.css`) — large/bold display
+  type should always be tracked tighter, not looser. Weight is used
+  deliberately per hierarchy tier: hero `h1` is `font-extrabold` (800),
+  case-study/article `h1`s are `font-bold` (700), section `h2`s and card
+  titles stay at `font-semibold` (600) — don't flatten these back to one
+  weight.
+- The homepage hero italicizes one word (`become`) at `font-normal
+  italic` against the surrounding `font-extrabold` — a deliberate
+  weight-contrast accent, not a mistake; keep both classes if editing
+  that line.
 
-**Why Fraunces, not a geometric sans, for display:** decided after
+**Font history:** originally shipped with Fraunces (serif display) after
 reverse-engineering three reference sites (see
 `docs/DESIGN-REFERENCE-AUDIT.md`) — a serif-display + sans-body pairing
-(confirmed at Iknite Studio: Marcellus + Outfit) reads more editorial and
-less generic-SaaS than an all-sans system, which fits "Designer.
-Strategist. Educator. Creative Leader." better. Deliberately did **not**
-adopt Iknite's dark-canvas-plus-saturated-accent palette or
-studio.design's six-font system — see `docs/DESIGN-REFERENCE-AUDIT.md` §4
-for the full reasoning and what else was/wasn't borrowed.
+confirmed at Iknite Studio (Marcellus + Outfit). Replaced with
+**Montserrat** per explicit user direction (wanted a sans-serif in the
+Montserrat/Gilroy family). Gilroy itself isn't available via
+`next/font/google` (commercial font, no Google Fonts distribution) — flag
+this if the user asks for it again; self-hosting purchased font files
+would be the only way in. Deliberately did **not** adopt Iknite's
+dark-canvas-plus-saturated-accent palette or studio.design's six-font
+system — see `docs/DESIGN-REFERENCE-AUDIT.md` §4/§5 for the full
+reasoning and what else was/wasn't borrowed.
 
 ## Motion
 
@@ -127,3 +138,10 @@ or additional Portfolio component) for visual consistency.
   needs a provider (e.g. Resend) and an API key before going live.
 - No headless CMS, auth, or payments — MDX-in-repo is the v1 content model.
 - Social links in `Footer.tsx` are placeholders — replace with real handles.
+- `ClientLogos.tsx` (homepage, below the hero) renders 6 generic "Client
+  Name" text placeholders — swap in real client names or logo images
+  before launch.
+- The `TESTIMONIALS` array in `src/app/page.tsx` is placeholder quote/name/
+  role text — replace with real client testimonials before launch. Both of
+  these are clearly-labeled placeholders on purpose; don't mistake them for
+  real content when reviewing the site.
