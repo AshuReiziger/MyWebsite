@@ -14,11 +14,12 @@ export default function WorkPage() {
   return (
     <Section className="pt-16 md:pt-24">
       <SectionHeading
-        eyebrow="Selected Work"
-        title="Identities, campaigns, and systems"
+        eyebrow="Portfolio"
+        title="Selected Work"
         description="A collection of identities, campaigns, systems, experiences, and creative solutions built for people and organizations with something meaningful to communicate."
+        centered
       />
-      <div className="mt-12 grid gap-8 md:grid-cols-2">
+      <div className="mx-auto mt-16 flex max-w-5xl flex-col gap-8">
         {work.map((entry) => (
           <WorkCard key={entry.slug} entry={entry} />
         ))}

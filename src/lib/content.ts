@@ -16,6 +16,7 @@ export interface WorkFrontmatter {
   insight: string;
   strategy: string;
   impact: string;
+  tags?: string[];
 }
 
 export interface ThinkFrontmatter {
@@ -24,6 +25,8 @@ export interface ThinkFrontmatter {
   category: string;
   excerpt: string;
   coverImage: string;
+  /** Renders this entry's card with the dark accent treatment, for visual rhythm in the grid. */
+  accent?: boolean;
 }
 
 export interface ContentEntry<T> {

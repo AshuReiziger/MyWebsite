@@ -47,11 +47,17 @@ export default async function Page({ params }: PageProps<"/work/[slug]">) {
 
 - `src/content/work/*.mdx` — case studies. Frontmatter:
   `title, client, year, category, coverImage, summary, challenge, insight,
-  strategy, impact`. The four `challenge/insight/strategy/impact` fields are
-  short structured summaries rendered in the fixed grid by
-  `CaseStudyLayout`; the MDX body below is for extended narrative/images.
+  strategy, impact, tags?`. The `challenge/insight/strategy/impact` fields
+  are structured summaries; the detail page (`CaseStudyLayout`) shows all
+  four in a fixed grid, but the **Work index** (`WorkCard`) only shows
+  three of them (challenge/strategy/impact, labeling `strategy` as
+  "Strategy & Design") as an abbreviated teaser — `insight` is
+  intentionally held back for the full case-study page. `tags` (optional
+  string array) renders as pills above the title on the index card.
 - `src/content/think/*.mdx` — articles. Frontmatter:
-  `title, date, category, excerpt, coverImage`.
+  `title, date, category, excerpt, coverImage, accent?`. `accent: true`
+  renders that card with the dark `bg-ink` treatment on the Think index
+  for visual rhythm — used sparingly (one card), not a per-category rule.
 - Loaded via `src/lib/content.ts` (`getAllWork`, `getWorkBySlug`,
   `getAllThink`, `getThinkBySlug`). Adding a new `.mdx` file to either
   directory is enough to publish — no code changes needed.
@@ -160,14 +166,42 @@ on Home and Build) — `className` alone only affects the centered
 
 ## Nav & Footer conventions
 
-- Nav order is Work, Think, Build, Teach, then About set apart with a
-  visual gap and its own underline-on-active treatment, then the
-  "Work With Me" button. Contact is deliberately **not** in the main
-  nav — the "Work With Me" button covers that, and Contact still appears
-  in the footer link list. Active-route highlighting uses
-  `usePathname()` (both Nav and Footer are client components for this).
+- Nav order is **About, Work, Think, Build, Teach, Contact** — centered
+  as a group in the header (absolutely positioned + `-translate-x-1/2`,
+  not `justify-between`, so it stays centered regardless of logo/button
+  width), with the "Work With Me" button separate on the right. This
+  order was explicitly chosen by the user over what a later Figma
+  mockup happened to show (About last) — don't "fix" it back without
+  asking, that mockup predates the explicit choice.
+- Active-route highlighting uses `usePathname()` (Nav and Footer are
+  both client components for this) — active link/current route gets
+  `text-accent`.
 - Footer is a full-bleed `bg-ink` band (not bordered/light) with the nav
   list including Home, and the current route highlighted in `accent`.
+
+## Think index: filter, featured row, load more
+
+`ThinkIndex.tsx` (client component) drives `/think`:
+- Category filter pills (`All` + one per unique `category` in the
+  content). Selecting a specific category drops the featured-row
+  treatment below (it only appears in the unfiltered "All" view) and
+  shows a plain grid of matches.
+- In the "All" view, the most recent article renders as a large
+  `FeaturedThinkCard` next to a static `QuoteCard` (hardcoded pull-quote,
+  not modeled as content — it's a decorative accent, not an article).
+- "Load More Thoughts" reveals additional cards `LOAD_MORE_STEP` at a
+  time (client-side, no real pagination — all MDX is loaded at build
+  time already); resets to the initial count when the category changes.
+
+## Build page: page-specific sidebar
+
+`BuildSidebar.tsx` (profile photo placeholder, name/role, icon nav,
+Contact button) is **only used on `/build`** — it's not part of the
+global `Nav`/`Footer` and shouldn't be added to other pages. This
+matches the Figma mockups: only the Build-page frame showed this
+sidebar: Work/Think/Home frames showed the standard top nav only. If a
+future mockup shows it elsewhere, treat that as a deliberate expansion,
+not a bug fix.
 
 ## Not yet wired up (intentional, see roadmap in the strategy doc)
 
@@ -179,6 +213,11 @@ on Home and Build) — `className` alone only affects the centered
   Name" text placeholders — swap in real client names or logo images
   before launch.
 - The `TESTIMONIALS` array in `src/app/page.tsx` is placeholder quote/name/
-  role text — replace with real client testimonials before launch. Both of
-  these are clearly-labeled placeholders on purpose; don't mistake them for
-  real content when reviewing the site.
+  role text — replace with real client testimonials before launch.
+- `src/content/work/aura-financial-platform.mdx` and four of the six
+  `src/content/think/*.mdx` entries are dummy sample content added to
+  preview the redesigned Work/Think index pages (per the Figma mockups)
+  before real projects/articles exist — each is marked as placeholder in
+  its own body text. Replace or remove once real content is ready.
+  All of these are clearly-labeled placeholders on purpose; don't mistake
+  them for real content when reviewing the site.
