@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
-import { Section } from "@/components/Section";
 import { CaseStudyLayout } from "@/components/CaseStudyLayout";
 import { getAllWork, getWorkBySlug } from "@/lib/content";
 
@@ -25,11 +24,13 @@ export default async function WorkCaseStudyPage({ params }: PageProps<"/work/[sl
 
   if (!entry) notFound();
 
+  const related = getAllWork()
+    .filter((e) => e.slug !== slug)
+    .slice(0, 2);
+
   return (
-    <Section className="pt-16 md:pt-24">
-      <CaseStudyLayout frontmatter={entry.frontmatter}>
-        <MDXRemote source={entry.content} />
-      </CaseStudyLayout>
-    </Section>
+    <CaseStudyLayout entry={entry} related={related}>
+      <MDXRemote source={entry.content} />
+    </CaseStudyLayout>
   );
 }

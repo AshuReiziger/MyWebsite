@@ -48,12 +48,12 @@ export default async function Page({ params }: PageProps<"/work/[slug]">) {
 - `src/content/work/*.mdx` — case studies. Frontmatter:
   `title, client, year, category, coverImage, summary, challenge, insight,
   strategy, impact, tags?`. The `challenge/insight/strategy/impact` fields
-  are structured summaries; the detail page (`CaseStudyLayout`) shows all
-  four in a fixed grid, but the **Work index** (`WorkCard`) only shows
-  three of them (challenge/strategy/impact, labeling `strategy` as
-  "Strategy & Design") as an abbreviated teaser — `insight` is
-  intentionally held back for the full case-study page. `tags` (optional
-  string array) renders as pills above the title on the index card.
+  are the same 5-part Challenge→Insight→Strategy→Design→Impact structure
+  from the brand voice rules — no schema change was needed to give the
+  case-study page a richer narrative layout (see "Work section: dark
+  theme" below), each field just got its own full-width alternating
+  section instead of being packed into a grid. `tags` (optional string
+  array) renders in the index band's meta line, alongside `client`.
 - `src/content/think/*.mdx` — articles. Frontmatter:
   `title, date, category, excerpt, coverImage, accent?`. `accent: true`
   renders that card with the dark `bg-ink` treatment on the Think index
@@ -142,11 +142,48 @@ audit-driven guess — don't conflate the two serif choices.
 
 ## Image treatment
 
-`WorkCard.tsx`'s thumbnail uses `grayscale` → `group-hover:grayscale-0`
+`WorkCard.tsx`'s photo half uses `grayscale` → `group-hover:grayscale-0`
 (desaturated by default, full color on hover) — borrowed from the
 confirmed Iknite Studio pattern in `docs/DESIGN-REFERENCE-AUDIT.md` §1.5.
 Apply the same treatment to any future image-based card grid (e.g. a Team
 or additional Portfolio component) for visual consistency.
+
+## Work section: dark theme (`theme-dark-fixed`)
+
+`/work` and `/work/[slug]` are permanently dark — a deliberate art
+direction choice (from a screen-recording reference of `ulevus.com`'s
+Work section), not tied to the visitor's system light/dark preference.
+This is different from the site-wide `prefers-color-scheme` handling in
+`globals.css`, which swaps `ink`/`paper`/etc. based on OS preference: the
+`.theme-dark-fixed` class (also in `globals.css`) overrides the same five
+token variables to their dark values unconditionally, so every `bg-ink`/
+`text-ink`/`text-muted`/`border-line`/`text-accent`/`bg-accent` utility
+inside it renders dark regardless of OS setting. Wrap a section's root
+in `theme-dark-fixed bg-paper text-ink` to opt it into this treatment —
+don't reach for raw hex values.
+
+Two gotchas this pattern introduces, both already handled in `WorkCard.tsx`
+and `CaseStudyLayout.tsx` — keep them in mind if either file is touched
+again, or if `theme-dark-fixed` is reused elsewhere:
+- The `from-accent/70 via-ink to-ink` gradient placeholder used elsewhere
+  on the site (e.g. `ClientLogos`-adjacent hero blob) relies on `ink`
+  being the dark tone. Inside `theme-dark-fixed`, `ink` is the light
+  foreground token instead, so that exact gradient washes out to
+  near-white — use `via-paper to-paper` there instead (`paper` is the
+  token that resolves dark in this context).
+- `Footer.tsx` has a hardcoded `mt-32` above the `<footer>` element,
+  invisible on light pages but a visible gap of exposed default (light)
+  background between a dark section and the dark footer band. Both
+  `theme-dark-fixed` wrappers cancel it locally with `-mb-32 pb-32`
+  (negative margin collapses the footer's `mt-32` to zero, `pb-32`
+  keeps the same visual spacing, now colored dark) rather than changing
+  `Footer.tsx` globally.
+
+`.panel-tint` (also in `globals.css`) is a `color-mix(in srgb, var(--color-accent) 12%, var(--color-paper))`
+background — the accent-tinted alternate to a flush `bg-paper` panel,
+used for every other `WorkCard` band and the case-study closing CTA
+band. Reuse it rather than hand-rolling another `color-mix` for the same
+effect.
 
 ## Icon-card system
 
