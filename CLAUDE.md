@@ -47,11 +47,17 @@ export default async function Page({ params }: PageProps<"/work/[slug]">) {
 
 - `src/content/work/*.mdx` — case studies. Frontmatter:
   `title, client, year, category, coverImage, summary, challenge, insight,
-  strategy, impact`. The four `challenge/insight/strategy/impact` fields are
-  short structured summaries rendered in the fixed grid by
-  `CaseStudyLayout`; the MDX body below is for extended narrative/images.
+  strategy, impact, tags?`. The `challenge/insight/strategy/impact` fields
+  are structured summaries; the detail page (`CaseStudyLayout`) shows all
+  four in a fixed grid, but the **Work index** (`WorkCard`) only shows
+  three of them (challenge/strategy/impact, labeling `strategy` as
+  "Strategy & Design") as an abbreviated teaser — `insight` is
+  intentionally held back for the full case-study page. `tags` (optional
+  string array) renders as pills above the title on the index card.
 - `src/content/think/*.mdx` — articles. Frontmatter:
-  `title, date, category, excerpt, coverImage`.
+  `title, date, category, excerpt, coverImage, accent?`. `accent: true`
+  renders that card with the dark `bg-ink` treatment on the Think index
+  for visual rhythm — used sparingly (one card), not a per-category rule.
 - Loaded via `src/lib/content.ts` (`getAllWork`, `getWorkBySlug`,
   `getAllThink`, `getThinkBySlug`). Adding a new `.mdx` file to either
   directory is enough to publish — no code changes needed.
@@ -65,35 +71,45 @@ Tailwind utilities directly (`bg-ink`, `text-muted`, `border-line`,
 `bg-accent`, `font-display`, `font-body`, etc. — no arbitrary-value syntax
 needed):
 
-- `ink` / `paper` — primary text / background (inverted in dark mode)
-- `muted` — secondary text
-- `line` — borders/dividers
-- `accent` — CTAs, eyebrows, highlights (bold orange)
-- `font-display` (Montserrat, weights 400/500/600/700/800 + italic) for
-  headings, `font-body` (Inter) for body text. `h1` gets `-0.02em`
-  letter-spacing globally (`src/app/globals.css`) — large/bold display
-  type should always be tracked tighter, not looser. Weight is used
-  deliberately per hierarchy tier: hero `h1` is `font-extrabold` (800),
-  case-study/article `h1`s are `font-bold` (700), section `h2`s and card
-  titles stay at `font-semibold` (600) — don't flatten these back to one
-  weight.
-- The homepage hero italicizes one word (`become`) at `font-normal
-  italic` against the surrounding `font-extrabold` — a deliberate
-  weight-contrast accent, not a mistake; keep both classes if editing
-  that line.
+- `ink` (`#0f172a`) / `paper` (`#f8fafc`) — primary text / background
+  (inverted in dark mode)
+- `muted` (`#64748b`) — secondary text
+- `line` (`#e2e8f0`) — borders/dividers
+- `accent` (`#b5995d`, warm gold/bronze) — CTAs, eyebrows, active nav
+  states, highlights
+- `font-display` (**Libre Caslon Text**, serif — only ships weights 400
+  and 700, no 500/600) for headings, `font-body` (**Hanken Grotesk**,
+  variable, full weight range) for body text. Because the display font
+  has only two weights, headings must use `font-normal` or `font-bold`
+  only — never `font-medium`/`font-semibold` on anything with
+  `font-display`, since that weight doesn't exist in the loaded font
+  file and will silently fall back. Hierarchy: hero `h1`s are
+  `font-bold` at a large size (no italic/extra-bold treatment — this
+  font doesn't have those), card/section titles are `font-bold` at
+  smaller sizes.
 
-**Font history:** originally shipped with Fraunces (serif display) after
+**Source of truth:** this entire token set — colors, fonts, the
+icon-badge card style, the dark "Ventures" band, the underline-style
+contact form, the dot-timeline with a highlighted current node — comes
+directly from a Figma design (Google Stitch export) the user supplied as
+full-resolution page screenshots, including a dedicated style-guide frame
+("Strategic Narrative") with exact hex values and font names. Treat those
+screenshots as the design spec going forward, ranking above earlier
+iterations in this file's history below. **Do not revert to Fraunces,
+Montserrat, or the orange/warm-neutral palette** without the user
+explicitly asking to change direction again.
+
+**Font/palette history (for context only, not to be reintroduced):**
+shipped first with Fraunces (serif) + a warm orange accent, after
 reverse-engineering three reference sites (see
 `docs/DESIGN-REFERENCE-AUDIT.md`) — a serif-display + sans-body pairing
-confirmed at Iknite Studio (Marcellus + Outfit). Replaced with
-**Montserrat** per explicit user direction (wanted a sans-serif in the
-Montserrat/Gilroy family). Gilroy itself isn't available via
-`next/font/google` (commercial font, no Google Fonts distribution) — flag
-this if the user asks for it again; self-hosting purchased font files
-would be the only way in. Deliberately did **not** adopt Iknite's
-dark-canvas-plus-saturated-accent palette or studio.design's six-font
-system — see `docs/DESIGN-REFERENCE-AUDIT.md` §4/§5 for the full
-reasoning and what else was/wasn't borrowed.
+confirmed at Iknite Studio (Marcellus + Outfit). Then swapped to
+Montserrat (sans) per explicit request for a Montserrat/Gilroy-family
+font (Gilroy itself isn't available via `next/font/google` — commercial
+font, no Google Fonts distribution). Then superseded again by the Figma
+design above, which uses a serif display font once more (Libre Caslon
+Text) but is a different, more specific source than the earlier
+audit-driven guess — don't conflate the two serif choices.
 
 ## Motion
 
@@ -132,6 +148,61 @@ confirmed Iknite Studio pattern in `docs/DESIGN-REFERENCE-AUDIT.md` §1.5.
 Apply the same treatment to any future image-based card grid (e.g. a Team
 or additional Portfolio component) for visual consistency.
 
+## Icon-card system
+
+`src/components/icons.tsx` holds a small set of hand-drawn line icons
+(20×20, `stroke=currentColor`, `strokeWidth=1.5`) plus `IconBadge` (the
+rounded-square accent-tinted wrapper). Used by `CapabilityCard` (Home,
+numbered 01–04), the Teach offerings grid, and the About values grid. Add
+new icons here rather than pulling in an icon library — keeps the visual
+weight consistent with the existing set instead of mixing icon styles.
+
+## Full-bleed sections
+
+`Section` takes an optional `outerClassName` prop for backgrounds that
+should span the full viewport width (e.g. the dark navy "Ventures" band
+on Home and Build) — `className` alone only affects the centered
+`max-w-6xl` inner container. See `src/components/Section.tsx`.
+
+## Nav & Footer conventions
+
+- Nav order is **About, Work, Think, Build, Teach, Contact** — centered
+  as a group in the header (absolutely positioned + `-translate-x-1/2`,
+  not `justify-between`, so it stays centered regardless of logo/button
+  width), with the "Work With Me" button separate on the right. This
+  order was explicitly chosen by the user over what a later Figma
+  mockup happened to show (About last) — don't "fix" it back without
+  asking, that mockup predates the explicit choice.
+- Active-route highlighting uses `usePathname()` (Nav and Footer are
+  both client components for this) — active link/current route gets
+  `text-accent`.
+- Footer is a full-bleed `bg-ink` band (not bordered/light) with the nav
+  list including Home, and the current route highlighted in `accent`.
+
+## Think index: filter, featured row, load more
+
+`ThinkIndex.tsx` (client component) drives `/think`:
+- Category filter pills (`All` + one per unique `category` in the
+  content). Selecting a specific category drops the featured-row
+  treatment below (it only appears in the unfiltered "All" view) and
+  shows a plain grid of matches.
+- In the "All" view, the most recent article renders as a large
+  `FeaturedThinkCard` next to a static `QuoteCard` (hardcoded pull-quote,
+  not modeled as content — it's a decorative accent, not an article).
+- "Load More Thoughts" reveals additional cards `LOAD_MORE_STEP` at a
+  time (client-side, no real pagination — all MDX is loaded at build
+  time already); resets to the initial count when the category changes.
+
+## Build page: page-specific sidebar
+
+`BuildSidebar.tsx` (profile photo placeholder, name/role, icon nav,
+Contact button) is **only used on `/build`** — it's not part of the
+global `Nav`/`Footer` and shouldn't be added to other pages. This
+matches the Figma mockups: only the Build-page frame showed this
+sidebar: Work/Think/Home frames showed the standard top nav only. If a
+future mockup shows it elsewhere, treat that as a deliberate expansion,
+not a bug fix.
+
 ## Not yet wired up (intentional, see roadmap in the strategy doc)
 
 - `/api/contact` logs submissions server-side but does not send email yet —
@@ -142,6 +213,11 @@ or additional Portfolio component) for visual consistency.
   Name" text placeholders — swap in real client names or logo images
   before launch.
 - The `TESTIMONIALS` array in `src/app/page.tsx` is placeholder quote/name/
-  role text — replace with real client testimonials before launch. Both of
-  these are clearly-labeled placeholders on purpose; don't mistake them for
-  real content when reviewing the site.
+  role text — replace with real client testimonials before launch.
+- `src/content/work/aura-financial-platform.mdx` and four of the six
+  `src/content/think/*.mdx` entries are dummy sample content added to
+  preview the redesigned Work/Think index pages (per the Figma mockups)
+  before real projects/articles exist — each is marked as placeholder in
+  its own body text. Replace or remove once real content is ready.
+  All of these are clearly-labeled placeholders on purpose; don't mistake
+  them for real content when reviewing the site.

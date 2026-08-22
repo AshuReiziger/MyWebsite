@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
+import clsx from "clsx";
 
 const LINKS = [
   { href: "/about", label: "About" },
@@ -14,31 +16,35 @@ const LINKS = [
 
 export function Nav() {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+
+  const linkClass = (href: string) =>
+    clsx(
+      "text-sm font-medium uppercase tracking-wide transition-colors hover:text-ink",
+      pathname === href ? "text-accent" : "text-muted"
+    );
 
   return (
     <header className="sticky top-0 z-50 border-b border-line bg-paper/90 backdrop-blur">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <Link href="/" className="font-display text-lg font-semibold tracking-tight">
-          REIZIGER ASHU
+      <div className="relative mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+        <Link href="/" className="font-display text-lg tracking-tight">
+          Reiziger Ashu
         </Link>
 
-        <nav className="hidden items-center gap-8 md:flex">
+        <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-8 md:flex">
           {LINKS.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="text-sm font-medium uppercase tracking-wide text-muted transition-colors hover:text-ink"
-            >
+            <Link key={link.href} href={link.href} className={linkClass(link.href)}>
               {link.label}
             </Link>
           ))}
-          <Link
-            href="/contact"
-            className="rounded-full bg-ink px-5 py-2 text-sm font-semibold uppercase tracking-wide text-paper transition-opacity hover:opacity-90"
-          >
-            Work With Me
-          </Link>
         </nav>
+
+        <Link
+          href="/contact"
+          className="hidden rounded-full bg-ink px-5 py-2 text-sm font-semibold uppercase tracking-wide text-paper transition-opacity hover:opacity-90 md:inline-block"
+        >
+          Work With Me
+        </Link>
 
         <button
           type="button"
@@ -58,7 +64,7 @@ export function Nav() {
               key={link.href}
               href={link.href}
               onClick={() => setOpen(false)}
-              className="py-2 text-sm font-medium uppercase tracking-wide text-muted"
+              className={clsx("py-2", linkClass(link.href))}
             >
               {link.label}
             </Link>

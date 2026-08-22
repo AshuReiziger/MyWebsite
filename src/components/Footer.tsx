@@ -1,6 +1,11 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import clsx from "clsx";
 
 const NAV_LINKS = [
+  { href: "/", label: "Home" },
   { href: "/about", label: "About" },
   { href: "/work", label: "Work" },
   { href: "/think", label: "Think" },
@@ -17,14 +22,17 @@ const SOCIAL_LINKS = [
 ];
 
 export function Footer() {
+  const pathname = usePathname();
+
   return (
-    <footer className="mt-32 border-t border-line">
+    <footer className="mt-32 bg-ink text-paper">
       <div className="mx-auto max-w-6xl px-6 py-16">
         <div className="flex flex-col gap-10 md:flex-row md:justify-between">
           <div className="max-w-sm">
-            <p className="font-display text-lg font-semibold tracking-tight">REIZIGER ASHU</p>
-            <p className="mt-2 text-sm text-muted">Designer. Strategist. Educator. Creative Leader.</p>
-            <p className="mt-1 text-sm text-muted">Designing ideas. Building systems. Creating impact.</p>
+            <p className="font-display text-lg tracking-tight">Reiziger Ashu</p>
+            <p className="mt-3 text-sm text-paper/60">
+              © {new Date().getFullYear()} Reiziger Ashu. Architecting intentional growth.
+            </p>
           </div>
 
           <div className="flex flex-col gap-6 sm:flex-row sm:gap-16">
@@ -33,7 +41,10 @@ export function Footer() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="text-sm text-muted transition-colors hover:text-ink"
+                  className={clsx(
+                    "text-sm transition-colors hover:text-paper",
+                    pathname === link.href ? "text-accent" : "text-paper/60"
+                  )}
                 >
                   {link.label}
                 </Link>
@@ -47,7 +58,7 @@ export function Footer() {
                   href={link.href}
                   target="_blank"
                   rel="noreferrer"
-                  className="text-sm text-muted transition-colors hover:text-ink"
+                  className="text-sm text-paper/60 transition-colors hover:text-paper"
                 >
                   {link.label}
                 </a>
@@ -55,10 +66,6 @@ export function Footer() {
             </nav>
           </div>
         </div>
-
-        <p className="mt-16 text-xs text-muted">
-          © {new Date().getFullYear()} Reiziger Ashu. All rights reserved.
-        </p>
       </div>
     </footer>
   );

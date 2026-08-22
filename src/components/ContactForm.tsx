@@ -2,7 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 
-const PROJECT_TYPES = [
+const AREAS_OF_INTEREST = [
   "Design Project",
   "Strategy / Consulting",
   "Training / Workshop",
@@ -12,6 +12,10 @@ const PROJECT_TYPES = [
 ];
 
 type Status = "idle" | "submitting" | "success" | "error";
+
+const inputClass =
+  "border-b border-line bg-transparent px-0 py-2 outline-none focus:border-ink";
+const labelClass = "text-xs font-semibold uppercase tracking-widest text-ink";
 
 export function ContactForm() {
   const [status, setStatus] = useState<Status>("idle");
@@ -40,9 +44,7 @@ export function ContactForm() {
 
   if (status === "success") {
     return (
-      <p className="rounded-2xl border border-line p-8 text-lg">
-        Thanks for reaching out — I&apos;ll get back to you soon.
-      </p>
+      <p className="text-lg">Thanks for reaching out — I&apos;ll get back to you soon.</p>
     );
   }
 
@@ -50,38 +52,28 @@ export function ContactForm() {
     <form onSubmit={handleSubmit} className="flex flex-col gap-6">
       <div className="grid gap-6 md:grid-cols-2">
         <label className="flex flex-col gap-2">
-          <span className="text-sm font-medium uppercase tracking-wide text-muted">Name</span>
-          <input
-            name="name"
-            required
-            className="rounded-lg border border-line bg-transparent px-4 py-3 outline-none focus:border-ink"
-          />
+          <span className={labelClass}>Full Name</span>
+          <input name="name" required placeholder="Your name" className={inputClass} />
         </label>
         <label className="flex flex-col gap-2">
-          <span className="text-sm font-medium uppercase tracking-wide text-muted">Email</span>
+          <span className={labelClass}>Email Address</span>
           <input
             type="email"
             name="email"
             required
-            className="rounded-lg border border-line bg-transparent px-4 py-3 outline-none focus:border-ink"
+            placeholder="you@domain.com"
+            className={inputClass}
           />
         </label>
       </div>
 
       <label className="flex flex-col gap-2">
-        <span className="text-sm font-medium uppercase tracking-wide text-muted">
-          Project Type
-        </span>
-        <select
-          name="projectType"
-          required
-          defaultValue=""
-          className="rounded-lg border border-line bg-transparent px-4 py-3 outline-none focus:border-ink"
-        >
+        <span className={labelClass}>Area of Interest</span>
+        <select name="projectType" required defaultValue="" className={inputClass}>
           <option value="" disabled>
-            Select one
+            Select an area
           </option>
-          {PROJECT_TYPES.map((type) => (
+          {AREAS_OF_INTEREST.map((type) => (
             <option key={type} value={type}>
               {type}
             </option>
@@ -90,19 +82,20 @@ export function ContactForm() {
       </label>
 
       <label className="flex flex-col gap-2">
-        <span className="text-sm font-medium uppercase tracking-wide text-muted">Message</span>
+        <span className={labelClass}>Project Details</span>
         <textarea
           name="message"
           required
           rows={5}
-          className="rounded-lg border border-line bg-transparent px-4 py-3 outline-none focus:border-ink"
+          placeholder="Tell me a bit about what you have in mind…"
+          className={inputClass}
         />
       </label>
 
       <button
         type="submit"
         disabled={status === "submitting"}
-        className="self-start rounded-full bg-ink px-6 py-3 text-sm font-semibold uppercase tracking-wide text-paper transition-opacity hover:opacity-90 disabled:opacity-50"
+        className="mt-2 self-start rounded-full bg-ink px-6 py-3 text-sm font-semibold uppercase tracking-wide text-paper transition-opacity hover:opacity-90 disabled:opacity-50"
       >
         {status === "submitting" ? "Sending…" : "Start a Conversation →"}
       </button>

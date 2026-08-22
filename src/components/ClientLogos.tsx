@@ -8,7 +8,7 @@ export function ClientLogos() {
       {Array.from({ length: CLIENT_COUNT }, (_, i) => (
         <span
           key={i}
-          className="font-display text-lg font-semibold tracking-tight text-muted transition-colors hover:text-ink"
+          className="font-display text-lg font-bold tracking-tight text-muted transition-colors hover:text-ink"
         >
           Client Name
         </span>

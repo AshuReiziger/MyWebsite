@@ -30,7 +30,7 @@ export function CaseStudyLayout({
       <div className="grid gap-10 border-y border-line py-12 md:grid-cols-2">
         {PARTS.map(({ key, label }) => (
           <div key={key}>
-            <h2 className="font-display text-lg font-semibold tracking-tight">{label}</h2>
+            <h2 className="font-display text-lg font-bold tracking-tight">{label}</h2>
             <p className="mt-2 text-muted">{frontmatter[key]}</p>
           </div>
         ))}

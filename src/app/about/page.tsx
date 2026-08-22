@@ -1,7 +1,15 @@
 import type { Metadata } from "next";
 import { Section, SectionHeading } from "@/components/Section";
 import { Timeline, type TimelineEntry } from "@/components/Timeline";
-import { FrameworkDiagram } from "@/components/FrameworkDiagram";
+import { IconBadge } from "@/components/icons";
+import {
+  PurposeIcon,
+  ExcellenceIcon,
+  CuriosityIcon,
+  IntegrityIcon,
+  ImpactIcon,
+  StewardshipIcon,
+} from "@/components/icons";
 
 export const metadata: Metadata = {
   title: "About — Reiziger Ashu",
@@ -11,91 +19,107 @@ export const metadata: Metadata = {
 const JOURNEY: TimelineEntry[] = [
   {
     period: "2021 — The Beginning",
-    title: "Started the design career",
-    description: "The first steps into design, driven by curiosity more than craft.",
+    title: "The Beginning",
+    description:
+      "Establishing the foundations of visual language and understanding the core principles of composition, typography, and user interaction. The focus was on learning the syntax of design before attempting to write poetry.",
   },
   {
     period: "2022–2023 — The Craft",
-    title: "Developing technical excellence",
-    description: "Building fluency and discovering a design voice.",
+    title: "The Craft",
+    description:
+      "Deepening technical expertise. Moving beyond aesthetics to solve complex usability problems. This era was defined by a rigorous pursuit of pixel-perfect execution and an obsession with detail.",
   },
   {
     period: "2023–2024 — The Strategist",
-    title: "Beyond producing graphics",
-    description: "Moving toward understanding brands, people, communication, and systems.",
+    title: "The Strategist",
+    description:
+      "Bridging the gap between design and business objectives. Learning to articulate the 'why' behind design decisions and aligning product vision with market realities. Design became a tool for organizational growth.",
   },
   {
     period: "2024–2025 — The Builder",
-    title: "Developing Sigma Studio",
-    description: "Expanding into training, consulting, and systems.",
+    title: "The Builder",
+    description:
+      "Transitioning from contributing to establishing ecosystems. Designing scalable systems, architecting holistic experiences, and leading cross-functional initiatives from conception to deployment.",
   },
   {
     period: "2026 → The Transformation",
-    title: "Building a broader ecosystem",
-    description: "Design, education, leadership, and national transformation.",
+    title: "The Transformation",
+    description: "Shaping the future narrative…",
   },
 ];
 
 const VALUES = [
-  { title: "Purpose", description: "I believe creative work should serve something bigger than aesthetics." },
-  { title: "Excellence", description: "I pursue quality because the work represents the thinking behind it." },
-  { title: "Curiosity", description: "I remain a student because better questions lead to better solutions." },
-  { title: "Integrity", description: "I want the way I work to be as meaningful as what I produce." },
-  { title: "Impact", description: "The ultimate measure isn't attention. It's meaningful change." },
-  { title: "Stewardship", description: "Skills, opportunities, relationships, and influence are things to develop and use responsibly." },
+  {
+    title: "Purpose",
+    description:
+      "Design must have intent. I believe in creating solutions that are not just beautiful, but meaningful — addressing real user needs and driving sustainable business value.",
+    icon: <PurposeIcon />,
+  },
+  {
+    title: "Excellence",
+    description:
+      "A commitment to the highest standards of craft. Rejecting 'good enough' in favor of rigorous iteration and continuous refinement.",
+    icon: <ExcellenceIcon />,
+  },
+  {
+    title: "Curiosity",
+    description:
+      "The relentless desire to understand 'why'. Staying open to new paradigms, technologies, and perspectives to inform better design decisions.",
+    icon: <CuriosityIcon />,
+  },
+  {
+    title: "Integrity",
+    description:
+      "Designing ethically and honestly. Ensuring that digital experiences respect user privacy, promote accessibility, and foster trust.",
+    icon: <IntegrityIcon />,
+  },
+  {
+    title: "Impact",
+    description: "Measuring success by the positive change created in the real world.",
+    icon: <ImpactIcon />,
+  },
+  {
+    title: "Stewardship",
+    description:
+      "Taking responsibility for the long-term health of the products and systems I build.",
+    icon: <StewardshipIcon />,
+  },
 ];
 
 export default function AboutPage() {
   return (
     <>
-      <Section className="pt-16 md:pt-24">
-        <SectionHeading eyebrow="About" title="The Designer Behind the Work" />
-        <div className="mt-8 max-w-2xl space-y-4 text-lg text-muted">
-          <p>
-            I didn&apos;t begin designing because I wanted to make things look good. I began
-            because I became fascinated by the power of ideas.
-          </p>
-          <p>
-            An idea can remain invisible until someone gives it language. A vision can remain
-            confusing until someone gives it structure. An organization can struggle to
-            communicate its value until someone helps it discover its identity.
-          </p>
-          <p className="font-medium text-ink">That&apos;s what design became for me. A way of making invisible things visible.</p>
+      <Section className="pt-16 text-center md:pt-24">
+        <SectionHeading centered divider title="The Designer Behind the Work" />
+        <blockquote className="mx-auto mt-10 max-w-2xl border-l-2 border-accent pl-6 text-left font-display text-xl italic">
+          &ldquo;I didn&apos;t begin designing because I wanted to make things look good. I began
+          because I became fascinated by the power of ideas.&rdquo;
+        </blockquote>
+      </Section>
+
+      <Section className="pt-0">
+        <div className="grid gap-10 md:grid-cols-[1fr_2fr]">
+          <div>
+            <h3 className="font-display text-2xl font-bold tracking-tight">The Journey</h3>
+            <p className="mt-3 text-muted">
+              A linear progression of mastery, evolving from foundational craft to visionary
+              leadership.
+            </p>
+          </div>
+          <Timeline entries={JOURNEY} current="2021 — The Beginning" />
         </div>
       </Section>
 
       <Section className="pt-0">
-        <SectionHeading eyebrow="The Journey" title="How this came together" />
-        <div className="mt-12 max-w-2xl">
-          <Timeline entries={JOURNEY} />
-        </div>
-      </Section>
-
-      <Section className="pt-0">
-        <SectionHeading eyebrow="Philosophy" title="Design is more than aesthetics." />
-        <div className="mt-8 max-w-2xl space-y-4 text-lg text-muted">
-          <p>
-            I believe design is a tool for understanding. It helps us discover identity,
-            communicate vision, solve problems, organize complexity, and create experiences that
-            move people.
-          </p>
-          <p className="font-medium text-ink">
-            The best design doesn&apos;t simply attract attention. It creates clarity. It creates
-            connection. It creates movement.
-          </p>
-        </div>
-        <div className="mt-12 overflow-x-auto">
-          <FrameworkDiagram />
-        </div>
-      </Section>
-
-      <Section className="pt-0">
-        <SectionHeading eyebrow="Values" title="What guides my work" />
-        <div className="mt-12 grid gap-8 sm:grid-cols-2 md:grid-cols-3">
+        <SectionHeading centered divider title="What guides my work" />
+        <div className="mt-12 grid gap-6 sm:grid-cols-2 md:grid-cols-3">
           {VALUES.map((value) => (
-            <div key={value.title}>
-              <h3 className="font-display text-lg font-semibold tracking-tight">{value.title}</h3>
-              <p className="mt-2 text-muted">{value.description}</p>
+            <div key={value.title} className="rounded-2xl border border-line p-6">
+              <IconBadge>{value.icon}</IconBadge>
+              <h3 className="mt-5 font-display text-lg font-bold tracking-tight">
+                {value.title}
+              </h3>
+              <p className="mt-2 text-sm text-muted">{value.description}</p>
             </div>
           ))}
         </div>
