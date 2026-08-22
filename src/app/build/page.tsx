@@ -26,14 +26,14 @@ export default function BuildPage() {
         />
       </Section>
 
-      <Section className="pt-0">
-        <div className="grid gap-8 md:grid-cols-2">
-          <div className="rounded-2xl border border-line p-8">
-            <h2 className="font-display text-2xl font-semibold tracking-tight">Sigma Studio</h2>
-            <p className="mt-1 text-sm uppercase tracking-wide text-muted">
-              Creative Consultancy &amp; Design Studio
+      <Section outerClassName="bg-ink text-paper">
+        <div className="grid gap-6 md:grid-cols-2">
+          <div className="rounded-2xl bg-paper/5 p-8">
+            <p className="text-xs font-semibold uppercase tracking-widest text-accent">
+              Creative Consultancy
             </p>
-            <p className="mt-4 text-muted">
+            <h2 className="mt-2 font-display text-2xl font-bold tracking-tight">Sigma Studio</h2>
+            <p className="mt-4 text-paper/70">
               A design-driven creative studio helping organizations clarify their identity,
               communicate their vision, and build meaningful brands.
             </p>
@@ -45,14 +45,14 @@ export default function BuildPage() {
             </a>
           </div>
 
-          <div className="rounded-2xl border border-line p-8">
-            <h2 className="font-display text-2xl font-semibold tracking-tight">
+          <div className="rounded-2xl bg-paper/5 p-8">
+            <p className="text-xs font-semibold uppercase tracking-widest text-accent">
+              Design Education
+            </p>
+            <h2 className="mt-2 font-display text-2xl font-bold tracking-tight">
               Sigma Studio Academy
             </h2>
-            <p className="mt-1 text-sm uppercase tracking-wide text-muted">
-              Developing the next generation of strategic designers
-            </p>
-            <p className="mt-4 text-muted">
+            <p className="mt-4 text-paper/70">
               An educational platform equipping creatives with technical excellence, strategic
               thinking, entrepreneurial competence, ethical leadership, and purpose-driven
               character.

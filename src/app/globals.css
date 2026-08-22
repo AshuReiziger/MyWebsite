@@ -2,14 +2,14 @@
 @plugin "@tailwindcss/typography";
 
 :root {
-  --color-ink: #111111;
-  --color-paper: #faf9f6;
-  --color-muted: #6b6b66;
-  --color-line: #e4e2dc;
-  --color-accent: #ff4b1f;
+  --color-ink: #0f172a;
+  --color-paper: #f8fafc;
+  --color-muted: #64748b;
+  --color-line: #e2e8f0;
+  --color-accent: #b5995d;
 
-  --font-display: var(--font-montserrat);
-  --font-body: var(--font-inter);
+  --font-display: var(--font-libre-caslon-text);
+  --font-body: var(--font-hanken-grotesk);
 }
 
 @theme inline {
@@ -24,11 +24,11 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-ink: #faf9f6;
-    --color-paper: #111111;
-    --color-muted: #9a9a94;
-    --color-line: #2a2a27;
-    --color-accent: #ff6a3d;
+    --color-ink: #f8fafc;
+    --color-paper: #0f172a;
+    --color-muted: #94a3b8;
+    --color-line: #1e293b;
+    --color-accent: #c7a876;
   }
 }
 
@@ -42,9 +42,5 @@ h1,
 h2,
 h3,
 h4 {
-  font-family: var(--font-display), Arial, Helvetica, sans-serif;
-}
-
-h1 {
-  letter-spacing: -0.02em;
+  font-family: var(--font-display), Georgia, serif;
 }

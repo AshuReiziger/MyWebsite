@@ -16,7 +16,7 @@ export function WorkCard({ entry }: { entry: ContentEntry<WorkFrontmatter> }) {
         <p className="text-xs uppercase tracking-widest text-accent">
           {frontmatter.client} · {frontmatter.year}
         </p>
-        <h3 className="mt-2 font-display text-xl font-semibold tracking-tight group-hover:underline">
+        <h3 className="mt-2 font-display text-xl font-bold tracking-tight group-hover:underline">
           {frontmatter.title}
         </h3>
         <p className="mt-2 text-muted">{frontmatter.summary}</p>

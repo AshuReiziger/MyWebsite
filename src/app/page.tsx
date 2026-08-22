@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { Section, SectionHeading } from "@/components/Section";
 import { CapabilityCard, type Capability } from "@/components/CapabilityCard";
+import { ProcessStepper } from "@/components/ProcessStepper";
 import { ThinkCard } from "@/components/ThinkCard";
 import { HeroReveal } from "@/components/HeroReveal";
 import { ClientLogos } from "@/components/ClientLogos";
 import { Testimonial, type TestimonialEntry } from "@/components/Testimonial";
+import { DesignIcon, StrategyIcon, EducationIcon, LeadershipIcon } from "@/components/icons";
 import { getAllThink } from "@/lib/content";
 
 // Placeholder testimonials — replace with real client feedback once available.
@@ -30,25 +32,25 @@ const CAPABILITIES: Capability[] = [
     title: "Design",
     description:
       "I create visual identities, communication systems, digital experiences, and strategic design solutions that help ideas become clear, compelling, and memorable.",
-    tags: ["Brand Identity", "Graphic Design", "Art Direction", "Visual Communication", "Digital Design"],
+    icon: <DesignIcon />,
   },
   {
     title: "Strategy",
     description:
       "I help individuals and organizations move from scattered ideas to clearer direction, stronger positioning, and practical systems.",
-    tags: ["Brand Strategy", "Creative Strategy", "Design Strategy", "Systems Thinking", "Consultation"],
+    icon: <StrategyIcon />,
   },
   {
     title: "Education",
     description:
       "I teach creatives how to move beyond software proficiency and develop the thinking, discipline, systems, and professional skills required to thrive.",
-    tags: ["Design Training", "Creative Development", "Workshops", "Mentorship", "Professional Development"],
+    icon: <EducationIcon />,
   },
   {
     title: "Leadership",
     description:
       "I develop creative teams, media units, and communities by building cultures that encourage excellence, growth, initiative, collaboration, and purpose.",
-    tags: ["Creative Leadership", "Team Development", "Media Leadership", "Volunteer Development", "Organizational Culture"],
+    icon: <LeadershipIcon />,
   },
 ];
 
@@ -57,24 +59,26 @@ export default function Home() {
 
   return (
     <>
-      <Section className="pt-16 md:pt-24">
+      <Section className="relative overflow-hidden pt-16 md:pt-24">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-gradient-to-br from-accent/10 via-muted/10 to-transparent blur-3xl"
+        />
         <HeroReveal delay={0}>
           <p className="text-sm font-semibold uppercase tracking-widest text-accent">
             Reiziger Ashu
           </p>
         </HeroReveal>
         <HeroReveal delay={0.1}>
-          <h1 className="mt-4 max-w-4xl font-display text-5xl font-extrabold tracking-tight md:text-7xl lg:text-8xl">
-            I don&apos;t just design things.
-            <br />
-            I design what they can <em className="font-normal italic">become</em>.
+          <h1 className="mt-4 max-w-4xl font-display text-4xl uppercase leading-tight tracking-tight md:text-6xl">
+            I don&apos;t just design things. I design what they can become.
           </h1>
         </HeroReveal>
         <HeroReveal delay={0.2}>
           <p className="mt-6 max-w-2xl text-lg text-muted md:text-xl">
-            I&apos;m a designer, strategist, educator, and creative leader passionate about using
-            design to help people and organizations discover who they are, communicate what they
-            believe, and build what they envision.
+            I&apos;m Reiziger Ashu — a designer, strategist, educator, and creative leader
+            passionate about using design to help people and organizations discover who they
+            are, communicate what they believe, and build what they envision.
           </p>
         </HeroReveal>
         <HeroReveal delay={0.3}>
@@ -89,7 +93,7 @@ export default function Home() {
               href="/contact"
               className="rounded-full border border-line px-6 py-3 text-sm font-semibold uppercase tracking-wide transition-colors hover:border-ink"
             >
-              Let&apos;s Work Together
+              Work With Me
             </Link>
           </div>
         </HeroReveal>
@@ -105,55 +109,80 @@ export default function Home() {
       </Section>
 
       <Section className="pt-0">
-        <SectionHeading eyebrow="What I Do" title="Four ways I create clarity" />
-        <div className="mt-12 grid gap-6 md:grid-cols-2">
-          {CAPABILITIES.map((capability) => (
-            <CapabilityCard key={capability.title} {...capability} />
-          ))}
+        <div className="grid gap-10 md:grid-cols-2 md:items-center">
+          <SectionHeading
+            title="Design is more than aesthetics."
+            description="I believe design is a tool for understanding. It helps us discover identity, communicate vision, solve problems, organize complexity, and create experiences that move people."
+          />
+          <ProcessStepper current="Design" />
         </div>
       </Section>
 
       <Section className="pt-0">
         <SectionHeading
-          eyebrow="What I've Built"
-          title="Platforms, not just projects"
-          description="Sigma Studio and Sigma Studio Academy anchor a growing ecosystem of design, education, and leadership work."
+          eyebrow="Expertise"
+          title="What I do"
+          description="A holistic approach bridging the gap between high-level vision and execution."
         />
         <div className="mt-12 grid gap-6 md:grid-cols-2">
-          <div className="rounded-2xl border border-line p-8">
-            <h3 className="font-display text-xl font-semibold tracking-tight">Sigma Studio</h3>
-            <p className="mt-1 text-sm uppercase tracking-wide text-muted">
-              Creative Consultancy & Design Studio
+          {CAPABILITIES.map((capability, i) => (
+            <CapabilityCard key={capability.title} {...capability} index={i + 1} />
+          ))}
+        </div>
+      </Section>
+
+      <Section outerClassName="bg-ink text-paper">
+        <p className="text-sm font-semibold uppercase tracking-widest text-accent">Ventures</p>
+        <div className="mt-3 max-w-2xl">
+          <h2 className="font-display text-3xl font-bold tracking-tight md:text-4xl">
+            Building the future
+          </h2>
+          <p className="mt-4 text-lg text-paper/70">
+            Beyond consulting, I am actively building ventures that institutionalize my
+            philosophy on design, education, and strategic growth.
+          </p>
+        </div>
+        <div className="mt-12 grid gap-6 md:grid-cols-2">
+          <div className="rounded-2xl bg-paper/5 p-8">
+            <p className="text-xs font-semibold uppercase tracking-widest text-accent">
+              Creative Consultancy
             </p>
-            <p className="mt-4 text-muted">
-              A design-driven creative studio helping organizations clarify their identity,
-              communicate their vision, and build meaningful brands.
+            <h3 className="mt-2 font-display text-xl font-bold tracking-tight">Sigma Studio</h3>
+            <p className="mt-3 text-paper/70">
+              A strategic design consultancy partnering with visionary organizations to define
+              their identity, communicate their value, and architect scalable digital
+              experiences.
             </p>
-            <Link href="/build" className="mt-6 inline-block text-sm font-semibold uppercase tracking-wide">
+            <Link
+              href="/build"
+              className="mt-6 inline-block text-sm font-semibold uppercase tracking-wide text-paper"
+            >
               Visit Sigma Studio →
             </Link>
           </div>
-          <div className="rounded-2xl border border-line p-8">
-            <h3 className="font-display text-xl font-semibold tracking-tight">
+          <div className="rounded-2xl bg-paper/5 p-8">
+            <p className="text-xs font-semibold uppercase tracking-widest text-accent">
+              Design Education
+            </p>
+            <h3 className="mt-2 font-display text-xl font-bold tracking-tight">
               Sigma Studio Academy
             </h3>
-            <p className="mt-1 text-sm uppercase tracking-wide text-muted">
-              Developing the next generation of strategic designers
+            <p className="mt-3 text-paper/70">
+              An educational platform dedicated to teaching the strategic, non-aesthetic
+              foundations of design leadership, systems thinking, and intentional growth.
             </p>
-            <p className="mt-4 text-muted">
-              An educational platform equipping creatives with technical excellence, strategic
-              thinking, entrepreneurial competence, ethical leadership, and purpose-driven
-              character.
-            </p>
-            <Link href="/build" className="mt-6 inline-block text-sm font-semibold uppercase tracking-wide">
-              Explore the Academy →
+            <Link
+              href="/build"
+              className="mt-6 inline-block text-sm font-semibold uppercase tracking-wide text-paper"
+            >
+              Visit the Academy →
             </Link>
           </div>
         </div>
       </Section>
 
       {latestThink.length > 0 && (
-        <Section className="pt-0">
+        <Section className="pt-20 md:pt-28">
           <SectionHeading eyebrow="What I Think" title="Recent writing" />
           <div className="mt-12 grid gap-6 md:grid-cols-3">
             {latestThink.map((entry) => (
@@ -174,7 +203,7 @@ export default function Home() {
 
       <Section className="pt-0">
         <div className="rounded-3xl border border-line p-12 text-center md:p-20">
-          <h2 className="font-display text-3xl font-semibold tracking-tight md:text-4xl">
+          <h2 className="font-display text-3xl font-bold tracking-tight md:text-4xl">
             Have an idea worth building?
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-muted">
