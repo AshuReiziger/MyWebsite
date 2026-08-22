@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import clsx from "clsx";
+import { Reveal } from "@/components/Reveal";
 
 export function Section({
   children,
@@ -27,7 +28,7 @@ export function SectionHeading({
   description?: string;
 }) {
   return (
-    <div className="max-w-2xl">
+    <Reveal className="max-w-2xl">
       {eyebrow && (
         <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-accent">
           {eyebrow}
@@ -35,6 +36,6 @@ export function SectionHeading({
       )}
       <h2 className="font-display text-3xl font-semibold tracking-tight md:text-4xl">{title}</h2>
       {description && <p className="mt-4 text-lg text-muted">{description}</p>}
-    </div>
+    </Reveal>
   );
 }

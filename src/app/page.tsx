@@ -2,7 +2,28 @@ import Link from "next/link";
 import { Section, SectionHeading } from "@/components/Section";
 import { CapabilityCard, type Capability } from "@/components/CapabilityCard";
 import { ThinkCard } from "@/components/ThinkCard";
+import { HeroReveal } from "@/components/HeroReveal";
+import { ClientLogos } from "@/components/ClientLogos";
+import { Testimonial, type TestimonialEntry } from "@/components/Testimonial";
 import { getAllThink } from "@/lib/content";
+
+// Placeholder testimonials — replace with real client feedback once available.
+const TESTIMONIALS: TestimonialEntry[] = [
+  {
+    quote:
+      "Placeholder testimonial — replace with a real quote from a client describing the impact of the work.",
+    name: "Client Name",
+    role: "Role, Company",
+    project: "Project name",
+  },
+  {
+    quote:
+      "Placeholder testimonial — replace with a real quote from a client describing the impact of the work.",
+    name: "Client Name",
+    role: "Role, Company",
+    project: "Project name",
+  },
+];
 
 const CAPABILITIES: Capability[] = [
   {
@@ -37,30 +58,49 @@ export default function Home() {
   return (
     <>
       <Section className="pt-16 md:pt-24">
-        <p className="text-sm font-semibold uppercase tracking-widest text-accent">
-          Reiziger Ashu
+        <HeroReveal delay={0}>
+          <p className="text-sm font-semibold uppercase tracking-widest text-accent">
+            Reiziger Ashu
+          </p>
+        </HeroReveal>
+        <HeroReveal delay={0.1}>
+          <h1 className="mt-4 max-w-4xl font-display text-5xl font-extrabold tracking-tight md:text-7xl lg:text-8xl">
+            I don&apos;t just design things.
+            <br />
+            I design what they can <em className="font-normal italic">become</em>.
+          </h1>
+        </HeroReveal>
+        <HeroReveal delay={0.2}>
+          <p className="mt-6 max-w-2xl text-lg text-muted md:text-xl">
+            I&apos;m a designer, strategist, educator, and creative leader passionate about using
+            design to help people and organizations discover who they are, communicate what they
+            believe, and build what they envision.
+          </p>
+        </HeroReveal>
+        <HeroReveal delay={0.3}>
+          <div className="mt-8 flex flex-wrap gap-4">
+            <Link
+              href="/work"
+              className="rounded-full bg-ink px-6 py-3 text-sm font-semibold uppercase tracking-wide text-paper transition-opacity hover:opacity-90"
+            >
+              Explore My Work →
+            </Link>
+            <Link
+              href="/contact"
+              className="rounded-full border border-line px-6 py-3 text-sm font-semibold uppercase tracking-wide transition-colors hover:border-ink"
+            >
+              Let&apos;s Work Together
+            </Link>
+          </div>
+        </HeroReveal>
+      </Section>
+
+      <Section className="pt-0">
+        <p className="text-center text-sm font-semibold uppercase tracking-widest text-muted">
+          Trusted by teams building something worth naming
         </p>
-        <h1 className="mt-4 max-w-4xl font-display text-4xl font-semibold tracking-tight md:text-6xl">
-          I don&apos;t just design things. I design what they can become.
-        </h1>
-        <p className="mt-6 max-w-2xl text-lg text-muted md:text-xl">
-          I&apos;m a designer, strategist, educator, and creative leader passionate about using
-          design to help people and organizations discover who they are, communicate what they
-          believe, and build what they envision.
-        </p>
-        <div className="mt-8 flex flex-wrap gap-4">
-          <Link
-            href="/work"
-            className="rounded-full bg-ink px-6 py-3 text-sm font-semibold uppercase tracking-wide text-paper transition-opacity hover:opacity-90"
-          >
-            Explore My Work →
-          </Link>
-          <Link
-            href="/contact"
-            className="rounded-full border border-line px-6 py-3 text-sm font-semibold uppercase tracking-wide transition-colors hover:border-ink"
-          >
-            Let&apos;s Work Together
-          </Link>
+        <div className="mt-8">
+          <ClientLogos />
         </div>
       </Section>
 
@@ -122,6 +162,15 @@ export default function Home() {
           </div>
         </Section>
       )}
+
+      <Section className="pt-0">
+        <SectionHeading eyebrow="Kind Words" title="Words from people I've worked with" />
+        <div className="mt-12 grid gap-6 md:grid-cols-2">
+          {TESTIMONIALS.map((testimonial, i) => (
+            <Testimonial key={i} {...testimonial} />
+          ))}
+        </div>
+      </Section>
 
       <Section className="pt-0">
         <div className="rounded-3xl border border-line p-12 text-center md:p-20">

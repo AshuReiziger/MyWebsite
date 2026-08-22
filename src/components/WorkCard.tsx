@@ -9,7 +9,7 @@ export function WorkCard({ entry }: { entry: ContentEntry<WorkFrontmatter> }) {
       href={`/work/${slug}`}
       className="group block overflow-hidden rounded-2xl border border-line transition-colors hover:border-ink"
     >
-      <div className="flex aspect-video items-center justify-center bg-ink/5 text-sm uppercase tracking-widest text-muted">
+      <div className="flex aspect-video items-center justify-center bg-gradient-to-br from-accent/70 via-ink to-ink text-sm uppercase tracking-widest text-paper grayscale transition-[filter] duration-500 group-hover:grayscale-0">
         {frontmatter.category}
       </div>
       <div className="p-6">

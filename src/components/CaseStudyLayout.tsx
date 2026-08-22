@@ -21,7 +21,7 @@ export function CaseStudyLayout({
         <p className="text-sm font-semibold uppercase tracking-widest text-accent">
           {frontmatter.client} · {frontmatter.year} · {frontmatter.category}
         </p>
-        <h1 className="mt-3 font-display text-4xl font-semibold tracking-tight md:text-5xl">
+        <h1 className="mt-3 font-display text-4xl font-bold tracking-tight md:text-5xl">
           {frontmatter.title}
         </h1>
         <p className="mt-4 max-w-2xl text-lg text-muted">{frontmatter.summary}</p>
