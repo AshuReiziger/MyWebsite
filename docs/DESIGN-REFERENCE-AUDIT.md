@@ -1,6 +1,7 @@
 # Reference Site Audit — Iknite Studio, Ulevus, studio.design
 
-Status: Partial — see "Coverage" below
+Status: Complete for Iknite and studio.design; structural-only for Ulevus
+— see "Coverage" below
 Source material: user-saved HTML page sources (View Source / Save Page),
 uploaded directly. No live network access to any of the three sites was
 available in this session (sandboxed egress policy blocks arbitrary web
@@ -12,7 +13,7 @@ hosts) — everything below is derived only from the uploaded files.
 |---|---|---|
 | **Iknite Studio** (`iknite.studio`) | Full "Webpage, HTML only" save of the homepage, with **all `<style>` blocks inlined** (WordPress/Elementor writes computed CSS directly into `<head>` and per-section `<style>` tags) | Strong — real hex colors, real font names, real responsive type scale, real component markup |
 | **Ulevus** (`ulevus.com/about`) | HTML-only save of the About page. The actual stylesheet (`main.a8bc8cfd.css`) is referenced but was **not** included — browsers don't inline external CSS on a plain "Save As → Webpage, HTML only" | Structural/technical only — confirmed framework, libraries, class names, copy. **No real colors, fonts, spacing, or radii** — anything visual for Ulevus below is unverified |
-| **studio.design** | Nothing provided | Not analyzed. Send a saved HTML file (or screenshots) if you want it covered |
+| **studio.design** | Full save of the homepage. Like Iknite, its builder inlines **per-component computed styles directly as `<style>` text in the DOM** (its own no-code tool bakes styles per-node), so almost everything needed is present in the file even though ~12 external CSS files weren't captured | Strong — real hex colors, real font tokens, real border-radius/shadow scale, real breakpoints, real copy |
 
 Per your instruction not to guess and to label confidence, every claim below
 is tagged:
@@ -291,12 +292,203 @@ down `main.a8bc8cfd.css` alongside it, or (b) a few screenshots.
 
 ---
 
-## 3. studio.design
+## 3. studio.design — Full Audit
 
-Not analyzed — no source was provided for this one and it's still blocked
-by this session's network policy. Send a saved HTML (ideally "Webpage,
-Complete", not "HTML only") or screenshots if you want it covered with the
-same rigor as Iknite above.
+Notable meta-fact before the details: **studio.design is itself a no-code
+website-builder product**, and its own marketing homepage is built using
+that same product — a deliberate (or at least evidence-consistent)
+dogfooding choice. That shapes almost everything below: the markup isn't
+hand-authored HTML/CSS, it's the *output* of their visual builder.
+
+### 3.1 Technical stack (CONFIRMED)
+
+- **Framework: Nuxt.js (Vue 3)** — confirmed by the app root
+  `<div id="__nuxt">` and by dozens of Vue single-file-component scoped
+  style attributes (`data-v-1a8a037a`, `data-v-cc1e3fda`, `data-v-74fe0335`
+  etc.) — that exact `data-v-[hash]` pattern is Vue's compiler output for
+  `<style scoped>`, not something another framework produces.
+- **Self-generated component/style system:** every visible element carries
+  a `class="sd"` plus a unique `data-s-<uuid>` attribute, and the
+  corresponding CSS rule (`.sd[data-s-<uuid>] { ... }`) is written directly
+  into a `<style>` block in the DOM — one bespoke rule per node, computed
+  and flattened (not composed from reusable utility classes). This is
+  **CONFIRMED** their own builder's export format
+  (`meta name="generator" content="Studio.Design"`), not Tailwind, not
+  CSS Modules, not styled-components.
+- **Entrance-animation system:** elements start with class `appear`
+  (`opacity: 0; translate: 0px -16px`), then receive `appear-active`
+  after a staged `transition-delay` (commonly 400ms) — **CONFIRMED**, this
+  is the literal mechanism behind the "content fades/slides up on
+  load/scroll" effect seen across the hero, nav, and feature sections.
+  Transition easing is consistently `cubic-bezier(0.2, 1, 1, 1)` or
+  `cubic-bezier(0.4, 0.4, 0, 1)` — a fast-out, gentle-settle curve, not a
+  linear or bouncy one.
+- **A floating "made with Studio" badge widget:** a fixed-position pill
+  (`bottom: 20px; left: 20px`) that's 84×20px by default and expands to
+  200×32px on hover (`transition: .4s cubic-bezier(.4,.4,0,1)`), with a
+  `backdrop-filter: blur(50px)` frosted-glass background — **CONFIRMED**
+  from its own scoped `<style>` block (`studio-banner-popover`). This is
+  the same UX pattern as Webflow's/Framer's "Made in ___" badge.
+- **Icons:** Font Awesome 6 (`Font Awesome 6 Free` solid + `6 Brands`),
+  self-hosted from Studio's own GCS bucket rather than the FA CDN
+  (`storage.googleapis.com/.../fontawesome/...`)
+- **Analytics/tag management:** Google Tag Manager (`GTM-5S536432`)
+- **Fonts:** loaded through CSS custom properties as named "font slots"
+  rather than hardcoded per element — **six distinct font tokens defined**
+  (see 3.3). A `preconnect` to `fonts.gstatic.com` exists, so at least
+  some of these are **STRONG INFERENCE** Google Fonts (the specific
+  `@font-face` rules pulling them in live in one of the ~12 external CSS
+  files not captured in this save).
+- **i18n:** the DOM contains a Japanese-language marketing line
+  (`STUDIOのオリジナルテンプレートを制作して、販売しよう。` — "Create and
+  sell your own STUDIO original templates") and a Japanese aria-label on
+  the mobile menu button (`"Menuを開く"`, i.e. "Open menu") — **CONFIRMED**
+  the site serves/embeds Japanese-locale content directly rather than only
+  via a separate translated subdomain. This lines up with a "New Brand is
+  Here. From Tokyo to the world" promo banner also present in the source —
+  **STRONG INFERENCE** of a real Tokyo connection (office, team, or launch
+  market) for the brand.
+- **Hero demo:** the hero contains a same-page `<iframe>` — **STRONG
+  INFERENCE** this is a live/interactive product-canvas embed (a
+  drag-around demo), consistent with a design-tool's homepage wanting to
+  show the product itself above the fold rather than a static screenshot.
+
+### 3.2 Confirmed color palette
+
+Unlike Iknite's bold pink-on-near-black, studio.design's marketing shell is
+**strictly monochrome** — across every background/text/border rule
+captured, nothing outside this grayscale set appears:
+
+```
+Pure white:        #FFFFFF / rgb(255,255,255)
+Near-black:        #000000, #141414, #222222, #333333
+Mid gray (UI text): #555555
+Light grays:       #EEEEEE, #f2f2f2, #f7f7f7, #eaeaea, #fafafa
+Card border:       rgb(225, 225, 225)   (a hairline, ~1px, light gray)
+```
+
+**No saturated brand hue appears anywhere in the captured styles.** That's
+a real, confirmed finding, not an absence of evidence — the palette is
+built entirely from black/white/gray at multiple steps, letting whatever
+colorful content sits inside it (portfolio screenshots, customer sites)
+supply all the color. This is a common pattern for creative-tool B2B
+brands (Figma, Framer, Webflow all lean the same way): a neutral shell,
+colorful content.
+
+Shadow convention (CONFIRMED, repeated dozens of times almost verbatim):
+```
+0px 2px 15px rgba(0, 0, 0, 0.1)     — the default card/element shadow
+0px 2px 15px rgba(255, 255, 255, 0.4)  — the SAME shadow inverted (white glow), used specifically inside at least one dark-background section
+0px 4px 20px rgba(0, 0, 0, 0.1)     — a slightly larger variant on bigger elements
+box-shadow: none                    — flat cards rely on the hairline border instead, no shadow at all, in several spots
+```
+
+### 3.3 Confirmed typography
+
+Six distinct font-family tokens are defined as CSS custom properties
+(`--s-font-<id>`), each a separate "slot" the builder lets you assign per
+text style:
+
+```
+--s-font-68aa87c4:  Inter, 'Noto Sans JP'     (primary UI/body — nav, buttons, most text)
+--s-font-7bb7f657:  Inter
+--s-font-1fa86104:  grandam                    (a display/script face — used sparingly, likely one accent moment)
+--s-font-d1864566:  Lato
+--s-font-0a841c2d:  'DM Mono'                   (monospace — likely for tags/labels/code-styled UI text)
+--s-font-e3931b38:  'Inter Tight'               (a tighter-tracking Inter variant — headings/labels)
+```
+
+This is a noticeably **wider font palette than Iknite's 2-font system** —
+consistent with a website *builder* wanting to demonstrate typographic
+range on its own marketing site, rather than a disciplined 2-font brand
+system. If you're borrowing from this reference, the lesson is "range is
+allowed when the product is about creative flexibility," not necessarily
+"use six fonts."
+
+**Confirmed real type-scale data points:**
+
+| Use | font-size | weight | letter-spacing | line-height | color |
+|---|---|---|---|---|---|
+| Large display line | 64px | 700 | **-0.04em** | 1 | `#EEEEEE` (on dark bg) |
+| Headline (responsive) | 48px → **40px** at ≤1280px | 700 | -0.04em | 1.1 | — |
+| Sub-headline | 20px | 400 | -0.04em | 1.4 | `#EEEEEE` |
+| Body-ish | 19px | 500 | normal | 1.4 | — |
+| Small UI text (nav/buttons) | 14–15px | 500 | normal | 1.4 | `#141414` / `#222222` |
+
+Two things worth flagging: **negative letter-spacing (-0.04em) on large,
+bold text** is a real, repeated, confirmed choice here — the same
+"tighten big bold headlines" instinct shows up independently at Iknite's
+mobile hero (`-1.4px` there). And **breakpoints are more granular** than
+Iknite's two-tier system: **1280px, 768px, 480px, 360px** all appear as
+real `@media` breakpoints in the captured CSS — a 4-tier responsive system
+rather than 2.
+
+### 3.4 Confirmed border-radius scale
+
+Tallying every `border-radius` value that appears (dozens of instances):
+
+```
+0px    — used deliberately on several elements (flat/square, likely image containers)
+4px    — small elements (badges, small buttons)
+6px    — the single most common value — the default card/button radius
+8px    — the second most common — larger cards/containers
+12px   — occasional, slightly bigger containers
+16px   — rare, standout elements
+48px / 64px / 96px  — large radii on what are almost certainly pill-shaped or fully circular elements (avatars, a big rounded CTA)
+```
+
+This gives a genuinely confirmed radius scale — `0 / 4 / 6 / 8 / 12 / 16 /
+pill` — rather than a single flat "everything is 8px" convention.
+
+### 3.5 Page hierarchy (homepage, as captured)
+
+```
+Page (Nuxt/Vue, self-built with Studio.Design's own editor)
+├── Promo banner (fixed, blur pill widget): "New Brand is Here. / From Tokyo to the world" → /brandbook
+├── Header (fixed)
+│   ├── Logo (SVG, "STUDIO" wordmark)
+│   ├── Nav: Features · Pricing · Templates(new tab) · Updates · Discord · Learn
+│   └── "Login／Sign Up" (external, opens app.studio.design/signup)
+├── Hero
+│   ├── H1: "Say Hello To Your New Site."
+│   ├── Subhead: "Studio.Design is the easiest and quickest design tool to turn any idea into a website. No code. All creative freedom."
+│   ├── CTA: "Start For Free" → app.studio.design/signup
+│   └── Embedded interactive demo (iframe)
+├── Feature grid (8 named capabilities, each its own mini-section):
+│   ├── "Start your site."
+│   ├── "Design Editor."
+│   ├── "CMS without mess."
+│   ├── "Publish in a click."
+│   ├── "Form your way."
+│   ├── "SEO you can control."
+│   ├── "Lottie power, built in."
+│   └── "Figma one sec."
+├── Japanese-market callout: "STUDIOのオリジナルテンプレートを制作して、販売しよう。" (template marketplace pitch)
+├── Testimonials / case studies
+│   ├── Catarina Costa — Graphic Designer
+│   ├── Nano Wilkinson — UX Designer ("Read Story" → case study)
+│   ├── Uday Pal Trabelsi — UX Designer + Student
+│   └── "Victor | WOOO! studio" (agency case-study attribution)
+├── Closing CTA block
+│   ├── "Spark your start" / "Find your template" / "Create your site in Studio"
+│   ├── "Get started for free"
+│   └── Restated hero echo: "Say hello to / Your new site."
+└── Footer (not fully captured in the greps pulled — structure not confirmed beyond the above)
+```
+
+### 3.6 Assets
+
+- Logo: SVG wordmark, "STUDIO" (`s-143x21_....svg`, i.e. 143×21px)
+- Icons: Font Awesome 6 solid + brands, self-hosted WOFF2/TTF from
+  Studio's own asset bucket
+- OG/social image and favicon both served from
+  `storage.googleapis.com/production-os-assets/...` — **CONFIRMED** all
+  media assets live on Google Cloud Storage, not a CDN like Cloudinary/
+  imgix
+- Small decorative SVGs (chevrons/arrows next to nav dropdown labels) are
+  tiny inline-dimension files (e.g. 7×auto, 10×6, 17×12) — consistent
+  with a builder that exports every icon as its own micro-SVG asset
+  rather than an icon font for these particular glyphs
 
 ---
 
@@ -329,3 +521,24 @@ tokens, given what's actually confirmed above:
    own About page (already drafted per the strategy doc) feels too
    sparse or too busy, these two sit at opposite ends of a real spectrum
    to calibrate against.
+6. **A strictly neutral shell (studio.design)** is the opposite bet from
+   Iknite's saturated palette, and it's just as confirmed: black/white/
+   gray only, letting portfolio/content images supply all the color. If
+   your own case-study covers and screenshots are already visually rich
+   (per the Work section spec), a neutral chrome around them — rather
+   than competing with your own accent color — is a legitimate,
+   evidence-backed alternative to weigh against option 1 above.
+7. **Negative letter-spacing on large bold headlines** (`-0.04em` at
+   studio.design, `-1.4px` at Iknite's mobile hero) shows up
+   independently in two unrelated codebases — a small, cheap, real
+   pattern (tighten tracking as weight/size go up) worth adopting as a
+   type-scale rule rather than a one-off.
+8. **A confirmed, reusable radius scale** (0 / 4 / 6 / 8 / 12 / 16 / pill)
+   and **a single repeated shadow recipe** (`0px 2px 15px rgba(0,0,0,0.1)`)
+   from studio.design are good, concrete starting tokens if you want a
+   soft-card aesthetic — more systematic than picking a radius/shadow
+   value ad hoc per component.
+9. **Studio.design's "Made with ___" floating badge** (backdrop-blur pill,
+   expands on hover) is a nice, small, reusable interaction idea if you
+   ever want a persistent low-key CTA (e.g. a "Work with me" pill) that
+   doesn't compete with the main nav.
