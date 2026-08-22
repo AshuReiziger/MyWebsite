@@ -15,7 +15,8 @@ and narrative arc rather than reading as generic portfolio filler.
   under `@theme inline`)
 - Content: MDX files in the repo (no headless CMS) via `gray-matter` +
   `next-mdx-remote/rsc`
-- `framer-motion` is installed for future motion work (not yet used)
+- `framer-motion` powers scroll/load entrance animations (`Reveal`,
+  `HeroReveal` in `src/components/`) — see "Motion" below
 - Deploy target: Vercel
 
 ## Commands
@@ -68,8 +69,39 @@ needed):
 - `muted` — secondary text
 - `line` — borders/dividers
 - `accent` — CTAs, eyebrows, highlights (bold orange)
-- `font-display` (Space Grotesk) for headings, `font-body` (Inter) for body
-  text
+- `font-display` (Fraunces, variable) for headings, `font-body` (Inter) for
+  body text. `h1` gets `-0.02em` letter-spacing globally
+  (`src/app/globals.css`) — large/bold display type should always be
+  tracked tighter, not looser.
+
+**Why Fraunces, not a geometric sans, for display:** decided after
+reverse-engineering three reference sites (see
+`docs/DESIGN-REFERENCE-AUDIT.md`) — a serif-display + sans-body pairing
+(confirmed at Iknite Studio: Marcellus + Outfit) reads more editorial and
+less generic-SaaS than an all-sans system, which fits "Designer.
+Strategist. Educator. Creative Leader." better. Deliberately did **not**
+adopt Iknite's dark-canvas-plus-saturated-accent palette or
+studio.design's six-font system — see `docs/DESIGN-REFERENCE-AUDIT.md` §4
+for the full reasoning and what else was/wasn't borrowed.
+
+## Motion
+
+- `src/components/Reveal.tsx` — wraps content in a `framer-motion`
+  fade+slide-up-on-scroll (`whileInView`, fires once). Used inside
+  `SectionHeading` (`Section.tsx`) so every section heading gets it for
+  free — don't wrap headings in it again manually.
+- `src/components/HeroReveal.tsx` — same visual effect but triggers on
+  mount (`animate`, not `whileInView`), for above-the-fold content that
+  should never require scrolling to appear (used for the homepage hero,
+  staggered by `delay`).
+- Easing `[0.2, 1, 1, 1]` is intentional — matches the confirmed entrance
+  curve from `docs/DESIGN-REFERENCE-AUDIT.md`'s studio.design audit, not
+  an arbitrary choice.
+- **Testing note:** Playwright's `fullPage` screenshot resizes the
+  viewport instantly rather than scrolling, so `whileInView` reveals below
+  the fold won't have fired yet when the screenshot is taken — that's a
+  capture artifact, not a bug. To verify reveals actually fire, scroll
+  incrementally (`window.scrollTo` in steps) before screenshotting.
 
 ## Brand voice rules (from `docs/WEBSITE-STRATEGY.md`)
 
@@ -80,6 +112,14 @@ needed):
 - The site-wide narrative arc is: Who I Am → What I Believe → What I Do →
   What I've Built → What I Think → What I Can Do For You → Let's Build. New
   sections should fit into this arc, not bolt on separately.
+
+## Image treatment
+
+`WorkCard.tsx`'s thumbnail uses `grayscale` → `group-hover:grayscale-0`
+(desaturated by default, full color on hover) — borrowed from the
+confirmed Iknite Studio pattern in `docs/DESIGN-REFERENCE-AUDIT.md` §1.5.
+Apply the same treatment to any future image-based card grid (e.g. a Team
+or additional Portfolio component) for visual consistency.
 
 ## Not yet wired up (intentional, see roadmap in the strategy doc)
 

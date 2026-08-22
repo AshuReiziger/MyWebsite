@@ -542,3 +542,25 @@ tokens, given what's actually confirmed above:
    expands on hover) is a nice, small, reusable interaction idea if you
    ever want a persistent low-key CTA (e.g. a "Work with me" pill) that
    doesn't compete with the main nav.
+
+## 5. Decisions Made — What Was Actually Applied
+
+Reviewed against the site as built. Status of each takeaway above:
+
+| # | Takeaway | Status |
+|---|---|---|
+| 1 | Dark-canvas-plus-accent palette | **Not applied.** Kept the existing warm paper/ink/orange palette — it already fits the brand's warmer "educator" register better than a nightlife-agency palette, and changing it would undo a deliberate choice already made in the strategy doc. |
+| 2 | Serif display + sans body | **Applied.** Swapped `font-display` from Space Grotesk to **Fraunces** (variable, with `opsz`/`SOFT`/`WONK` axes and italic), kept Inter for body. See `src/app/layout.tsx`, `globals.css`. |
+| 3 | Grayscale→color image hover | **Applied.** `WorkCard.tsx` thumbnail: `grayscale` → `group-hover:grayscale-0`, 500ms transition. |
+| 4 | One secondary accent used sparingly | **Not applied.** The site's single-accent (orange) system is intentionally simpler than Iknite's two-accent system — no clear second "delight" moment identified yet that would justify a second hue. Revisit if/when a specific UI moment calls for it. |
+| 5 | Ulevus's sparse, manifesto-style About structure | **Noted, not changed.** The current About page (per `WEBSITE-STRATEGY.md`) already sits closer to this end of the spectrum (narrative + timeline + values, no dense grid) — no change needed. |
+| 6 | Neutral-shell alternative (studio.design) | **Not applied** (superseded by keeping the existing palette per #1) — documented here as the alternative considered and passed on. |
+| 7 | Negative letter-spacing on large bold headlines | **Applied.** Global `h1 { letter-spacing: -0.02em }` in `globals.css`, plus the homepage hero pushed to a bigger scale (`text-5xl` → `lg:text-8xl`) to give the tightened tracking somewhere to matter. |
+| 8 | Confirmed radius/shadow tokens | **Not formally tokenized.** Existing component radii (`rounded-2xl`/`rounded-full` etc.) were left as-is rather than introducing a parallel `--radius-*` variable system on top of Tailwind's own scale — would duplicate, not add, structure. Worth a real pass later if the component count grows enough to need it. |
+| 9 | "Made with ___" floating badge | **Not applied.** Doesn't fit a personal-brand site (that pattern exists to promote the *tool*, not the site owner) — skipped as a deliberate no, not an oversight. |
+
+Also applied, beyond the numbered takeaways: a `Reveal`/`HeroReveal`
+scroll-and-load entrance-animation system (`src/components/Reveal.tsx`,
+`HeroReveal.tsx`), finally putting the previously-unused `framer-motion`
+dependency to work, using the exact easing curve
+(`cubic-bezier(0.2, 1, 1, 1)`) confirmed in studio.design's own CSS.

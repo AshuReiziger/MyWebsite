@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Section, SectionHeading } from "@/components/Section";
 import { CapabilityCard, type Capability } from "@/components/CapabilityCard";
 import { ThinkCard } from "@/components/ThinkCard";
+import { HeroReveal } from "@/components/HeroReveal";
 import { getAllThink } from "@/lib/content";
 
 const CAPABILITIES: Capability[] = [
@@ -37,31 +38,41 @@ export default function Home() {
   return (
     <>
       <Section className="pt-16 md:pt-24">
-        <p className="text-sm font-semibold uppercase tracking-widest text-accent">
-          Reiziger Ashu
-        </p>
-        <h1 className="mt-4 max-w-4xl font-display text-4xl font-semibold tracking-tight md:text-6xl">
-          I don&apos;t just design things. I design what they can become.
-        </h1>
-        <p className="mt-6 max-w-2xl text-lg text-muted md:text-xl">
-          I&apos;m a designer, strategist, educator, and creative leader passionate about using
-          design to help people and organizations discover who they are, communicate what they
-          believe, and build what they envision.
-        </p>
-        <div className="mt-8 flex flex-wrap gap-4">
-          <Link
-            href="/work"
-            className="rounded-full bg-ink px-6 py-3 text-sm font-semibold uppercase tracking-wide text-paper transition-opacity hover:opacity-90"
-          >
-            Explore My Work →
-          </Link>
-          <Link
-            href="/contact"
-            className="rounded-full border border-line px-6 py-3 text-sm font-semibold uppercase tracking-wide transition-colors hover:border-ink"
-          >
-            Let&apos;s Work Together
-          </Link>
-        </div>
+        <HeroReveal delay={0}>
+          <p className="text-sm font-semibold uppercase tracking-widest text-accent">
+            Reiziger Ashu
+          </p>
+        </HeroReveal>
+        <HeroReveal delay={0.1}>
+          <h1 className="mt-4 max-w-4xl font-display text-5xl font-semibold tracking-tight md:text-7xl lg:text-8xl">
+            I don&apos;t just design things.
+            <br />
+            I design what they can <em className="italic">become</em>.
+          </h1>
+        </HeroReveal>
+        <HeroReveal delay={0.2}>
+          <p className="mt-6 max-w-2xl text-lg text-muted md:text-xl">
+            I&apos;m a designer, strategist, educator, and creative leader passionate about using
+            design to help people and organizations discover who they are, communicate what they
+            believe, and build what they envision.
+          </p>
+        </HeroReveal>
+        <HeroReveal delay={0.3}>
+          <div className="mt-8 flex flex-wrap gap-4">
+            <Link
+              href="/work"
+              className="rounded-full bg-ink px-6 py-3 text-sm font-semibold uppercase tracking-wide text-paper transition-opacity hover:opacity-90"
+            >
+              Explore My Work →
+            </Link>
+            <Link
+              href="/contact"
+              className="rounded-full border border-line px-6 py-3 text-sm font-semibold uppercase tracking-wide transition-colors hover:border-ink"
+            >
+              Let&apos;s Work Together
+            </Link>
+          </div>
+        </HeroReveal>
       </Section>
 
       <Section className="pt-0">
