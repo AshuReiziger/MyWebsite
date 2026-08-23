@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import { execFileSync } from "child_process";
 import matter from "gray-matter";
 
 const WORK_DIR = path.join(process.cwd(), "src/content/work");
@@ -35,6 +36,23 @@ export interface ContentEntry<T> {
   slug: string;
   frontmatter: T;
   content: string;
+  /** Unix ms timestamp of this file's last git commit, or its filesystem mtime if it isn't tracked yet (a brand-new file). Drives the most-recently-edited-first ordering everywhere entries are listed. */
+  lastEdited: number;
+}
+
+/** Most-recent-commit-touching-this-file, not the content's own date/year field — so editing an old entry surfaces it without needing to bump a date by hand. Falls back to mtime for untracked files (and works even outside a git repo). */
+function getLastEditedTime(filePath: string): number {
+  try {
+    const output = execFileSync("git", ["log", "-1", "--format=%ct", "--", filePath], {
+      cwd: process.cwd(),
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    }).trim();
+    if (output) return Number(output) * 1000;
+  } catch {
+    // Not a git repo, git unavailable, or the file isn't tracked yet.
+  }
+  return fs.statSync(filePath).mtimeMs;
 }
 
 function readEntries<T>(dir: string): ContentEntry<T>[] {
@@ -45,16 +63,16 @@ function readEntries<T>(dir: string): ContentEntry<T>[] {
     .filter((file) => file.endsWith(".mdx"))
     .map((file) => {
       const slug = file.replace(/\.mdx$/, "");
-      const source = fs.readFileSync(path.join(dir, file), "utf8");
+      const filePath = path.join(dir, file);
+      const source = fs.readFileSync(filePath, "utf8");
       const { data, content } = matter(source);
-      return { slug, frontmatter: data as T, content };
-    });
+      return { slug, frontmatter: data as T, content, lastEdited: getLastEditedTime(filePath) };
+    })
+    .sort((a, b) => b.lastEdited - a.lastEdited);
 }
 
 export function getAllWork(): ContentEntry<WorkFrontmatter>[] {
-  return readEntries<WorkFrontmatter>(WORK_DIR).sort(
-    (a, b) => Number(b.frontmatter.year) - Number(a.frontmatter.year)
-  );
+  return readEntries<WorkFrontmatter>(WORK_DIR);
 }
 
 export function getWorkBySlug(slug: string): ContentEntry<WorkFrontmatter> | null {
@@ -62,9 +80,7 @@ export function getWorkBySlug(slug: string): ContentEntry<WorkFrontmatter> | nul
 }
 
 export function getAllThink(): ContentEntry<ThinkFrontmatter>[] {
-  return readEntries<ThinkFrontmatter>(THINK_DIR).sort(
-    (a, b) => new Date(b.frontmatter.date).getTime() - new Date(a.frontmatter.date).getTime()
-  );
+  return readEntries<ThinkFrontmatter>(THINK_DIR);
 }
 
 export function getThinkBySlug(slug: string): ContentEntry<ThinkFrontmatter> | null {
