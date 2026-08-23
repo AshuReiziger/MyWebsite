@@ -82,6 +82,20 @@ export default async function Page({ params }: PageProps<"/work/[slug]">) {
 - Loaded via `src/lib/content.ts` (`getAllWork`, `getWorkBySlug`,
   `getAllThink`, `getThinkBySlug`). Adding a new `.mdx` file to either
   directory is enough to publish — no code changes needed.
+- **Ordering is by last edit, not by the `year`/`date` field.** Both
+  `getAllWork` and `getAllThink` sort by each file's actual last-commit
+  time (`git log -1 --format=%ct`, falling back to filesystem `mtime`
+  for an untracked file, or if `git` isn't available) — editing an old
+  entry's copy bumps it back to the top without touching `year`/`date`,
+  which stay purely for display (the "2025" badge, the Think card date)
+  and no longer drive order. Every listing built on `getAllWork`/
+  `getAllThink` inherits this automatically: the Work index, the Think
+  index (including which article is "featured" in the All view), Home's
+  "Recent writing", and `CaseStudyLayout`'s Related Projects. Requires a
+  real git history to be meaningful — fine on Vercel (clones the repo)
+  and in local dev, but ties (several files touched by the same commit)
+  fall back to stable sort on `readdirSync`'s order, not something to
+  rely on.
 - `[slug]` routes use `generateStaticParams` to prerender every entry at
   build time.
 
