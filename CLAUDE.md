@@ -261,6 +261,53 @@ sidebar: Work/Think/Home frames showed the standard top nav only. If a
 future mockup shows it elsewhere, treat that as a deliberate expansion,
 not a bug fix.
 
+## Error, offline, and maintenance states
+
+Four distinct "site isn't showing the normal page" states, each solving a
+different problem — don't conflate them:
+
+- **`src/app/not-found.tsx`** — 404. Triggers on both an unmatched URL and
+  an explicit `notFound()` call (already used in `work/[slug]` and
+  `think/[slug]`). Renders inside the normal root layout (Nav/Footer/
+  WhatsApp button still show).
+- **`src/app/error.tsx`** — a client-component Error Boundary for
+  exceptions thrown while rendering a page (a bug, a bad MDX file, etc.).
+  Also renders inside the root layout — only the segment that threw is
+  replaced. Has a "Try Again" button (calls the `reset()` prop) rather
+  than just a reload link.
+- **`src/app/global-error.tsx`** — the last-resort fallback for an error
+  in the root layout itself. Must define its own `<html>`/`<body>` and
+  `import "./globals.css"` directly, since it replaces `layout.tsx`
+  entirely rather than nesting inside it — `next/font` variables from
+  `layout.tsx` won't be defined here, so headings silently fall back to
+  Georgia. This is expected and fine for a catastrophic-failure screen;
+  don't try to duplicate the font loading here.
+- **`src/app/maintenance/page.tsx`** + **`src/proxy.ts`** — a deliberate,
+  manually-toggled "site is down for scheduled work" state, gated by the
+  `MAINTENANCE_MODE` environment variable. When set to the string
+  `"true"`, `proxy.ts` rewrites every route (except `/maintenance` itself
+  and Next's internals/API routes) to the maintenance page — the browser
+  URL and nav active-state stay correct since it's a rewrite, not a
+  redirect. Toggle it in Vercel's environment variables and redeploy;
+  there's no in-app switch. (Next.js 16 renamed the `middleware.ts`
+  convention to `proxy.ts` — the export is named `proxy`, not
+  `middleware`; don't reintroduce the old file name or export name.)
+- **`src/app/offline/page.tsx`** + **`public/sw.js`** +
+  **`ServiceWorkerRegister.tsx`** (mounted in `layout.tsx`) — a true
+  no-network fallback. This is the only one of the four that isn't
+  server-side: a service worker pre-caches `/offline`'s HTML in the
+  visitor's browser on first visit, so if a later navigation's `fetch`
+  fails (no connection at all), it serves the cached offline page instead
+  of the browser's native error screen. This only helps when *the
+  visitor's own connection* is down — if Vercel/DNS is down, nothing
+  server-side or client-side can respond, since no request completes at
+  all; that failure mode isn't fixable from within the app.
+
+None of these four render real navigation content when active by design
+(no case-study links, no "recent work" — they're deliberately minimal),
+matching the rest of the site's restraint rather than trying to be a
+mini-homepage.
+
 ## Not yet wired up (intentional, see roadmap in the strategy doc)
 
 - `/api/contact` logs submissions server-side but does not send email yet —
