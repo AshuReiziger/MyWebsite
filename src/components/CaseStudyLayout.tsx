@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import type { ContentEntry, WorkFrontmatter } from "@/lib/content";
+import { WorkImage } from "@/components/WorkImage";
 
 const BEATS: { key: keyof WorkFrontmatter; num: string; heading: string }[] = [
   { key: "challenge", num: "01 — The Challenge", heading: "Understanding the Challenge" },
@@ -30,7 +31,11 @@ export function CaseStudyLayout({
           {frontmatter.title}
         </h1>
         <p className="mt-5 max-w-xl text-lg text-muted">{frontmatter.summary}</p>
-        <div className="mt-12 aspect-[21/9] rounded-2xl bg-gradient-to-br from-accent/70 via-paper to-paper" />
+        <WorkImage
+          src={frontmatter.coverImage}
+          alt={frontmatter.title}
+          className="mt-12 aspect-[21/9] rounded-2xl bg-gradient-to-br from-accent/70 via-paper to-paper"
+        />
       </div>
 
       <div className="mx-auto flex max-w-6xl flex-col gap-20 px-6 pt-20 md:gap-28 md:pt-28">
@@ -41,7 +46,9 @@ export function CaseStudyLayout({
               <h2 className="mt-3 font-display text-2xl font-bold tracking-tight">{heading}</h2>
               <p className="mt-4 text-lg leading-relaxed text-muted">{frontmatter[key]}</p>
             </div>
-            <div
+            <WorkImage
+              src={frontmatter.gallery?.[i]}
+              alt={`${frontmatter.title} — ${heading}`}
               className={
                 "aspect-[4/3] rounded-2xl bg-gradient-to-br from-accent/70 via-paper to-paper " +
                 (i % 2 === 1 ? "md:order-1" : "")
@@ -56,9 +63,14 @@ export function CaseStudyLayout({
             Designing the Solution
           </h2>
           <div className="mt-10 grid grid-cols-3 gap-6">
-            <div className="aspect-square rounded-2xl bg-gradient-to-br from-accent/70 via-paper to-paper" />
-            <div className="aspect-square rounded-2xl bg-gradient-to-br from-accent/70 via-paper to-paper" />
-            <div className="aspect-square rounded-2xl bg-gradient-to-br from-accent/70 via-paper to-paper" />
+            {[0, 1, 2].map((i) => (
+              <WorkImage
+                key={i}
+                src={frontmatter.gallery?.[BEATS.length + i]}
+                alt={`${frontmatter.title} — design detail`}
+                className="aspect-square rounded-2xl bg-gradient-to-br from-accent/70 via-paper to-paper"
+              />
+            ))}
           </div>
         </div>
       </div>
@@ -75,7 +87,11 @@ export function CaseStudyLayout({
                 href={`/work/${r.slug}`}
                 className="group overflow-hidden rounded-2xl border border-line transition-colors hover:border-accent/50"
               >
-                <div className="aspect-video bg-gradient-to-br from-line to-muted/20" />
+                <WorkImage
+                  src={r.frontmatter.coverImage}
+                  alt={r.frontmatter.title}
+                  className="aspect-video bg-gradient-to-br from-line to-muted/20"
+                />
                 <div className="p-6">
                   <p className="text-xs font-semibold uppercase tracking-widest text-accent">
                     {r.frontmatter.category}

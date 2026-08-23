@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ContentEntry, WorkFrontmatter } from "@/lib/content";
 import { ArrowRightIcon } from "@/components/icons";
+import { WorkImage } from "@/components/WorkImage";
 
 function getInitials(name: string) {
   return name
@@ -31,7 +32,9 @@ export function WorkCard({
         href={`/work/${slug}`}
         className="group grid overflow-hidden rounded-2xl md:grid-cols-2"
       >
-        <div
+        <WorkImage
+          src={frontmatter.coverImage}
+          alt={frontmatter.title}
           className={
             "aspect-[4/3] bg-gradient-to-br from-accent/70 via-paper to-paper grayscale transition-[filter] duration-500 group-hover:grayscale-0 md:aspect-auto md:min-h-[440px] " +
             (reversed ? "md:order-2" : "")
@@ -70,8 +73,16 @@ export function WorkCard({
         </div>
       </Link>
       <div className="mt-4 grid grid-cols-2 gap-4">
-        <div className="aspect-[4/3] rounded-2xl bg-gradient-to-br from-line to-muted/20" />
-        <div className="aspect-[4/3] rounded-2xl bg-gradient-to-br from-line to-muted/20" />
+        <WorkImage
+          src={frontmatter.gallery?.[0]}
+          alt={`${frontmatter.title} — supporting image`}
+          className="aspect-[4/3] rounded-2xl bg-gradient-to-br from-line to-muted/20"
+        />
+        <WorkImage
+          src={frontmatter.gallery?.[1]}
+          alt={`${frontmatter.title} — supporting image`}
+          className="aspect-[4/3] rounded-2xl bg-gradient-to-br from-line to-muted/20"
+        />
       </div>
     </div>
   );

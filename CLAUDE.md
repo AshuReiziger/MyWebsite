@@ -46,14 +46,35 @@ export default async function Page({ params }: PageProps<"/work/[slug]">) {
 ## Content model
 
 - `src/content/work/*.mdx` — case studies. Frontmatter:
-  `title, client, year, category, coverImage, summary, challenge, insight,
-  strategy, impact, tags?`. The `challenge/insight/strategy/impact` fields
-  are the same 5-part Challenge→Insight→Strategy→Design→Impact structure
-  from the brand voice rules — no schema change was needed to give the
-  case-study page a richer narrative layout (see "Work section: dark
-  theme" below), each field just got its own full-width alternating
-  section instead of being packed into a grid. `tags` (optional string
-  array) renders in the index band's meta line, alongside `client`.
+  `title, client, year, category, summary, challenge, insight, strategy,
+  impact, tags?, coverImage?, gallery?`. The `challenge/insight/strategy/
+  impact` fields are the same 5-part Challenge→Insight→Strategy→Design→
+  Impact structure from the brand voice rules — no schema change was
+  needed to give the case-study page a richer narrative layout (see
+  "Work section: dark theme" below), each field just got its own
+  full-width alternating section instead of being packed into a grid.
+  `tags` (optional string array) renders in the index band's meta line,
+  alongside `client`.
+- **Images (`coverImage?`, `gallery?`)** — both optional; every image slot
+  falls back to the site's gradient placeholder when omitted, so entries
+  work fine with zero real photography. `coverImage` is the single hero/
+  band photo (Work index band, case-study hero, and the thumbnail used
+  for that entry when it appears in another case study's Related
+  Projects). `gallery` is an ordered array consumed positionally: index
+  0–1 for the Work index's 2-image strip beneath a band, 0–3 for the four
+  case-study beats (Challenge/Insight/Strategy/Impact, in order), 4–6 for
+  the three Design-beat tiles — so a case study can supply anywhere from
+  zero images (all placeholders) up to 7 (every slot filled) without
+  code changes. Rendered via `WorkImage` (`src/components/WorkImage.tsx`),
+  a thin wrapper that shows the gradient div, `next/image`, or both
+  layered (gradient behind, image on top — harmless if the image is
+  transparent or slow to load) depending on whether `src` is set. Accepts
+  either a local path (drop the file in `public/work/...` and reference
+  `/work/...`) or an absolute URL — Cloudinary
+  (`res.cloudinary.com`) is pre-allowed in `next.config.ts`'s
+  `images.remotePatterns` as the secondary option for images too large
+  or numerous to commit to the repo; add another host there if a
+  different image CDN is ever needed.
 - `src/content/think/*.mdx` — articles. Frontmatter:
   `title, date, category, excerpt, coverImage, accent?`. `accent: true`
   renders that card with the dark `bg-ink` treatment on the Think index

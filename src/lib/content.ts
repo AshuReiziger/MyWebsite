@@ -10,7 +10,9 @@ export interface WorkFrontmatter {
   client: string;
   year: string;
   category: string;
-  coverImage: string;
+  coverImage?: string;
+  /** Additional images, used in order for the index's supporting gallery strip, the case-study beats, and the Design tiles. Falls back to the gradient placeholder wherever no image is supplied. */
+  gallery?: string[];
   summary: string;
   challenge: string;
   insight: string;
