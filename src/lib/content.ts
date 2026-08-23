@@ -5,6 +5,7 @@ import matter from "gray-matter";
 
 const WORK_DIR = path.join(process.cwd(), "src/content/work");
 const THINK_DIR = path.join(process.cwd(), "src/content/think");
+const RESOURCES_DIR = path.join(process.cwd(), "src/content/resources");
 
 export interface WorkFrontmatter {
   title: string;
@@ -30,6 +31,47 @@ export interface ThinkFrontmatter {
   coverImage: string;
   /** Renders this entry's card with the dark accent treatment, for visual rhythm in the grid. */
   accent?: boolean;
+  /** Slug of a resource (src/content/resources) to recommend via ResourceCTA at the end of this article. Opt-in per article — omit for none. */
+  relatedResource?: string;
+}
+
+export interface ResourceCoverArea {
+  title: string;
+  description: string;
+}
+
+export interface ResourceFrontmatter {
+  title: string;
+  /** e.g. "Brand & Business", "Design", "Creative Career", "Creative Leadership" — open string set, extensible by just using a new value. */
+  category: string;
+  /** e.g. "Guide", "Checklist", "Workbook", "Template", "Framework", "Audit". */
+  type: string;
+  /** Short card/meta description. */
+  description: string;
+  /** Longer copy for the resource's own landing page. */
+  longDescription: string;
+  /** Optional preview/mockup image — falls back to the gradient placeholder like Work/Think. */
+  coverImage?: string;
+  /** Overrides for the landing-page hero; fall back to generated defaults from title/description when omitted. */
+  heroHeadline?: string;
+  heroSubcopy?: string;
+  /** "What this resource covers" beats. */
+  covers: ResourceCoverArea[];
+  /** "Who it's for" list. */
+  audience: string[];
+  /** "What you'll get" paragraph. */
+  whatYoullGet: string;
+  /**
+   * Where the actual file lives once submission succeeds — a local /public
+   * path or an absolute URL (e.g. Cloudinary, S3, or any secure storage).
+   * Deliberately per-resource (frontmatter, not a global env var) since a
+   * single global variable can't scale once there's more than one resource.
+   */
+  downloadFile: string;
+  /** Marks the flagship resource used for homepage/Think CTAs when no specific resource is named. */
+  featured?: boolean;
+  metaTitle?: string;
+  metaDescription?: string;
 }
 
 export interface ContentEntry<T> {
@@ -107,4 +149,17 @@ export function getAllThink(): ContentEntry<ThinkFrontmatter>[] {
 
 export function getThinkBySlug(slug: string): ContentEntry<ThinkFrontmatter> | null {
   return getAllThink().find((entry) => entry.slug === slug) ?? null;
+}
+
+export function getAllResources(): ContentEntry<ResourceFrontmatter>[] {
+  return readEntries<ResourceFrontmatter>(RESOURCES_DIR);
+}
+
+export function getResourceBySlug(slug: string): ContentEntry<ResourceFrontmatter> | null {
+  return getAllResources().find((entry) => entry.slug === slug) ?? null;
+}
+
+export function getFeaturedResource(): ContentEntry<ResourceFrontmatter> | null {
+  const resources = getAllResources();
+  return resources.find((entry) => entry.frontmatter.featured) ?? resources[0] ?? null;
 }

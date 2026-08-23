@@ -6,8 +6,9 @@ import { ThinkCard } from "@/components/ThinkCard";
 import { HeroReveal } from "@/components/HeroReveal";
 import { ClientLogos } from "@/components/ClientLogos";
 import { Testimonial, type TestimonialEntry } from "@/components/Testimonial";
+import { ResourceCTA } from "@/components/ResourceCTA";
 import { DesignIcon, StrategyIcon, EducationIcon, LeadershipIcon } from "@/components/icons";
-import { getAllThink } from "@/lib/content";
+import { getAllThink, getFeaturedResource } from "@/lib/content";
 
 // Placeholder testimonials — replace with real client feedback once available.
 const TESTIMONIALS: TestimonialEntry[] = [
@@ -56,6 +57,7 @@ const CAPABILITIES: Capability[] = [
 
 export default function Home() {
   const latestThink = getAllThink().slice(0, 3);
+  const featuredResource = getFeaturedResource();
 
   return (
     <>
@@ -130,6 +132,17 @@ export default function Home() {
           ))}
         </div>
       </Section>
+
+      {featuredResource && (
+        <Section className="pt-0">
+          <ResourceCTA
+            resource={featuredResource}
+            headline={featuredResource.frontmatter.heroHeadline}
+            body={`Download my free ${featuredResource.frontmatter.title} and evaluate your brand before investing in a redesign.`}
+            ctaLabel="Get the Free Guide →"
+          />
+        </Section>
+      )}
 
       <Section outerClassName="bg-ink text-paper">
         <p className="text-sm font-semibold uppercase tracking-widest text-accent">Ventures</p>

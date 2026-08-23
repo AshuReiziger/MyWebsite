@@ -1,14 +1,21 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { Section, SectionHeading } from "@/components/Section";
-import { IconBadge, CompassIcon, WorkshopIcon, MentorshipIcon, ResourcesIcon } from "@/components/icons";
+import { IconBadge, CompassIcon, WorkshopIcon, MentorshipIcon, ResourcesIcon, ArrowRightIcon } from "@/components/icons";
 
 export const metadata: Metadata = {
   title: "Teach — Reiziger Ashu",
   description: "Design training, workshops, mentorship, and speaking.",
 };
 
-const OFFERINGS = [
+const OFFERINGS: {
+  title: string;
+  description: string;
+  icon: ReactNode;
+  href?: string;
+  cta?: string;
+}[] = [
   {
     title: "Design Training",
     description:
@@ -28,10 +35,11 @@ const OFFERINGS = [
     icon: <MentorshipIcon />,
   },
   {
-    title: "Resources",
-    description:
-      "Curated tools, templates, and reading lists to support continuous self-directed learning and system building.",
+    title: "Free Resources",
+    description: "Practical guides, frameworks and tools for designers, creatives and organizations.",
     icon: <ResourcesIcon />,
+    href: "/resources",
+    cta: "Explore Resources",
   },
 ];
 
@@ -74,15 +82,40 @@ export default function TeachPage() {
 
       <Section className="pt-0">
         <div className="grid gap-6 md:grid-cols-2">
-          {OFFERINGS.map((offering) => (
-            <div key={offering.title} className="rounded-2xl border border-line p-8">
-              <IconBadge>{offering.icon}</IconBadge>
-              <h3 className="mt-5 font-display text-lg font-bold tracking-tight">
-                {offering.title}
-              </h3>
-              <p className="mt-2 text-muted">{offering.description}</p>
-            </div>
-          ))}
+          {OFFERINGS.map((offering) => {
+            const content = (
+              <>
+                <IconBadge>{offering.icon}</IconBadge>
+                <h3 className="mt-5 font-display text-lg font-bold tracking-tight">
+                  {offering.title}
+                </h3>
+                <p className="mt-2 text-muted">{offering.description}</p>
+                {offering.href && offering.cta && (
+                  <span className="mt-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-accent">
+                    {offering.cta} <ArrowRightIcon className="h-4 w-4" />
+                  </span>
+                )}
+              </>
+            );
+
+            if (offering.href) {
+              return (
+                <Link
+                  key={offering.title}
+                  href={offering.href}
+                  className="group rounded-2xl border border-line p-8 transition-colors hover:border-accent/50"
+                >
+                  {content}
+                </Link>
+              );
+            }
+
+            return (
+              <div key={offering.title} className="rounded-2xl border border-line p-8">
+                {content}
+              </div>
+            );
+          })}
         </div>
       </Section>
 
