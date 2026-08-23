@@ -40,17 +40,39 @@ export interface ContentEntry<T> {
   lastEdited: number;
 }
 
-/** Most-recent-commit-touching-this-file, not the content's own date/year field — so editing an old entry surfaces it without needing to bump a date by hand. Falls back to mtime for untracked files (and works even outside a git repo). */
+/**
+ * Most-recent-commit-touching-this-file, not the content's own date/year
+ * field — so editing an old entry surfaces it without needing to bump a
+ * date by hand.
+ *
+ * Vercel's default build clone is shallow (depth 10 — see CLAUDE.md), so
+ * `git log` finds nothing for a file whose last commit fell outside that
+ * window even though the file is genuinely tracked. Falling back to
+ * filesystem mtime in that case would be actively wrong: a fresh checkout
+ * writes every file at roughly the same instant, so an untouched, actually
+ * -old file would get an mtime indistinguishable from "just edited" and
+ * wrongly jump to the top. So a tracked-but-log-empty file sorts as
+ * oldest (epoch 0) instead — safe (falls to the bottom, doesn't lie) even
+ * without deep clone enabled. mtime is only used for a file git doesn't
+ * know about at all (brand new, uncommitted, or no git repo present).
+ */
 function getLastEditedTime(filePath: string): number {
   try {
-    const output = execFileSync("git", ["log", "-1", "--format=%ct", "--", filePath], {
+    const log = execFileSync("git", ["log", "-1", "--format=%ct", "--", filePath], {
       cwd: process.cwd(),
       encoding: "utf8",
       stdio: ["ignore", "pipe", "ignore"],
     }).trim();
-    if (output) return Number(output) * 1000;
+    if (log) return Number(log) * 1000;
+
+    const tracked = execFileSync("git", ["ls-files", "--", filePath], {
+      cwd: process.cwd(),
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    }).trim();
+    if (tracked) return 0;
   } catch {
-    // Not a git repo, git unavailable, or the file isn't tracked yet.
+    // Not a git repo or git unavailable.
   }
   return fs.statSync(filePath).mtimeMs;
 }

@@ -84,18 +84,31 @@ export default async function Page({ params }: PageProps<"/work/[slug]">) {
   directory is enough to publish — no code changes needed.
 - **Ordering is by last edit, not by the `year`/`date` field.** Both
   `getAllWork` and `getAllThink` sort by each file's actual last-commit
-  time (`git log -1 --format=%ct`, falling back to filesystem `mtime`
-  for an untracked file, or if `git` isn't available) — editing an old
-  entry's copy bumps it back to the top without touching `year`/`date`,
-  which stay purely for display (the "2025" badge, the Think card date)
-  and no longer drive order. Every listing built on `getAllWork`/
-  `getAllThink` inherits this automatically: the Work index, the Think
-  index (including which article is "featured" in the All view), Home's
-  "Recent writing", and `CaseStudyLayout`'s Related Projects. Requires a
-  real git history to be meaningful — fine on Vercel (clones the repo)
-  and in local dev, but ties (several files touched by the same commit)
-  fall back to stable sort on `readdirSync`'s order, not something to
-  rely on.
+  time (`git log -1 --format=%ct` in `getLastEditedTime()`) — editing an
+  old entry's copy bumps it back to the top without touching `year`/
+  `date`, which stay purely for display (the "2025" badge, the Think
+  card date) and no longer drive order. Every listing built on
+  `getAllWork`/`getAllThink` inherits this automatically: the Work
+  index, the Think index (including which article is "featured" in the
+  All view), Home's "Recent writing", and `CaseStudyLayout`'s Related
+  Projects.
+  **Vercel's build clone is shallow by default (depth 10)** — `git log`
+  finds nothing for a file whose last touching commit has aged out of
+  that window, even though the file is genuinely tracked. Falling back
+  to filesystem `mtime` in that case would actively lie: a fresh
+  checkout writes every file at ~the same instant, so an untouched,
+  actually-old file's mtime would be indistinguishable from "just
+  edited" and it'd wrongly jump to the top. So `getLastEditedTime()`
+  only uses mtime for a file git doesn't know about at all (new,
+  uncommitted, or no repo present) — a tracked file with no reachable
+  log entry sorts as oldest (epoch 0) instead, a safe default that never
+  promotes stale content, even without deep clone. For genuinely correct
+  ordering of content older than the last ~10 commits, set the
+  `VERCEL_DEEP_CLONE` environment variable (any truthy value) in the
+  Vercel project settings — that's a dashboard toggle, not something
+  fixable from the repo. Ties (several files touched by the same commit,
+  or several both aged out of history) fall back to stable sort on
+  `readdirSync`'s order — not something to rely on for meaning.
 - `[slug]` routes use `generateStaticParams` to prerender every entry at
   build time.
 
