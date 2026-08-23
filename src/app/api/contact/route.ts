@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { Resend } from "resend";
 
 interface ContactPayload {
   name?: string;
@@ -6,6 +7,8 @@ interface ContactPayload {
   projectType?: string;
   message?: string;
 }
+
+const CONTACT_EMAIL = "ashu.reiziger45@gmail.com";
 
 export async function POST(request: Request) {
   const body = (await request.json()) as ContactPayload;
@@ -15,9 +18,26 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Missing required fields." }, { status: 400 });
   }
 
-  // TODO: wire up real delivery (e.g. Resend) once an API key is configured.
-  // For now this just confirms the submission was received.
-  console.log("New contact submission:", { name, email, projectType, message });
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    console.error("RESEND_API_KEY is not set — contact form cannot send email.");
+    return NextResponse.json({ error: "Email delivery is not configured." }, { status: 500 });
+  }
+
+  const resend = new Resend(apiKey);
+
+  const { error } = await resend.emails.send({
+    from: "Reiziger Ashu Website <onboarding@resend.dev>",
+    to: CONTACT_EMAIL,
+    replyTo: email,
+    subject: `New inquiry from ${name} — ${projectType}`,
+    text: `Name: ${name}\nEmail: ${email}\nArea of Interest: ${projectType}\n\n${message}`,
+  });
+
+  if (error) {
+    console.error("Resend error:", error);
+    return NextResponse.json({ error: "Failed to send message." }, { status: 502 });
+  }
 
   return NextResponse.json({ ok: true });
 }

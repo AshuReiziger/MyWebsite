@@ -335,10 +335,25 @@ None of these four render real navigation content when active by design
 matching the rest of the site's restraint rather than trying to be a
 mini-homepage.
 
+## Contact form email (`/api/contact`)
+
+Sends via [Resend](https://resend.com) to `ashu.reiziger45@gmail.com`
+(hardcoded as `CONTACT_EMAIL` in `route.ts` — there's only one recipient,
+so this isn't an env var). Requires a `RESEND_API_KEY` environment
+variable, set in Vercel's project settings (and in `.env.local`,
+gitignored, for local testing) — without it the route returns a clean
+500 rather than silently pretending success, so a missing key fails
+loudly instead of just dropping messages.
+
+The `from` address is Resend's shared sandbox domain
+(`onboarding@resend.dev`), which works immediately with no setup —
+`replyTo` is set to the submitter's own email, so replying from Gmail
+goes straight to them regardless. Verify a real domain with Resend
+(their dashboard, DNS records) to send from `@reizigerashu.com` or
+similar instead — purely cosmetic, not required for delivery to work.
+
 ## Not yet wired up (intentional, see roadmap in the strategy doc)
 
-- `/api/contact` logs submissions server-side but does not send email yet —
-  needs a provider (e.g. Resend) and an API key before going live.
 - No headless CMS, auth, or payments — MDX-in-repo is the v1 content model.
 - Social links in `Footer.tsx` are placeholders — replace with real handles.
 - `ClientLogos.tsx` (homepage, below the hero) renders 6 generic "Client
