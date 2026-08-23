@@ -222,6 +222,14 @@ export function WhatsAppIcon(props: IconProps) {
   );
 }
 
+export function ArrowRightIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M5 12h14M13 6l6 6-6 6" />
+    </svg>
+  );
+}
+
 export function IconBadge({ children }: { children: React.ReactNode }) {
   return (
     <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-accent/10 text-accent">

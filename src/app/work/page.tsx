@@ -12,18 +12,20 @@ export default function WorkPage() {
   const work = getAllWork();
 
   return (
-    <Section className="pt-16 md:pt-24">
-      <SectionHeading
-        eyebrow="Portfolio"
-        title="Selected Work"
-        description="A collection of identities, campaigns, systems, experiences, and creative solutions built for people and organizations with something meaningful to communicate."
-        centered
-      />
-      <div className="mx-auto mt-16 flex max-w-5xl flex-col gap-8">
-        {work.map((entry) => (
-          <WorkCard key={entry.slug} entry={entry} />
-        ))}
-      </div>
-    </Section>
+    <div className="theme-dark-fixed -mb-32 bg-paper pb-32 text-ink">
+      <Section className="pt-16 md:pt-24">
+        <SectionHeading
+          eyebrow="Portfolio"
+          title="Where Ideas Become Visible"
+          description="A collection of identities, campaigns, systems, and creative solutions built for people and organizations with something meaningful to communicate."
+          centered
+        />
+        <div className="mx-auto mt-16 flex max-w-5xl flex-col gap-24">
+          {work.map((entry, i) => (
+            <WorkCard key={entry.slug} entry={entry} index={i} />
+          ))}
+        </div>
+      </Section>
+    </div>
   );
 }

@@ -44,3 +44,18 @@ h3,
 h4 {
   font-family: var(--font-display), Georgia, serif;
 }
+
+/* Sections that are always dark by design (Work index, case studies) —
+   overrides the token roles regardless of the system light/dark
+   preference, unlike the media query above which swaps both ways. */
+.theme-dark-fixed {
+  --color-ink: #f8fafc;
+  --color-paper: #0f172a;
+  --color-muted: #94a3b8;
+  --color-line: #1e293b;
+  --color-accent: #c7a876;
+}
+
+.panel-tint {
+  background: color-mix(in srgb, var(--color-accent) 12%, var(--color-paper));
+}
