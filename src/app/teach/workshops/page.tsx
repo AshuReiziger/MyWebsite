@@ -2,38 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Section, SectionHeading } from "@/components/Section";
 import { OfferingCard } from "@/components/OfferingCard";
+import { WORKSHOPS, WORKSHOP_DISCOUNTS } from "@/content/workshops";
 
 export const metadata: Metadata = {
   title: "Workshops — Reiziger Ashu",
   description: "Practical, hands-on workshops for creatives and teams who learn best by doing.",
 };
-
-const WORKSHOPS = [
-  {
-    title: "Strategic Design",
-    description: "A workshop on solving business problems through design thinking, not just making things look good.",
-  },
-  {
-    title: "Visual Communication",
-    description: "A workshop on communicating clearly and persuasively through layout, color, typography, and image.",
-  },
-  {
-    title: "Branding",
-    description: "A workshop on building brands with real strategic backbone, from positioning through to visual execution.",
-  },
-  {
-    title: "Creative Business",
-    description: "A workshop on the business side of creative work: pricing, contracts, clients, and getting paid what you're worth.",
-  },
-  {
-    title: "Creative Leadership",
-    description: "A workshop on leading creative people and teams, from giving useful feedback to running a healthy studio culture.",
-  },
-  {
-    title: "Systems Thinking",
-    description: "A workshop on building repeatable systems so creative output doesn't depend on constant improvisation.",
-  },
-];
 
 export default function WorkshopsPage() {
   return (
@@ -47,8 +21,28 @@ export default function WorkshopsPage() {
         />
         <div className="mx-auto mt-16 grid max-w-5xl gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {WORKSHOPS.map((workshop) => (
-            <OfferingCard key={workshop.title} tag="Workshop" title={workshop.title} description={workshop.description} />
+            <OfferingCard
+              key={workshop.slug}
+              tag="Workshop"
+              title={workshop.title}
+              description={workshop.subhead}
+              href={`/teach/workshops/${workshop.slug}`}
+            />
           ))}
+        </div>
+      </Section>
+
+      <Section className="pt-0">
+        <div className="mx-auto max-w-3xl rounded-2xl border border-line p-8 text-center md:p-10">
+          <p className="text-xs font-semibold uppercase tracking-widest text-accent">Discounts</p>
+          <div className="mt-4 grid gap-4 sm:grid-cols-3">
+            {WORKSHOP_DISCOUNTS.map((discount) => (
+              <div key={discount.name}>
+                <p className="font-display text-sm font-bold tracking-tight">{discount.name}</p>
+                <p className="mt-1 text-sm text-muted">{discount.detail}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </Section>
 
