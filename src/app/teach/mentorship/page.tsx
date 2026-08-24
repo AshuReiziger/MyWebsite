@@ -2,38 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Section, SectionHeading } from "@/components/Section";
 import { OfferingCard } from "@/components/OfferingCard";
+import { MENTORSHIP_TRACKS } from "@/content/mentorship";
 
 export const metadata: Metadata = {
   title: "Mentorship — Reiziger Ashu",
   description: "One-on-one and small-group guidance for designers and creatives who want a faster, less isolated path forward.",
 };
-
-const MENTORSHIP_TRACKS = [
-  {
-    title: "Career Development",
-    description: "Guidance on where your creative career is headed and how to get there with intention.",
-  },
-  {
-    title: "Portfolio Building",
-    description: "Hands-on feedback to shape a portfolio that shows range, judgment, and results.",
-  },
-  {
-    title: "Professional Practice",
-    description: "Support in building the habits, workflows, and standards of a working professional.",
-  },
-  {
-    title: "Creative Business",
-    description: "Guidance on pricing, contracts, and running a creative practice like a real business.",
-  },
-  {
-    title: "Personal Positioning",
-    description: "Help defining your creative point of view and how you want to be known in the industry.",
-  },
-  {
-    title: "Building Systems Around Your Skill",
-    description: "Support turning individual talent into a structured, repeatable, and scalable way of working.",
-  },
-];
 
 export default function MentorshipPage() {
   return (
@@ -47,7 +21,13 @@ export default function MentorshipPage() {
         />
         <div className="mx-auto mt-16 grid max-w-5xl gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {MENTORSHIP_TRACKS.map((track) => (
-            <OfferingCard key={track.title} tag="Mentorship Track" title={track.title} description={track.description} />
+            <OfferingCard
+              key={track.slug}
+              tag="Mentorship Track"
+              title={track.title}
+              description={track.subhead}
+              href={`/teach/mentorship/${track.slug}`}
+            />
           ))}
         </div>
       </Section>
