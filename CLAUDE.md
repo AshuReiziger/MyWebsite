@@ -82,6 +82,33 @@ export default async function Page({ params }: PageProps<"/work/[slug]">) {
 - Loaded via `src/lib/content.ts` (`getAllWork`, `getWorkBySlug`,
   `getAllThink`, `getThinkBySlug`). Adding a new `.mdx` file to either
   directory is enough to publish — no code changes needed.
+- **Ordering is by last edit, not by the `year`/`date` field.** Both
+  `getAllWork` and `getAllThink` sort by each file's actual last-commit
+  time (`git log -1 --format=%ct` in `getLastEditedTime()`) — editing an
+  old entry's copy bumps it back to the top without touching `year`/
+  `date`, which stay purely for display (the "2025" badge, the Think
+  card date) and no longer drive order. Every listing built on
+  `getAllWork`/`getAllThink` inherits this automatically: the Work
+  index, the Think index (including which article is "featured" in the
+  All view), Home's "Recent writing", and `CaseStudyLayout`'s Related
+  Projects.
+  **Vercel's build clone is shallow by default (depth 10)** — `git log`
+  finds nothing for a file whose last touching commit has aged out of
+  that window, even though the file is genuinely tracked. Falling back
+  to filesystem `mtime` in that case would actively lie: a fresh
+  checkout writes every file at ~the same instant, so an untouched,
+  actually-old file's mtime would be indistinguishable from "just
+  edited" and it'd wrongly jump to the top. So `getLastEditedTime()`
+  only uses mtime for a file git doesn't know about at all (new,
+  uncommitted, or no repo present) — a tracked file with no reachable
+  log entry sorts as oldest (epoch 0) instead, a safe default that never
+  promotes stale content, even without deep clone. For genuinely correct
+  ordering of content older than the last ~10 commits, set the
+  `VERCEL_DEEP_CLONE` environment variable (any truthy value) in the
+  Vercel project settings — that's a dashboard toggle, not something
+  fixable from the repo. Ties (several files touched by the same commit,
+  or several both aged out of history) fall back to stable sort on
+  `readdirSync`'s order — not something to rely on for meaning.
 - `[slug]` routes use `generateStaticParams` to prerender every entry at
   build time.
 
@@ -261,10 +288,72 @@ sidebar: Work/Think/Home frames showed the standard top nav only. If a
 future mockup shows it elsewhere, treat that as a deliberate expansion,
 not a bug fix.
 
+## Error, offline, and maintenance states
+
+Four distinct "site isn't showing the normal page" states, each solving a
+different problem — don't conflate them:
+
+- **`src/app/not-found.tsx`** — 404. Triggers on both an unmatched URL and
+  an explicit `notFound()` call (already used in `work/[slug]` and
+  `think/[slug]`). Renders inside the normal root layout (Nav/Footer/
+  WhatsApp button still show).
+- **`src/app/error.tsx`** — a client-component Error Boundary for
+  exceptions thrown while rendering a page (a bug, a bad MDX file, etc.).
+  Also renders inside the root layout — only the segment that threw is
+  replaced. Has a "Try Again" button (calls the `reset()` prop) rather
+  than just a reload link.
+- **`src/app/global-error.tsx`** — the last-resort fallback for an error
+  in the root layout itself. Must define its own `<html>`/`<body>` and
+  `import "./globals.css"` directly, since it replaces `layout.tsx`
+  entirely rather than nesting inside it — `next/font` variables from
+  `layout.tsx` won't be defined here, so headings silently fall back to
+  Georgia. This is expected and fine for a catastrophic-failure screen;
+  don't try to duplicate the font loading here.
+- **`src/app/maintenance/page.tsx`** + **`src/proxy.ts`** — a deliberate,
+  manually-toggled "site is down for scheduled work" state, gated by the
+  `MAINTENANCE_MODE` environment variable. When set to the string
+  `"true"`, `proxy.ts` rewrites every route (except `/maintenance` itself
+  and Next's internals/API routes) to the maintenance page — the browser
+  URL and nav active-state stay correct since it's a rewrite, not a
+  redirect. Toggle it in Vercel's environment variables and redeploy;
+  there's no in-app switch. (Next.js 16 renamed the `middleware.ts`
+  convention to `proxy.ts` — the export is named `proxy`, not
+  `middleware`; don't reintroduce the old file name or export name.)
+- **`src/app/offline/page.tsx`** + **`public/sw.js`** +
+  **`ServiceWorkerRegister.tsx`** (mounted in `layout.tsx`) — a true
+  no-network fallback. This is the only one of the four that isn't
+  server-side: a service worker pre-caches `/offline`'s HTML in the
+  visitor's browser on first visit, so if a later navigation's `fetch`
+  fails (no connection at all), it serves the cached offline page instead
+  of the browser's native error screen. This only helps when *the
+  visitor's own connection* is down — if Vercel/DNS is down, nothing
+  server-side or client-side can respond, since no request completes at
+  all; that failure mode isn't fixable from within the app.
+
+None of these four render real navigation content when active by design
+(no case-study links, no "recent work" — they're deliberately minimal),
+matching the rest of the site's restraint rather than trying to be a
+mini-homepage.
+
+## Contact form email (`/api/contact`)
+
+Sends via [Resend](https://resend.com) to `ashu.reiziger45@gmail.com`
+(hardcoded as `CONTACT_EMAIL` in `route.ts` — there's only one recipient,
+so this isn't an env var). Requires a `RESEND_API_KEY` environment
+variable, set in Vercel's project settings (and in `.env.local`,
+gitignored, for local testing) — without it the route returns a clean
+500 rather than silently pretending success, so a missing key fails
+loudly instead of just dropping messages.
+
+The `from` address is Resend's shared sandbox domain
+(`onboarding@resend.dev`), which works immediately with no setup —
+`replyTo` is set to the submitter's own email, so replying from Gmail
+goes straight to them regardless. Verify a real domain with Resend
+(their dashboard, DNS records) to send from `@reizigerashu.com` or
+similar instead — purely cosmetic, not required for delivery to work.
+
 ## Not yet wired up (intentional, see roadmap in the strategy doc)
 
-- `/api/contact` logs submissions server-side but does not send email yet —
-  needs a provider (e.g. Resend) and an API key before going live.
 - No headless CMS, auth, or payments — MDX-in-repo is the v1 content model.
 - Social links in `Footer.tsx` are placeholders — replace with real handles.
 - `ClientLogos.tsx` (homepage, below the hero) renders 6 generic "Client
