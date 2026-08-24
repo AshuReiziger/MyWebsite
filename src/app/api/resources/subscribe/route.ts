@@ -2,19 +2,23 @@ import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { getResourceBySlug } from "@/lib/content";
 import { subscribeToList } from "@/lib/email-provider";
+import { getAssessmentBySlug } from "@/lib/assessments";
+import type { AssessmentResult } from "@/lib/assessment-scoring";
 
 interface ResourceSubscribePayload {
   firstName?: string;
   email?: string;
   role?: string;
   resourceSlug?: string;
+  /** Present when the submission came from the interactive assessment flow rather than a plain download form. */
+  assessmentScore?: AssessmentResult;
 }
 
 const CONTACT_EMAIL = "ashu.reiziger45@gmail.com";
 
 export async function POST(request: Request) {
   const body = (await request.json()) as ResourceSubscribePayload;
-  const { firstName, email, role, resourceSlug } = body;
+  const { firstName, email, role, resourceSlug, assessmentScore } = body;
 
   if (!firstName || !email || !resourceSlug) {
     return NextResponse.json({ error: "Missing required fields." }, { status: 400 });
@@ -34,6 +38,7 @@ export async function POST(request: Request) {
     role,
     resourceSlug: resource.slug,
     resourceTitle: resource.frontmatter.title,
+    assessmentScore: assessmentScore?.overall,
   });
   if (!listResult.ok && !listResult.skipped) {
     console.error(`Failed to add ${email} to email list for ${resource.slug}: ${listResult.error}`);
@@ -48,12 +53,20 @@ export async function POST(request: Request) {
   const downloadUrl = new URL(resource.frontmatter.downloadFile, request.url).toString();
   const resend = new Resend(apiKey);
 
+  const { subject, text } = buildDeliveryEmail({
+    firstName,
+    resourceTitle: resource.frontmatter.title,
+    resourceSlug: resource.slug,
+    downloadUrl,
+    assessmentScore,
+  });
+
   const { error } = await resend.emails.send({
     from: "Reiziger Ashu <onboarding@resend.dev>",
     to: email,
     replyTo: CONTACT_EMAIL,
-    subject: `Your ${resource.frontmatter.title} is on its way`,
-    text: `Hi ${firstName},\n\nHere's your copy of the ${resource.frontmatter.title}:\n${downloadUrl}\n\nIf you have any questions, just reply to this email.\n\n— Reiziger Ashu`,
+    subject,
+    text,
   });
 
   if (error) {
@@ -62,4 +75,38 @@ export async function POST(request: Request) {
   }
 
   return NextResponse.json({ ok: true });
+}
+
+function buildDeliveryEmail({
+  firstName,
+  resourceTitle,
+  resourceSlug,
+  downloadUrl,
+  assessmentScore,
+}: {
+  firstName: string;
+  resourceTitle: string;
+  resourceSlug: string;
+  downloadUrl: string;
+  assessmentScore?: AssessmentResult;
+}): { subject: string; text: string } {
+  if (!assessmentScore) {
+    return {
+      subject: `Your ${resourceTitle} is on its way`,
+      text: `Hi ${firstName},\n\nHere's your copy of the ${resourceTitle}:\n${downloadUrl}\n\nIf you have any questions, just reply to this email.\n\n— Reiziger Ashu`,
+    };
+  }
+
+  const assessment = getAssessmentBySlug(resourceSlug);
+  const breakdown = assessmentScore.byArea
+    .map(({ area, score }) => {
+      const label = assessment?.areas.find((a) => a.id === area)?.label ?? area;
+      return `- ${label}: ${Math.round(score)} / 100`;
+    })
+    .join("\n");
+
+  return {
+    subject: `Your Brand Audit Score: ${Math.round(assessmentScore.overall)} / 100`,
+    text: `Hi ${firstName},\n\nHere's your full Brand Audit breakdown:\n\nOverall: ${Math.round(assessmentScore.overall)} / 100\n${breakdown}\n\nAnd here's your copy of the ${resourceTitle}:\n${downloadUrl}\n\nIf you have any questions, just reply to this email.\n\n— Reiziger Ashu`,
+  };
 }

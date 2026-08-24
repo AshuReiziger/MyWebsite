@@ -70,6 +70,8 @@ export interface ResourceFrontmatter {
   downloadFile: string;
   /** Marks the flagship resource used for homepage/Think CTAs when no specific resource is named. */
   featured?: boolean;
+  /** Offers an interactive scored assessment (see src/content/assessments) at /resources/[slug]/assessment, alongside the plain email-gated download. */
+  hasAssessment?: boolean;
   metaTitle?: string;
   metaDescription?: string;
 }

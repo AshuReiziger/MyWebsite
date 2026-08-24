@@ -37,12 +37,28 @@ export function ResourceDetailLayout({ entry }: { entry: ContentEntry<ResourceFr
               </p>
             </HeroReveal>
             <HeroReveal delay={0.3}>
-              <a
-                href="#get-guide"
-                className="mt-8 inline-block rounded-full bg-ink px-6 py-3 text-sm font-semibold uppercase tracking-wide text-paper transition-opacity hover:opacity-90"
-              >
-                Get the Free {frontmatter.type}
-              </a>
+              {frontmatter.hasAssessment ? (
+                <>
+                  <Link
+                    href={`/resources/${slug}/assessment`}
+                    className="mt-8 inline-block rounded-full bg-ink px-6 py-3 text-sm font-semibold uppercase tracking-wide text-paper transition-opacity hover:opacity-90"
+                  >
+                    Take the 3-Minute Assessment →
+                  </Link>
+                  <div className="mt-4">
+                    <a href="#get-guide" className="text-sm font-semibold text-accent hover:underline">
+                      Prefer to just get the PDF? Jump to email signup ↓
+                    </a>
+                  </div>
+                </>
+              ) : (
+                <a
+                  href="#get-guide"
+                  className="mt-8 inline-block rounded-full bg-ink px-6 py-3 text-sm font-semibold uppercase tracking-wide text-paper transition-opacity hover:opacity-90"
+                >
+                  Get the Free {frontmatter.type}
+                </a>
+              )}
             </HeroReveal>
           </div>
           <WorkImage

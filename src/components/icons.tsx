@@ -230,6 +230,60 @@ export function ArrowRightIcon(props: IconProps) {
   );
 }
 
+export function MessageIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <rect x="3" y="4" width="18" height="12" rx="2" />
+      <path d="M8 16l-2 4v-4" />
+    </svg>
+  );
+}
+
+export function LayersIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M12 3l9 4.5-9 4.5-9-4.5L12 3z" />
+      <path d="M3 12l9 4.5 9-4.5" />
+      <path d="M3 16.5l9 4.5 9-4.5" />
+    </svg>
+  );
+}
+
+export function HeartIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M12 20s-7-4.35-9.5-8.5C.7 7.9 2.1 4.6 5.6 4.6c2 0 3.6 1.2 4.4 2.6.8-1.4 2.4-2.6 4.4-2.6 3.5 0 4.9 3.3 3.1 6.9C19 15.65 12 20 12 20z" />
+    </svg>
+  );
+}
+
+export function EyeIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  );
+}
+
+export function LockIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M6 11V8a6 6 0 0 1 12 0v3" />
+      <rect x="4" y="11" width="16" height="10" rx="2" />
+    </svg>
+  );
+}
+
+export function DownloadIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M12 3v12m0 0l-4-4m4 4l4-4" />
+      <path d="M4 17v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3" />
+    </svg>
+  );
+}
+
 export function IconBadge({ children }: { children: React.ReactNode }) {
   return (
     <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-accent/10 text-accent">
