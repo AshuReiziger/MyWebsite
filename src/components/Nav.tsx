@@ -11,7 +11,6 @@ const LINKS = [
   { href: "/think", label: "Think" },
   { href: "/build", label: "Build" },
   { href: "/teach", label: "Teach" },
-  { href: "/contact", label: "Contact" },
 ];
 
 export function Nav() {

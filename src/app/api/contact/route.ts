@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
+import { CONTACT_EMAIL } from "@/lib/constants";
 
 interface ContactPayload {
   name?: string;
@@ -7,8 +8,6 @@ interface ContactPayload {
   projectType?: string;
   message?: string;
 }
-
-const CONTACT_EMAIL = "ashu.reiziger45@gmail.com";
 
 export async function POST(request: Request) {
   const body = (await request.json()) as ContactPayload;

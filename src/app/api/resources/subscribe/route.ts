@@ -4,6 +4,7 @@ import { getResourceBySlug } from "@/lib/content";
 import { subscribeToList } from "@/lib/email-provider";
 import { getAssessmentBySlug } from "@/lib/assessments";
 import type { AssessmentResult } from "@/lib/assessment-scoring";
+import { CONTACT_EMAIL } from "@/lib/constants";
 
 interface ResourceSubscribePayload {
   firstName?: string;
@@ -13,8 +14,6 @@ interface ResourceSubscribePayload {
   /** Present when the submission came from the interactive assessment flow rather than a plain download form. */
   assessmentScore?: AssessmentResult;
 }
-
-const CONTACT_EMAIL = "ashu.reiziger45@gmail.com";
 
 export async function POST(request: Request) {
   const body = (await request.json()) as ResourceSubscribePayload;

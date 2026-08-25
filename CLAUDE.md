@@ -251,13 +251,19 @@ on Home and Build) — `className` alone only affects the centered
 
 ## Nav & Footer conventions
 
-- Nav order is **About, Work, Think, Build, Teach, Contact** — centered
-  as a group in the header (absolutely positioned + `-translate-x-1/2`,
-  not `justify-between`, so it stays centered regardless of logo/button
+- Nav order is **About, Work, Think, Build, Teach** — centered as a group
+  in the header (absolutely positioned + `-translate-x-1/2`, not
+  `justify-between`, so it stays centered regardless of logo/button
   width), with the "Work With Me" button separate on the right. This
   order was explicitly chosen by the user over what a later Figma
   mockup happened to show (About last) — don't "fix" it back without
-  asking, that mockup predates the explicit choice.
+  asking, that mockup predates the explicit choice. There is deliberately
+  **no separate "Contact" nav item** — "Work With Me" already links to
+  `/contact` and serves the same purpose, so a second nav entry for the
+  same destination was removed rather than kept as a redundant link.
+  (The Footer's own nav list still includes "Contact" — that list isn't
+  "the nav bar" this decision was about, and unlike the header it has no
+  separate CTA button pointing at `/contact`.)
 - Active-route highlighting uses `usePathname()` (Nav and Footer are
   both client components for this) — active link/current route gets
   `text-accent`.
@@ -356,19 +362,137 @@ verification completes, sends from this address will fail — swap the
 `from` back to Resend's shared sandbox domain (`onboarding@resend.dev`)
 if you need working email before verification finishes.
 
+## Category-specific Teach forms
+
+The Teach section's CTAs no longer dump every inquiry into the generic
+`/contact` form — each category has its own purpose-built form, since a
+speaking invite, a mentorship application, and a workshop booking need
+genuinely different fields (budget/honorarium vs. commitment-to-track-
+length vs. seat count), not one generic "message" textarea:
+
+- **`/teach/speaking`** (`SpeakingForm.tsx` → `/api/speaking/request`) —
+  linked from the "Book a Session" CTA in the Teach page's "Invite me to
+  speak" section.
+- **`/teach/mentorship/apply`** (`MentorshipApplicationForm.tsx` →
+  `/api/mentorship/apply`) — linked from "Start Mentorship" on the
+  mentorship index and "Apply for Mentorship" on each track's detail page.
+  Track-detail links pass `?track=<slug>`, which the form resolves against
+  `MENTORSHIP_TRACKS` to pre-select that track in the dropdown — visitors
+  can still change it, it's just not blank when they arrive from a
+  specific track's page.
+- **`/teach/workshops/book`** (`WorkshopBookingForm.tsx` →
+  `/api/workshops/book`) — linked from "Book a Workshop" on the workshops
+  index and "Book This Workshop" on each workshop's detail page, same
+  `?workshop=<slug>` pre-select pattern against `WORKSHOPS`.
+
+Each form is a controlled client component (not a plain
+`<form>`/`FormData` pass-through like `ContactForm.tsx`) because several
+fields are conditional on another field's value — e.g. the mentorship
+form's "worked with a mentor before" follow-up textarea, or the workshop
+form's "Additional Participants" field which only appears once seats > 1.
+Single-select and multi-select fields that the spec called "radio" or
+"checkboxes" render as pill-button toggle groups (`PillToggle`/
+`PillMultiToggle` in `PillToggle.tsx`) rather than native radio/checkbox
+inputs, matching the site's existing filter-pill visual language (see
+Think index category filters) instead of introducing a new control style.
+
+All three API routes follow the same pattern as `/api/contact`: validate
+required fields, 400 if missing; 500 with a clean error (not a silent
+failure) if `RESEND_API_KEY` is unset; send one plain-text email to the
+shared `CONTACT_EMAIL` (now centralized in `src/lib/constants.ts` rather
+than duplicated per route) with `replyTo` set to the submitter so a reply
+goes straight to them. None of these send a confirmation email back to the
+submitter — the on-page success state's confirmation copy (e.g. "We'll
+respond within 3–5 business days…") is the only acknowledgment, same
+tradeoff as the rest of the site's forms.
+
+The workshop booking form always shows the In-person/Virtual format
+toggle regardless of which workshop is selected, rather than trying to
+parse each workshop's freeform `format.delivery` string (e.g. "In-person,
+with a virtual option for teams outside Buea") to decide whether to hide
+it — every workshop's delivery text mentions some virtual option, so
+showing it unconditionally is simpler and never wrong.
+
+## Newsletter signup (`/api/newsletter/subscribe`)
+
+The footer's `NewsletterForm` (email-only, no name field) posts to this
+route, which calls the same `subscribeToList()` from `lib/email-provider.ts`
+that the resource lead-magnet flow uses — it does **not** send any email
+itself via Resend. Since `SubscribePayload` requires `resourceSlug`/
+`resourceTitle`, the route passes fixed values (`"newsletter"` /
+`"Newsletter"`) so a footer subscriber is distinguishable from a resource
+download in whichever ESP fields those values land in (e.g. Kit's
+`fields.resource`). Configuring `EMAIL_PROVIDER`/`EMAIL_API_KEY`/`EMAIL_FORM_ID` (documented in
+`lib/email-provider.ts`'s header comment — the same env vars power both this
+and the resource lead-magnet flow) is required for this to do anything;
+without it the route returns a clean 500 rather than silently dropping
+signups, same pattern as the contact form's missing-`RESEND_API_KEY` case.
+
+## Resources: lead magnets and assessments (`/resources`)
+
+`src/content/resources/*.mdx` holds 15 downloadable lead magnets (frontmatter
+type `ResourceFrontmatter` in `src/lib/content.ts`, loaded via `getAllResources`/
+`getResourceBySlug`). Each has an `.mdx` body (rendered in a `.prose` block via
+`<MDXRemote source={entry.content}/>` in `ResourceDetailLayout.tsx`, right
+below the "what it covers" grid) so every resource gets a genuine on-page
+preview of its real content before the visitor hands over an email — not a
+teaser, the full worksheet/checklist/guide text. That preview block only
+renders when `entry.content.trim()` is non-empty, so it's optional per file.
+
+Two of the 15 (`creative-team-health-check`, `media-team-audit`) are
+interactive assessments instead of static reads — `hasAssessment: true` in
+their frontmatter swaps the hero CTA to link to `/resources/[slug]/assessment`
+(`AssessmentFlow.tsx`) rather than jumping straight to the email-gate section.
+This is the same scored-quiz pattern as the original `brand-audit-guide`
+assessment: `AssessmentFlow` is fully generic now — all three assessments'
+shared types (`Assessment`, `AssessmentArea`, `AssessmentQuestion`,
+`AssessmentOption`, `AreaIconKey`, `ScoreBand`) live in
+`src/content/assessments/types.ts` rather than inside `brand-audit-guide.ts`,
+and `src/lib/assessments.ts`'s `ASSESSMENTS` record is the only place a new
+assessment needs registering — `AssessmentFlow`/the route never change.
+Adding a new assessment means: write its `AssessmentArea[]`/
+`AssessmentQuestion[]` in a new `src/content/assessments/<slug>.ts`, add any
+new `AreaIconKey`s to that file's icon union and to `AREA_ICONS` in
+`AssessmentFlow.tsx`, and register the export in `ASSESSMENTS`.
+
+`scoreAssessment()` (`src/lib/assessment-scoring.ts`) normalizes each area's
+raw points to a 0–100 score regardless of the underlying point scale — brand-
+audit-guide uses 4-option 0-3pt questions, the two newer assessments use
+5-option 1-5pt Likert questions, and both score identically. `insightTier()`
+picks each area's low/mid/high insight copy off fixed global thresholds.
+`ScoreBand[]` (a resource's optional `scoreBands` field) is a separate,
+additive mechanism for narrating the *overall* score (e.g. "Healthy" /
+"Early Warning" / "Needs Attention") — brand-audit-guide doesn't use it (its
+source content only ever specified per-area insights), but the two newer
+assessments' source material specified overall-score bands instead, so this
+was added to `Assessment` as `scoreBands?: ScoreBand[]` and rendered in
+`AssessmentFlow.tsx` directly under the `ScoreRing`, picking the
+highest-`min` band the visitor's overall score clears.
+
+Every resource's PDF lives in `public/resources/files/<slug>.pdf` and its
+`downloadFile` frontmatter field points there — all 15 are real, generated
+files (ReportLab-authored, matching the site's ink/paper/accent palette),
+not the old shared `coming-soon.pdf` stand-in. The PDF is never linked
+directly on the page; it's delivered by `/api/resources/subscribe` (or the
+assessment's unlock flow, which posts to the same route) once a visitor
+submits their email — same gated-download model as `brand-audit-guide`
+always used, now applied to all 15.
+
 ## Not yet wired up (intentional, see roadmap in the strategy doc)
 
 - No headless CMS, auth, or payments — MDX-in-repo is the v1 content model.
-- Social links in `Footer.tsx` are placeholders — replace with real handles.
+- `Footer.tsx`'s `SOCIAL_LINKS` has real handles for Behance, LinkedIn, and
+  Facebook. Instagram and YouTube are still pending — add them to the array
+  once real profile URLs are supplied, rather than linking to a generic
+  platform homepage in the meantime.
 - `ClientLogos.tsx` (homepage, below the hero) renders 6 generic "Client
   Name" text placeholders — swap in real client names or logo images
   before launch.
 - The `TESTIMONIALS` array in `src/app/page.tsx` is placeholder quote/name/
   role text — replace with real client testimonials before launch.
-- `src/content/work/aura-financial-platform.mdx` and four of the six
-  `src/content/think/*.mdx` entries are dummy sample content added to
-  preview the redesigned Work/Think index pages (per the Figma mockups)
-  before real projects/articles exist — each is marked as placeholder in
-  its own body text. Replace or remove once real content is ready.
-  All of these are clearly-labeled placeholders on purpose; don't mistake
-  them for real content when reviewing the site.
+- `src/content/work/aura-financial-platform.mdx` is still dummy sample
+  content added to preview the redesigned Work index page (per the Figma
+  mockups) before a real project exists — marked as placeholder in its own
+  body text. Replace or remove once a real case study is ready. All six
+  `src/content/think/*.mdx` entries, by contrast, now carry real long-form
+  essays (from the "Sigma Studio Journal" doc) — not placeholders.

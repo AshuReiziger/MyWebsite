@@ -1,4 +1,4 @@
-import type { AssessmentQuestion } from "@/content/assessments/brand-audit-guide";
+import type { AssessmentQuestion } from "@/content/assessments/types";
 
 export interface AreaScore {
   area: string;

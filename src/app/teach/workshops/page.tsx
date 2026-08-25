@@ -56,7 +56,7 @@ export default function WorkshopsPage() {
             team needs and we&apos;ll figure out the right session together.
           </p>
           <Link
-            href="/contact"
+            href="/teach/workshops/book"
             className="mt-8 inline-block rounded-full bg-ink px-6 py-3 text-sm font-semibold uppercase tracking-wide text-paper transition-opacity hover:opacity-90"
           >
             Book a Workshop →
