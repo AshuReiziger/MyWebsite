@@ -440,10 +440,9 @@ signups, same pattern as the contact form's missing-`RESEND_API_KEY` case.
   before launch.
 - The `TESTIMONIALS` array in `src/app/page.tsx` is placeholder quote/name/
   role text — replace with real client testimonials before launch.
-- `src/content/work/aura-financial-platform.mdx` and four of the six
-  `src/content/think/*.mdx` entries are dummy sample content added to
-  preview the redesigned Work/Think index pages (per the Figma mockups)
-  before real projects/articles exist — each is marked as placeholder in
-  its own body text. Replace or remove once real content is ready.
-  All of these are clearly-labeled placeholders on purpose; don't mistake
-  them for real content when reviewing the site.
+- `src/content/work/aura-financial-platform.mdx` is still dummy sample
+  content added to preview the redesigned Work index page (per the Figma
+  mockups) before a real project exists — marked as placeholder in its own
+  body text. Replace or remove once a real case study is ready. All six
+  `src/content/think/*.mdx` entries, by contrast, now carry real long-form
+  essays (from the "Sigma Studio Journal" doc) — not placeholders.
