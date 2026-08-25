@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { MDXRemote } from "next-mdx-remote/rsc";
 import type { ContentEntry, ResourceFrontmatter } from "@/lib/content";
 import { Section } from "@/components/Section";
 import { WorkImage } from "@/components/WorkImage";
@@ -85,6 +86,18 @@ export function ResourceDetailLayout({ entry }: { entry: ContentEntry<ResourceFr
           ))}
         </div>
       </Section>
+
+      {entry.content.trim() && (
+        <Section className="pt-0">
+          <p className="text-xs font-semibold uppercase tracking-widest text-accent">Preview</p>
+          <h2 className="mt-2 font-display text-2xl font-bold tracking-tight md:text-3xl">
+            Read the full {frontmatter.type.toLowerCase()} before you download it.
+          </h2>
+          <div className="prose prose-neutral mt-10 max-w-2xl">
+            <MDXRemote source={entry.content} />
+          </div>
+        </Section>
+      )}
 
       <Section className="pt-0">
         <div className="grid gap-10 md:grid-cols-2">

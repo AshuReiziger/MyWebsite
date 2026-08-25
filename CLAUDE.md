@@ -428,6 +428,56 @@ and the resource lead-magnet flow) is required for this to do anything;
 without it the route returns a clean 500 rather than silently dropping
 signups, same pattern as the contact form's missing-`RESEND_API_KEY` case.
 
+## Resources: lead magnets and assessments (`/resources`)
+
+`src/content/resources/*.mdx` holds 15 downloadable lead magnets (frontmatter
+type `ResourceFrontmatter` in `src/lib/content.ts`, loaded via `getAllResources`/
+`getResourceBySlug`). Each has an `.mdx` body (rendered in a `.prose` block via
+`<MDXRemote source={entry.content}/>` in `ResourceDetailLayout.tsx`, right
+below the "what it covers" grid) so every resource gets a genuine on-page
+preview of its real content before the visitor hands over an email — not a
+teaser, the full worksheet/checklist/guide text. That preview block only
+renders when `entry.content.trim()` is non-empty, so it's optional per file.
+
+Two of the 15 (`creative-team-health-check`, `media-team-audit`) are
+interactive assessments instead of static reads — `hasAssessment: true` in
+their frontmatter swaps the hero CTA to link to `/resources/[slug]/assessment`
+(`AssessmentFlow.tsx`) rather than jumping straight to the email-gate section.
+This is the same scored-quiz pattern as the original `brand-audit-guide`
+assessment: `AssessmentFlow` is fully generic now — all three assessments'
+shared types (`Assessment`, `AssessmentArea`, `AssessmentQuestion`,
+`AssessmentOption`, `AreaIconKey`, `ScoreBand`) live in
+`src/content/assessments/types.ts` rather than inside `brand-audit-guide.ts`,
+and `src/lib/assessments.ts`'s `ASSESSMENTS` record is the only place a new
+assessment needs registering — `AssessmentFlow`/the route never change.
+Adding a new assessment means: write its `AssessmentArea[]`/
+`AssessmentQuestion[]` in a new `src/content/assessments/<slug>.ts`, add any
+new `AreaIconKey`s to that file's icon union and to `AREA_ICONS` in
+`AssessmentFlow.tsx`, and register the export in `ASSESSMENTS`.
+
+`scoreAssessment()` (`src/lib/assessment-scoring.ts`) normalizes each area's
+raw points to a 0–100 score regardless of the underlying point scale — brand-
+audit-guide uses 4-option 0-3pt questions, the two newer assessments use
+5-option 1-5pt Likert questions, and both score identically. `insightTier()`
+picks each area's low/mid/high insight copy off fixed global thresholds.
+`ScoreBand[]` (a resource's optional `scoreBands` field) is a separate,
+additive mechanism for narrating the *overall* score (e.g. "Healthy" /
+"Early Warning" / "Needs Attention") — brand-audit-guide doesn't use it (its
+source content only ever specified per-area insights), but the two newer
+assessments' source material specified overall-score bands instead, so this
+was added to `Assessment` as `scoreBands?: ScoreBand[]` and rendered in
+`AssessmentFlow.tsx` directly under the `ScoreRing`, picking the
+highest-`min` band the visitor's overall score clears.
+
+Every resource's PDF lives in `public/resources/files/<slug>.pdf` and its
+`downloadFile` frontmatter field points there — all 15 are real, generated
+files (ReportLab-authored, matching the site's ink/paper/accent palette),
+not the old shared `coming-soon.pdf` stand-in. The PDF is never linked
+directly on the page; it's delivered by `/api/resources/subscribe` (or the
+assessment's unlock flow, which posts to the same route) once a visitor
+submits their email — same gated-download model as `brand-audit-guide`
+always used, now applied to all 15.
+
 ## Not yet wired up (intentional, see roadmap in the strategy doc)
 
 - No headless CMS, auth, or payments — MDX-in-repo is the v1 content model.

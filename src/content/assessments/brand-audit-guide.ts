@@ -1,34 +1,5 @@
-export type AreaIconKey =
-  | "positioning"
-  | "messaging"
-  | "visual-identity"
-  | "consistency"
-  | "customer-experience"
-  | "perception";
-
-export interface AssessmentArea {
-  id: string;
-  label: string;
-  icon: AreaIconKey;
-  insights: { low: string; mid: string; high: string };
-}
-
-export interface AssessmentOption {
-  label: string;
-  points: number;
-}
-
-export interface AssessmentQuestion {
-  /** Matches an AssessmentArea.id */
-  area: string;
-  prompt: string;
-  options: AssessmentOption[];
-}
-
-export interface Assessment {
-  areas: AssessmentArea[];
-  questions: AssessmentQuestion[];
-}
+import type { Assessment, AssessmentArea, AssessmentQuestion } from "./types";
+export type { AreaIconKey, AssessmentArea, AssessmentOption, AssessmentQuestion, Assessment } from "./types";
 
 const AREAS: AssessmentArea[] = [
   {

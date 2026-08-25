@@ -3,7 +3,7 @@
 import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import type { ContentEntry, ResourceFrontmatter } from "@/lib/content";
-import type { Assessment, AreaIconKey } from "@/content/assessments/brand-audit-guide";
+import type { Assessment, AreaIconKey } from "@/content/assessments/types";
 import { scoreAssessment, insightTier, type AssessmentResult } from "@/lib/assessment-scoring";
 import { ScoreRing } from "@/components/ScoreRing";
 import { ResourceLeadForm } from "@/components/ResourceLeadForm";
@@ -19,6 +19,10 @@ import {
   EyeIcon,
   LockIcon,
   DownloadIcon,
+  LightbulbIcon,
+  BriefcaseIcon,
+  ImpactIcon,
+  StrategyIcon,
 } from "@/components/icons";
 
 const AREA_ICONS: Record<AreaIconKey, ReactNode> = {
@@ -28,6 +32,14 @@ const AREA_ICONS: Record<AreaIconKey, ReactNode> = {
   consistency: <LayersIcon />,
   "customer-experience": <HeartIcon />,
   perception: <EyeIcon />,
+  clarity: <LightbulbIcon />,
+  feedback: <MessageIcon />,
+  workload: <BriefcaseIcon />,
+  growth: <ImpactIcon />,
+  strategy: <CompassIcon />,
+  quality: <DiamondIcon />,
+  workflow: <LayersIcon />,
+  measurement: <StrategyIcon />,
 };
 
 type Stage = "intro" | "question" | "locked" | "unlocked";
@@ -211,6 +223,24 @@ export function AssessmentFlow({
             <div className="mt-10">
               <ScoreRing score={result.overall} />
             </div>
+            {assessment.scoreBands && (
+              <div className="mx-auto mt-8 max-w-md">
+                {(() => {
+                  const band = [...assessment.scoreBands]
+                    .sort((a, b) => b.min - a.min)
+                    .find((b) => result.overall >= b.min);
+                  if (!band) return null;
+                  return (
+                    <>
+                      <p className="text-sm font-semibold uppercase tracking-widest text-accent">
+                        {band.label}
+                      </p>
+                      <p className="mt-2 text-sm text-muted">{band.description}</p>
+                    </>
+                  );
+                })()}
+              </div>
+            )}
           </div>
 
           <div className="relative mt-14">
