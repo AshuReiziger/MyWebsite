@@ -469,6 +469,14 @@ was added to `Assessment` as `scoreBands?: ScoreBand[]` and rendered in
 `AssessmentFlow.tsx` directly under the `ScoreRing`, picking the
 highest-`min` band the visitor's overall score clears.
 
+`/api/resources/subscribe`'s emailed download link is built from
+`SITE_URL` (`src/lib/constants.ts`, hardcoded to `https://reizigerashu.com`)
+rather than the incoming request's own URL. A request served by a Vercel
+*preview* deployment would otherwise produce a link on that preview's
+`*.vercel.app` domain — which sits behind Vercel's Deployment Protection,
+so a real visitor without a Vercel login couldn't open it. Always resolve
+`resource.frontmatter.downloadFile` against `SITE_URL`, never `request.url`.
+
 Every resource's PDF lives in `public/resources/files/<slug>.pdf` and its
 `downloadFile` frontmatter field points there — all 15 are real, generated
 files (ReportLab-authored, matching the site's ink/paper/accent palette),
