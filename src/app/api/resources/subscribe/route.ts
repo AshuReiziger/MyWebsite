@@ -4,7 +4,7 @@ import { getResourceBySlug } from "@/lib/content";
 import { subscribeToList } from "@/lib/email-provider";
 import { getAssessmentBySlug } from "@/lib/assessments";
 import type { AssessmentResult } from "@/lib/assessment-scoring";
-import { CONTACT_EMAIL } from "@/lib/constants";
+import { CONTACT_EMAIL, SITE_URL } from "@/lib/constants";
 
 interface ResourceSubscribePayload {
   firstName?: string;
@@ -49,7 +49,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Email delivery is not configured." }, { status: 500 });
   }
 
-  const downloadUrl = new URL(resource.frontmatter.downloadFile, request.url).toString();
+  const downloadUrl = new URL(resource.frontmatter.downloadFile, SITE_URL).toString();
   const resend = new Resend(apiKey);
 
   const { subject, text } = buildDeliveryEmail({
