@@ -27,7 +27,7 @@ export async function POST(request: Request) {
   const resend = new Resend(apiKey);
 
   const { error } = await resend.emails.send({
-    from: "Reiziger Ashu Website <onboarding@resend.dev>",
+    from: "Reiziger Ashu Website <hello@reizigerashu.com>",
     to: CONTACT_EMAIL,
     replyTo: email,
     subject: `New inquiry from ${name} — ${projectType}`,

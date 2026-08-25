@@ -62,7 +62,7 @@ export async function POST(request: Request) {
   });
 
   const { error } = await resend.emails.send({
-    from: "Reiziger Ashu <onboarding@resend.dev>",
+    from: "Reiziger Ashu <hello@reizigerashu.com>",
     to: email,
     replyTo: CONTACT_EMAIL,
     subject,
