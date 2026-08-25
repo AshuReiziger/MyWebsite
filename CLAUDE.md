@@ -251,13 +251,19 @@ on Home and Build) — `className` alone only affects the centered
 
 ## Nav & Footer conventions
 
-- Nav order is **About, Work, Think, Build, Teach, Contact** — centered
-  as a group in the header (absolutely positioned + `-translate-x-1/2`,
-  not `justify-between`, so it stays centered regardless of logo/button
+- Nav order is **About, Work, Think, Build, Teach** — centered as a group
+  in the header (absolutely positioned + `-translate-x-1/2`, not
+  `justify-between`, so it stays centered regardless of logo/button
   width), with the "Work With Me" button separate on the right. This
   order was explicitly chosen by the user over what a later Figma
   mockup happened to show (About last) — don't "fix" it back without
-  asking, that mockup predates the explicit choice.
+  asking, that mockup predates the explicit choice. There is deliberately
+  **no separate "Contact" nav item** — "Work With Me" already links to
+  `/contact` and serves the same purpose, so a second nav entry for the
+  same destination was removed rather than kept as a redundant link.
+  (The Footer's own nav list still includes "Contact" — that list isn't
+  "the nav bar" this decision was about, and unlike the header it has no
+  separate CTA button pointing at `/contact`.)
 - Active-route highlighting uses `usePathname()` (Nav and Footer are
   both client components for this) — active link/current route gets
   `text-accent`.
