@@ -356,10 +356,28 @@ verification completes, sends from this address will fail — swap the
 `from` back to Resend's shared sandbox domain (`onboarding@resend.dev`)
 if you need working email before verification finishes.
 
+## Newsletter signup (`/api/newsletter/subscribe`)
+
+The footer's `NewsletterForm` (email-only, no name field) posts to this
+route, which calls the same `subscribeToList()` from `lib/email-provider.ts`
+that the resource lead-magnet flow uses — it does **not** send any email
+itself via Resend. Since `SubscribePayload` requires `resourceSlug`/
+`resourceTitle`, the route passes fixed values (`"newsletter"` /
+`"Newsletter"`) so a footer subscriber is distinguishable from a resource
+download in whichever ESP fields those values land in (e.g. Kit's
+`fields.resource`). Configuring `EMAIL_PROVIDER`/`EMAIL_API_KEY`/`EMAIL_FORM_ID` (documented in
+`lib/email-provider.ts`'s header comment — the same env vars power both this
+and the resource lead-magnet flow) is required for this to do anything;
+without it the route returns a clean 500 rather than silently dropping
+signups, same pattern as the contact form's missing-`RESEND_API_KEY` case.
+
 ## Not yet wired up (intentional, see roadmap in the strategy doc)
 
 - No headless CMS, auth, or payments — MDX-in-repo is the v1 content model.
-- Social links in `Footer.tsx` are placeholders — replace with real handles.
+- `Footer.tsx`'s `SOCIAL_LINKS` has real handles for Behance, LinkedIn, and
+  Facebook. Instagram and YouTube are still pending — add them to the array
+  once real profile URLs are supplied, rather than linking to a generic
+  platform homepage in the meantime.
 - `ClientLogos.tsx` (homepage, below the hero) renders 6 generic "Client
   Name" text placeholders — swap in real client names or logo images
   before launch.
