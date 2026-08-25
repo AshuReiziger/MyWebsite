@@ -142,7 +142,7 @@ export default function TeachPage() {
             ))}
           </ul>
           <Link
-            href="/contact"
+            href="/teach/speaking"
             className="mt-8 inline-block rounded-full border border-line px-6 py-3 text-sm font-semibold uppercase tracking-wide transition-colors hover:border-ink"
           >
             Book a Session

@@ -21,7 +21,7 @@ export function WorkshopDetailLayout({ workshop }: { workshop: WorkshopDetail })
           </HeroReveal>
           <HeroReveal delay={0.3}>
             <Link
-              href="/contact"
+              href={`/teach/workshops/book?workshop=${workshop.slug}`}
               className="mt-8 inline-block rounded-full bg-ink px-6 py-3 text-sm font-semibold uppercase tracking-wide text-paper transition-opacity hover:opacity-90"
             >
               Book This Workshop →
@@ -112,7 +112,7 @@ export function WorkshopDetailLayout({ workshop }: { workshop: WorkshopDetail })
             Tell me a bit about your team and timeline, and we&apos;ll find the right date.
           </p>
           <Link
-            href="/contact"
+            href={`/teach/workshops/book?workshop=${workshop.slug}`}
             className="mt-8 inline-block rounded-full bg-ink px-6 py-3 text-sm font-semibold uppercase tracking-wide text-paper transition-opacity hover:opacity-90"
           >
             Book This Workshop →

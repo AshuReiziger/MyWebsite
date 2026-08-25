@@ -21,7 +21,7 @@ export function MentorshipDetailLayout({ track }: { track: MentorshipDetail }) {
           </HeroReveal>
           <HeroReveal delay={0.3}>
             <Link
-              href="/contact"
+              href={`/teach/mentorship/apply?track=${track.slug}`}
               className="mt-8 inline-block rounded-full bg-ink px-6 py-3 text-sm font-semibold uppercase tracking-wide text-paper transition-opacity hover:opacity-90"
             >
               Apply for Mentorship →
@@ -111,7 +111,7 @@ export function MentorshipDetailLayout({ track }: { track: MentorshipDetail }) {
             from there.
           </p>
           <Link
-            href="/contact"
+            href={`/teach/mentorship/apply?track=${track.slug}`}
             className="mt-8 inline-block rounded-full bg-ink px-6 py-3 text-sm font-semibold uppercase tracking-wide text-paper transition-opacity hover:opacity-90"
           >
             Apply for Mentorship →

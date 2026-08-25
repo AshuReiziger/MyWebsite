@@ -356,6 +356,57 @@ verification completes, sends from this address will fail — swap the
 `from` back to Resend's shared sandbox domain (`onboarding@resend.dev`)
 if you need working email before verification finishes.
 
+## Category-specific Teach forms
+
+The Teach section's CTAs no longer dump every inquiry into the generic
+`/contact` form — each category has its own purpose-built form, since a
+speaking invite, a mentorship application, and a workshop booking need
+genuinely different fields (budget/honorarium vs. commitment-to-track-
+length vs. seat count), not one generic "message" textarea:
+
+- **`/teach/speaking`** (`SpeakingForm.tsx` → `/api/speaking/request`) —
+  linked from the "Book a Session" CTA in the Teach page's "Invite me to
+  speak" section.
+- **`/teach/mentorship/apply`** (`MentorshipApplicationForm.tsx` →
+  `/api/mentorship/apply`) — linked from "Start Mentorship" on the
+  mentorship index and "Apply for Mentorship" on each track's detail page.
+  Track-detail links pass `?track=<slug>`, which the form resolves against
+  `MENTORSHIP_TRACKS` to pre-select that track in the dropdown — visitors
+  can still change it, it's just not blank when they arrive from a
+  specific track's page.
+- **`/teach/workshops/book`** (`WorkshopBookingForm.tsx` →
+  `/api/workshops/book`) — linked from "Book a Workshop" on the workshops
+  index and "Book This Workshop" on each workshop's detail page, same
+  `?workshop=<slug>` pre-select pattern against `WORKSHOPS`.
+
+Each form is a controlled client component (not a plain
+`<form>`/`FormData` pass-through like `ContactForm.tsx`) because several
+fields are conditional on another field's value — e.g. the mentorship
+form's "worked with a mentor before" follow-up textarea, or the workshop
+form's "Additional Participants" field which only appears once seats > 1.
+Single-select and multi-select fields that the spec called "radio" or
+"checkboxes" render as pill-button toggle groups (`PillToggle`/
+`PillMultiToggle` in `PillToggle.tsx`) rather than native radio/checkbox
+inputs, matching the site's existing filter-pill visual language (see
+Think index category filters) instead of introducing a new control style.
+
+All three API routes follow the same pattern as `/api/contact`: validate
+required fields, 400 if missing; 500 with a clean error (not a silent
+failure) if `RESEND_API_KEY` is unset; send one plain-text email to the
+shared `CONTACT_EMAIL` (now centralized in `src/lib/constants.ts` rather
+than duplicated per route) with `replyTo` set to the submitter so a reply
+goes straight to them. None of these send a confirmation email back to the
+submitter — the on-page success state's confirmation copy (e.g. "We'll
+respond within 3–5 business days…") is the only acknowledgment, same
+tradeoff as the rest of the site's forms.
+
+The workshop booking form always shows the In-person/Virtual format
+toggle regardless of which workshop is selected, rather than trying to
+parse each workshop's freeform `format.delivery` string (e.g. "In-person,
+with a virtual option for teams outside Buea") to decide whether to hide
+it — every workshop's delivery text mentions some virtual option, so
+showing it unconditionally is simpler and never wrong.
+
 ## Newsletter signup (`/api/newsletter/subscribe`)
 
 The footer's `NewsletterForm` (email-only, no name field) posts to this
