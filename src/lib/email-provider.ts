@@ -20,6 +20,8 @@ export interface SubscribePayload {
   role?: string;
   resourceSlug: string;
   resourceTitle: string;
+  /** Overall score (0-100), present when the subscriber came through an interactive assessment rather than a plain download. */
+  assessmentScore?: number;
 }
 
 export type SubscribeResult =
@@ -35,7 +37,11 @@ async function subscribeKit(payload: SubscribePayload, apiKey: string, formId: s
       api_key: apiKey,
       email: payload.email,
       first_name: payload.firstName,
-      fields: { role: payload.role ?? "", resource: payload.resourceSlug },
+      fields: {
+        role: payload.role ?? "",
+        resource: payload.resourceSlug,
+        ...(payload.assessmentScore !== undefined && { assessment_score: payload.assessmentScore }),
+      },
     }),
   });
   if (!response.ok) return { ok: false, error: `Kit/ConvertKit responded ${response.status}` };
@@ -51,7 +57,11 @@ async function subscribeMailerlite(payload: SubscribePayload, apiKey: string, gr
     },
     body: JSON.stringify({
       email: payload.email,
-      fields: { name: payload.firstName, role: payload.role ?? "" },
+      fields: {
+        name: payload.firstName,
+        role: payload.role ?? "",
+        ...(payload.assessmentScore !== undefined && { assessment_score: payload.assessmentScore }),
+      },
       groups: [groupId],
     }),
   });

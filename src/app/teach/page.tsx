@@ -27,12 +27,16 @@ const OFFERINGS: {
     description:
       "Intensive, collaborative sessions focusing on specific strategic frameworks, design systems, or creative leadership challenges.",
     icon: <WorkshopIcon />,
+    href: "/teach/workshops",
+    cta: "See Workshops",
   },
   {
     title: "Mentorship",
     description:
       "1-on-1 guidance focusing on career trajectory, portfolio refinement, and navigating the complexities of the design industry.",
     icon: <MentorshipIcon />,
+    href: "/teach/mentorship",
+    cta: "See Mentorship Tracks",
   },
   {
     title: "Free Resources",

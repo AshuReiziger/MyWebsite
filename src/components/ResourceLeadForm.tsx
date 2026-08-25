@@ -23,9 +23,17 @@ const labelClass = "text-xs font-semibold uppercase tracking-widest text-ink";
 export function ResourceLeadForm({
   resourceSlug,
   resourceTitle,
+  extraPayload,
+  submitLabel = "Send Me the Guide",
+  onSuccess,
 }: {
   resourceSlug: string;
   resourceTitle: string;
+  /** Merged into the POST body — used by the assessment flow to attach the computed score. */
+  extraPayload?: Record<string, unknown>;
+  submitLabel?: string;
+  /** When provided, called instead of rendering the default "on its way" success state — the caller owns what happens next (e.g. the assessment flow unlocks its results). */
+  onSuccess?: () => void;
 }) {
   const [status, setStatus] = useState<Status>("idle");
   const startedRef = useRef(false);
@@ -47,7 +55,7 @@ export function ResourceLeadForm({
       const response = await fetch("/api/resources/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, resourceSlug }),
+        body: JSON.stringify({ ...data, resourceSlug, ...extraPayload }),
       });
 
       if (!response.ok) throw new Error("Request failed");
@@ -56,9 +64,14 @@ export function ResourceLeadForm({
       track("newsletter_signup", { resource: resourceSlug });
       track("resource_download", { resource: resourceSlug });
       form.reset();
+      onSuccess?.();
     } catch {
       setStatus("error");
     }
+  }
+
+  if (status === "success" && onSuccess) {
+    return null;
   }
 
   if (status === "success") {
@@ -135,7 +148,7 @@ export function ResourceLeadForm({
         disabled={status === "submitting"}
         className="mt-2 self-start rounded-full bg-ink px-6 py-3 text-sm font-semibold uppercase tracking-wide text-paper transition-opacity hover:opacity-90 disabled:opacity-50"
       >
-        {status === "submitting" ? "Sending…" : "Send Me the Guide"}
+        {status === "submitting" ? "Sending…" : submitLabel}
       </button>
 
       {status === "error" && (
