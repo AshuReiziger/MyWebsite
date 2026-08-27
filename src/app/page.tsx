@@ -3,12 +3,13 @@ import { Section, SectionHeading } from "@/components/Section";
 import { CapabilityCard, type Capability } from "@/components/CapabilityCard";
 import { ProcessStepper } from "@/components/ProcessStepper";
 import { ThinkCard } from "@/components/ThinkCard";
+import { WorkCard } from "@/components/WorkCard";
 import { HeroReveal } from "@/components/HeroReveal";
 import { ClientLogos } from "@/components/ClientLogos";
 import { Testimonial, type TestimonialEntry } from "@/components/Testimonial";
 import { ResourceCTA } from "@/components/ResourceCTA";
 import { DesignIcon, StrategyIcon, EducationIcon, LeadershipIcon } from "@/components/icons";
-import { getAllThink, getFeaturedResource } from "@/lib/content";
+import { getAllThink, getFeaturedResource, getWorkBySlug } from "@/lib/content";
 
 // Placeholder testimonials — replace with real client feedback once available.
 const TESTIMONIALS: TestimonialEntry[] = [
@@ -58,9 +59,10 @@ const CAPABILITIES: Capability[] = [
 export default function Home() {
   const latestThink = getAllThink().slice(0, 3);
   const featuredResource = getFeaturedResource();
+  const featuredWork = getWorkBySlug("house-of-trust-for-peace");
 
   return (
-    <>
+    <div className="theme-dark-fixed -mb-32 bg-paper pb-32 text-ink">
       <Section className="relative overflow-hidden pt-16 md:pt-24">
         <div
           aria-hidden
@@ -110,6 +112,20 @@ export default function Home() {
         </div>
       </Section>
 
+      {featuredWork && (
+        <Section className="pt-0">
+          <SectionHeading eyebrow="Featured Work" title="Recent work, built to last." />
+          <div className="mt-12">
+            <WorkCard entry={featuredWork} index={0} />
+          </div>
+          <p className="mt-8 text-center">
+            <Link href="/work" className="text-sm font-semibold uppercase tracking-wide text-accent hover:underline">
+              See All Work →
+            </Link>
+          </p>
+        </Section>
+      )}
+
       <Section className="pt-0">
         <div className="grid gap-10 md:grid-cols-2 md:items-center">
           <SectionHeading
@@ -144,49 +160,49 @@ export default function Home() {
         </Section>
       )}
 
-      <Section outerClassName="bg-ink text-paper">
+      <Section className="pt-0">
         <p className="text-sm font-semibold uppercase tracking-widest text-accent">Ventures</p>
         <div className="mt-3 max-w-2xl">
           <h2 className="font-display text-3xl font-bold tracking-tight md:text-4xl">
             Building the future
           </h2>
-          <p className="mt-4 text-lg text-paper/70">
+          <p className="mt-4 text-lg text-ink/70">
             Beyond consulting, I am actively building ventures that institutionalize my
             philosophy on design, education, and strategic growth.
           </p>
         </div>
         <div className="mt-12 grid gap-6 md:grid-cols-2">
-          <div className="rounded-2xl bg-paper/5 p-8">
+          <div className="rounded-2xl bg-ink/5 p-8">
             <p className="text-xs font-semibold uppercase tracking-widest text-accent">
               Creative Consultancy
             </p>
             <h3 className="mt-2 font-display text-xl font-bold tracking-tight">Sigma Studio</h3>
-            <p className="mt-3 text-paper/70">
+            <p className="mt-3 text-ink/70">
               A strategic design consultancy partnering with visionary organizations to define
               their identity, communicate their value, and architect scalable digital
               experiences.
             </p>
             <Link
               href="/build"
-              className="mt-6 inline-block text-sm font-semibold uppercase tracking-wide text-paper"
+              className="mt-6 inline-block text-sm font-semibold uppercase tracking-wide text-ink"
             >
               Visit Sigma Studio →
             </Link>
           </div>
-          <div className="rounded-2xl bg-paper/5 p-8">
+          <div className="rounded-2xl bg-ink/5 p-8">
             <p className="text-xs font-semibold uppercase tracking-widest text-accent">
               Design Education
             </p>
             <h3 className="mt-2 font-display text-xl font-bold tracking-tight">
               Sigma Studio Academy
             </h3>
-            <p className="mt-3 text-paper/70">
+            <p className="mt-3 text-ink/70">
               An educational platform dedicated to teaching the strategic, non-aesthetic
               foundations of design leadership, systems thinking, and intentional growth.
             </p>
             <Link
               href="/build"
-              className="mt-6 inline-block text-sm font-semibold uppercase tracking-wide text-paper"
+              className="mt-6 inline-block text-sm font-semibold uppercase tracking-wide text-ink"
             >
               Visit the Academy →
             </Link>
@@ -232,6 +248,6 @@ export default function Home() {
           </Link>
         </div>
       </Section>
-    </>
+    </div>
   );
 }
