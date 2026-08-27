@@ -119,7 +119,7 @@ Tailwind utilities directly (`bg-ink`, `text-muted`, `border-line`,
 `bg-accent`, `font-display`, `font-body`, etc. — no arbitrary-value syntax
 needed):
 
-- `ink` (`#0f172a`) / `paper` (`#f8fafc`) — primary text / background
+- `ink` (`#0e0e0e`) / `paper` (`#f8fafc`) — primary text / background
   (inverted in dark mode)
 - `muted` (`#64748b`) — secondary text
 - `line` (`#e2e8f0`) — borders/dividers

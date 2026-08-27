@@ -2,7 +2,7 @@
 @plugin "@tailwindcss/typography";
 
 :root {
-  --color-ink: #0f172a;
+  --color-ink: #0e0e0e;
   --color-paper: #f8fafc;
   --color-muted: #64748b;
   --color-line: #e2e8f0;
@@ -25,7 +25,7 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --color-ink: #f8fafc;
-    --color-paper: #0f172a;
+    --color-paper: #0e0e0e;
     --color-muted: #94a3b8;
     --color-line: #1e293b;
     --color-accent: #c7a876;
@@ -50,7 +50,7 @@ h4 {
    preference, unlike the media query above which swaps both ways. */
 .theme-dark-fixed {
   --color-ink: #f8fafc;
-  --color-paper: #0f172a;
+  --color-paper: #0e0e0e;
   --color-muted: #94a3b8;
   --color-line: #1e293b;
   --color-accent: #c7a876;
