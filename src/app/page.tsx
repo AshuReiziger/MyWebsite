@@ -68,39 +68,46 @@ export default function Home() {
           aria-hidden
           className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-gradient-to-br from-accent/10 via-muted/10 to-transparent blur-3xl"
         />
-        <HeroReveal delay={0}>
-          <p className="text-sm font-semibold uppercase tracking-widest text-accent">
-            Reiziger Ashu
-          </p>
-        </HeroReveal>
-        <HeroReveal delay={0.1}>
-          <h1 className="mt-4 max-w-4xl font-display text-4xl uppercase leading-tight tracking-tight md:text-6xl">
-            I don&apos;t just design things. I design what they can become.
-          </h1>
-        </HeroReveal>
-        <HeroReveal delay={0.2}>
-          <p className="mt-6 max-w-2xl text-lg text-muted md:text-xl">
-            I&apos;m Reiziger Ashu — a designer, strategist, educator, and creative leader
-            passionate about using design to help people and organizations discover who they
-            are, communicate what they believe, and build what they envision.
-          </p>
-        </HeroReveal>
-        <HeroReveal delay={0.3}>
-          <div className="mt-8 flex flex-wrap gap-4">
-            <Link
-              href="/work"
-              className="rounded-full bg-ink px-6 py-3 text-sm font-semibold uppercase tracking-wide text-paper transition-opacity hover:opacity-90"
-            >
-              Explore My Work →
-            </Link>
-            <Link
-              href="/contact"
-              className="rounded-full border border-line px-6 py-3 text-sm font-semibold uppercase tracking-wide transition-colors hover:border-ink"
-            >
-              Work With Me
-            </Link>
+        <div className="grid gap-10 md:grid-cols-[1.3fr_1fr] md:items-center">
+          <div>
+            <HeroReveal delay={0}>
+              <p className="text-sm font-semibold uppercase tracking-widest text-accent">
+                Reiziger Ashu
+              </p>
+            </HeroReveal>
+            <HeroReveal delay={0.1}>
+              <h1 className="mt-4 font-display text-4xl uppercase leading-tight tracking-tight md:text-6xl">
+                I don&apos;t just design things. I design what they can become.
+              </h1>
+            </HeroReveal>
+            <HeroReveal delay={0.2}>
+              <p className="mt-6 max-w-2xl text-lg text-muted md:text-xl">
+                I&apos;m Reiziger Ashu — a designer, strategist, educator, and creative leader
+                passionate about using design to help people and organizations discover who
+                they are, communicate what they believe, and build what they envision.
+              </p>
+            </HeroReveal>
+            <HeroReveal delay={0.3}>
+              <div className="mt-8 flex flex-wrap gap-4">
+                <Link
+                  href="/work"
+                  className="rounded-full bg-ink px-6 py-3 text-sm font-semibold uppercase tracking-wide text-paper transition-opacity hover:opacity-90"
+                >
+                  Explore My Work →
+                </Link>
+                <Link
+                  href="/contact"
+                  className="rounded-full border border-line px-6 py-3 text-sm font-semibold uppercase tracking-wide transition-colors hover:border-ink"
+                >
+                  Work With Me
+                </Link>
+              </div>
+            </HeroReveal>
           </div>
-        </HeroReveal>
+          <HeroReveal delay={0.15}>
+            <div className="aspect-[4/5] rounded-2xl bg-gradient-to-br from-accent/30 via-paper to-paper" />
+          </HeroReveal>
+        </div>
       </Section>
 
       <Section className="pt-0">
@@ -126,12 +133,13 @@ export default function Home() {
         </Section>
       )}
 
-      <Section className="pt-0">
-        <div className="grid gap-10 md:grid-cols-2 md:items-center">
-          <SectionHeading
-            title="Design is more than aesthetics."
-            description="I believe design is a tool for understanding. It helps us discover identity, communicate vision, solve problems, organize complexity, and create experiences that move people."
-          />
+      <Section className="pt-0 text-center">
+        <SectionHeading
+          title="Design is more than aesthetics."
+          description="I believe design is a tool for understanding. It helps us discover identity, communicate vision, solve problems, organize complexity, and create experiences that move people."
+          centered
+        />
+        <div className="mx-auto mt-10 max-w-3xl">
           <ProcessStepper current="Design" />
         </div>
       </Section>
@@ -212,7 +220,15 @@ export default function Home() {
 
       {latestThink.length > 0 && (
         <Section className="pt-20 md:pt-28">
-          <SectionHeading eyebrow="What I Think" title="Recent writing" />
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <SectionHeading eyebrow="What I Think" title="Recent writing" />
+            <Link
+              href="/think"
+              className="text-sm font-semibold uppercase tracking-wide text-accent hover:underline"
+            >
+              View All Articles →
+            </Link>
+          </div>
           <div className="mt-12 grid gap-6 md:grid-cols-3">
             {latestThink.map((entry) => (
               <ThinkCard key={entry.slug} entry={entry} />
