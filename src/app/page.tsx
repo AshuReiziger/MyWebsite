@@ -3,13 +3,13 @@ import { Section, SectionHeading } from "@/components/Section";
 import { CapabilityCard, type Capability } from "@/components/CapabilityCard";
 import { ProcessStepper } from "@/components/ProcessStepper";
 import { ThinkCard } from "@/components/ThinkCard";
-import { WorkCard } from "@/components/WorkCard";
+import { SelectedWorkGrid } from "@/components/SelectedWorkGrid";
 import { HeroReveal } from "@/components/HeroReveal";
 import { ClientLogos } from "@/components/ClientLogos";
 import { Testimonial, type TestimonialEntry } from "@/components/Testimonial";
 import { ResourceCTA } from "@/components/ResourceCTA";
 import { DesignIcon, StrategyIcon, EducationIcon, LeadershipIcon } from "@/components/icons";
-import { getAllThink, getFeaturedResource, getWorkBySlug } from "@/lib/content";
+import { getAllThink, getAllWork, getFeaturedResource } from "@/lib/content";
 
 // Placeholder testimonials — replace with real client feedback once available.
 const TESTIMONIALS: TestimonialEntry[] = [
@@ -59,7 +59,7 @@ const CAPABILITIES: Capability[] = [
 export default function Home() {
   const latestThink = getAllThink().slice(0, 3);
   const featuredResource = getFeaturedResource();
-  const featuredWork = getWorkBySlug("house-of-trust-for-peace");
+  const selectedWork = getAllWork();
 
   return (
     <div className="theme-dark-fixed -mb-32 bg-paper pb-32 text-ink">
@@ -119,18 +119,23 @@ export default function Home() {
         </div>
       </Section>
 
-      {featuredWork && (
-        <Section className="pt-0">
-          <SectionHeading eyebrow="Featured Work" title="Recent work, built to last." />
-          <div className="mt-12">
-            <WorkCard entry={featuredWork} index={0} />
+      {selectedWork.length > 0 && (
+        <>
+          <Section className="pb-0">
+            <div className="flex flex-wrap items-end justify-between gap-4">
+              <SectionHeading eyebrow="Selected Work" title="Design systems and brand identities, built to last." />
+              <Link
+                href="/work"
+                className="text-sm font-semibold uppercase tracking-wide text-accent hover:underline"
+              >
+                See All Work →
+              </Link>
+            </div>
+          </Section>
+          <div className="mt-10">
+            <SelectedWorkGrid entries={selectedWork} />
           </div>
-          <p className="mt-8 text-center">
-            <Link href="/work" className="text-sm font-semibold uppercase tracking-wide text-accent hover:underline">
-              See All Work →
-            </Link>
-          </p>
-        </Section>
+        </>
       )}
 
       <Section className="pt-0 text-center">

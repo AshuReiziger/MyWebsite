@@ -258,13 +258,23 @@ copying `text-paper`/`bg-paper` classes from anywhere else in the
 codebase onto a `theme-dark-fixed`-wrapped page — check which role each
 token resolves to in that specific context first.
 
-The home page's "Recent work, built to last" band (right after the
-client-logos row) is a single `WorkCard` for a real, existing case study
-(`house-of-trust-for-peace`, via `getWorkBySlug`) — not a fabricated
-preview. It reuses `WorkCard` exactly as `/work`'s index does, so it
-inherits that component's `theme-dark-fixed`-safe gradient/token choices
-for free. Point it at a different slug (or drop it) rather than building
-a bespoke component if the featured project changes.
+The home page's "Selected Work" band (right after the client-logos row)
+is `SelectedWorkGrid.tsx`, fed all of `getAllWork()` — every entry is a
+real, existing case study, not a fabricated preview. Unlike `WorkCard`
+(used on `/work`'s index), this component is deliberately rendered
+*outside* any `Section`'s `max-w-6xl` container — it's a direct sibling
+in the page fragment — so the grid is genuinely full-bleed edge-to-edge
+rather than centered/constrained. The first entry (most recently edited,
+same ordering convention as everywhere else) renders as a wide hero
+tile; the rest fill a masonry-style row beneath it. Each tile layers a
+`from-paper/95 via-paper/25 to-transparent` scrim over the cover image
+for text legibility, with the title/category text in `text-ink` — inside
+`theme-dark-fixed`, `paper` is the dark token and `ink` the light one, so
+this is the same token-role gotcha documented above, just applied to a
+gradient overlay instead of a background. Adding or removing a case
+study from `/work` automatically updates this grid — no changes needed
+here unless the curation logic itself (which entries, in what order)
+should change.
 
 ## Icon-card system
 
