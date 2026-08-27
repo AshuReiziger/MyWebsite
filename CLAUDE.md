@@ -196,12 +196,18 @@ confirmed Iknite Studio pattern in `docs/DESIGN-REFERENCE-AUDIT.md` §1.5.
 Apply the same treatment to any future image-based card grid (e.g. a Team
 or additional Portfolio component) for visual consistency.
 
-## Work section: dark theme (`theme-dark-fixed`)
+## Home and Work sections: dark theme (`theme-dark-fixed`)
 
-`/work` and `/work/[slug]` are permanently dark — a deliberate art
-direction choice (from a screen-recording reference of `ulevus.com`'s
-Work section), not tied to the visitor's system light/dark preference.
-This is different from the site-wide `prefers-color-scheme` handling in
+`/`, `/work`, and `/work/[slug]` are permanently dark — a deliberate art
+direction choice (`/work` from a screen-recording reference of
+`ulevus.com`'s Work section; the home page followed later per an updated
+Figma reference, applied to the whole page top-to-bottom rather than
+just the "Ventures" band it used previously), not tied to the visitor's
+system light/dark preference. Nav and Footer stay their own global
+components regardless — only the page content between them opts into
+`theme-dark-fixed`, same as `/work` already did; don't make Nav itself
+dark to "match" a themed page. This is different from the site-wide
+`prefers-color-scheme` handling in
 `globals.css`, which swaps `ink`/`paper`/etc. based on OS preference: the
 `.theme-dark-fixed` class (also in `globals.css`) overrides the same five
 token variables to their dark values unconditionally, so every `bg-ink`/
@@ -232,6 +238,29 @@ background — the accent-tinted alternate to a flush `bg-paper` panel,
 used for every other `WorkCard` band and the case-study closing CTA
 band. Reuse it rather than hand-rolling another `color-mix` for the same
 effect.
+
+`src/app/page.tsx`'s "Ventures" section pre-dates the home page's move to
+`theme-dark-fixed` — it used to be the one deliberately-dark band on an
+otherwise light page (via a plain `outerClassName="bg-ink text-paper"`,
+no `theme-dark-fixed` needed since `ink`/`paper` in their normal, unswapped
+roles already gave a dark-bg/light-text section). Now that the whole page
+is wrapped in `theme-dark-fixed`, that same section had to drop the
+`outerClassName` override and swap its `bg-paper/5`/`text-paper/70`/
+`text-paper` classes to `bg-ink/5`/`text-ink/70`/`text-ink` — inside
+`theme-dark-fixed`, `paper` is the dark token, so `bg-paper/5` on top of
+an already-dark page is nearly invisible; `ink` (the light token in this
+context) is what reads as a subtle highlight. Keep this in mind before
+copying `text-paper`/`bg-paper` classes from anywhere else in the
+codebase onto a `theme-dark-fixed`-wrapped page — check which role each
+token resolves to in that specific context first.
+
+The home page's "Recent work, built to last" band (right after the
+client-logos row) is a single `WorkCard` for a real, existing case study
+(`house-of-trust-for-peace`, via `getWorkBySlug`) — not a fabricated
+preview. It reuses `WorkCard` exactly as `/work`'s index does, so it
+inherits that component's `theme-dark-fixed`-safe gradient/token choices
+for free. Point it at a different slug (or drop it) rather than building
+a bespoke component if the featured project changes.
 
 ## Icon-card system
 
