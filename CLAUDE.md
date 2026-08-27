@@ -203,11 +203,15 @@ direction choice (`/work` from a screen-recording reference of
 `ulevus.com`'s Work section; the home page followed later per an updated
 Figma reference, applied to the whole page top-to-bottom rather than
 just the "Ventures" band it used previously), not tied to the visitor's
-system light/dark preference. Nav and Footer stay their own global
-components regardless — only the page content between them opts into
-`theme-dark-fixed`, same as `/work` already did; don't make Nav itself
-dark to "match" a themed page. This is different from the site-wide
-`prefers-color-scheme` handling in
+system light/dark preference. `Nav.tsx` matches: it applies
+`theme-dark-fixed` to its own `<header>` (plus an explicit `text-ink` so
+elements without their own color class — the logo, the mobile hamburger
+button — re-resolve to the new scope's color instead of the value
+inherited from `body`) whenever `usePathname()` is `/` or starts with
+`/work`, via a small `isDarkRoute()` helper — the same per-route pattern
+already used for active-link highlighting. Footer stays its own always-
+dark global band regardless of route (see below). This is different
+from the site-wide `prefers-color-scheme` handling in
 `globals.css`, which swaps `ink`/`paper`/etc. based on OS preference: the
 `.theme-dark-fixed` class (also in `globals.css`) overrides the same five
 token variables to their dark values unconditionally, so every `bg-ink`/
@@ -298,6 +302,9 @@ on Home and Build) — `className` alone only affects the centered
   `text-accent`.
 - Footer is a full-bleed `bg-ink` band (not bordered/light) with the nav
   list including Home, and the current route highlighted in `accent`.
+- Nav itself goes dark (via `theme-dark-fixed` on its own `<header>`) on
+  routes that render permanently-dark page content — see "Home and Work
+  sections: dark theme" above for the mechanism and which routes qualify.
 
 ## Think index: filter, featured row, load more
 
