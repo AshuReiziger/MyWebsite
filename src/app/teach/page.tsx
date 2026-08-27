@@ -73,12 +73,6 @@ export default function TeachPage() {
               creatives develop the thinking, skills, systems, and character required to use
               their gifts meaningfully.
             </p>
-            <Link
-              href="/contact"
-              className="mt-8 inline-block rounded-full bg-ink px-6 py-3 text-sm font-semibold uppercase tracking-wide text-paper transition-opacity hover:opacity-90"
-            >
-              Learn With Me →
-            </Link>
           </div>
           <div className="aspect-[4/3] rounded-2xl bg-gradient-to-br from-line to-muted/20" />
         </div>
