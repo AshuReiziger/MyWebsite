@@ -14,15 +14,17 @@ export default async function MentorshipApplyPage({
   const track = typeof params.track === "string" ? params.track : undefined;
 
   return (
-    <Section className="pt-16 md:pt-24">
-      <SectionHeading
-        eyebrow="Teach"
-        title="Apply for Mentorship"
-        description="Tell me where you are right now and what you're hoping to work through — we'll take it from there."
-      />
-      <div className="mt-12 max-w-2xl">
-        <MentorshipApplicationForm initialTrackSlug={track} />
-      </div>
-    </Section>
+    <div className="theme-dark-fixed -mb-32 bg-paper pb-32 text-ink">
+      <Section className="pt-16 md:pt-24">
+        <SectionHeading
+          eyebrow="Teach"
+          title="Apply for Mentorship"
+          description="Tell me where you are right now and what you're hoping to work through — we'll take it from there."
+        />
+        <div className="mt-12 max-w-2xl">
+          <MentorshipApplicationForm initialTrackSlug={track} />
+        </div>
+      </Section>
+    </div>
   );
 }

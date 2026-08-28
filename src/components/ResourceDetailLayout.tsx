@@ -16,7 +16,7 @@ export function ResourceDetailLayout({ entry }: { entry: ContentEntry<ResourceFr
   const { slug, frontmatter } = entry;
 
   return (
-    <>
+    <div className="theme-dark-fixed -mb-32 bg-paper pb-32 text-ink">
       <AnalyticsPageView event="resource_page_view" properties={{ resource: slug }} />
 
       <Section className="pt-16 md:pt-24">
@@ -93,7 +93,7 @@ export function ResourceDetailLayout({ entry }: { entry: ContentEntry<ResourceFr
           <h2 className="mt-2 font-display text-2xl font-bold tracking-tight md:text-3xl">
             Read the full {frontmatter.type.toLowerCase()} before you download it.
           </h2>
-          <div className="prose prose-neutral mt-10 max-w-2xl">
+          <div className="prose prose-invert mt-10 max-w-2xl">
             <MDXRemote source={entry.content} />
           </div>
         </Section>
@@ -146,6 +146,6 @@ export function ResourceDetailLayout({ entry }: { entry: ContentEntry<ResourceFr
           </Link>
         </p>
       </Section>
-    </>
+    </div>
   );
 }

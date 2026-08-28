@@ -13,16 +13,9 @@ const LINKS = [
   { href: "/teach", label: "Teach" },
 ];
 
-// Routes that render their own content permanently dark (theme-dark-fixed) —
-// the nav bar over them matches, rather than sitting as a light bar on a dark page.
-function isDarkRoute(pathname: string) {
-  return pathname === "/" || pathname.startsWith("/work") || pathname.startsWith("/about");
-}
-
 export function Nav() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
-  const dark = isDarkRoute(pathname);
 
   const linkClass = (href: string) =>
     clsx(
@@ -31,12 +24,7 @@ export function Nav() {
     );
 
   return (
-    <header
-      className={clsx(
-        "sticky top-0 z-50 border-b border-line bg-paper/90 text-ink backdrop-blur",
-        dark && "theme-dark-fixed"
-      )}
-    >
+    <header className="theme-dark-fixed sticky top-0 z-50 border-b border-line bg-paper/90 text-ink backdrop-blur">
       <div className="relative mx-auto flex h-20 max-w-[1920px] items-center justify-between px-3 md:px-10">
         <Link href="/" className="font-display text-lg tracking-tight">
           Reiziger Ashu

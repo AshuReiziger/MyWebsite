@@ -5,7 +5,7 @@ import { HeroReveal } from "@/components/HeroReveal";
 
 export function WorkshopDetailLayout({ workshop }: { workshop: WorkshopDetail }) {
   return (
-    <>
+    <div className="theme-dark-fixed -mb-32 bg-paper pb-32 text-ink">
       <Section className="pt-16 md:pt-24">
         <div className="mx-auto max-w-2xl text-center">
           <HeroReveal delay={0}>
@@ -128,6 +128,6 @@ export function WorkshopDetailLayout({ workshop }: { workshop: WorkshopDetail })
           </Link>
         </p>
       </Section>
-    </>
+    </div>
   );
 }

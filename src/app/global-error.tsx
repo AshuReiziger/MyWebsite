@@ -10,7 +10,7 @@ export default function GlobalError({
 }) {
   return (
     <html lang="en">
-      <body className="flex min-h-screen flex-col items-center justify-center px-6 text-center antialiased">
+      <body className="theme-dark-fixed flex min-h-screen flex-col items-center justify-center bg-paper px-6 text-center text-ink antialiased">
         <p className="text-sm font-semibold uppercase tracking-widest text-accent">Error</p>
         <h1 className="mt-4 font-display text-4xl font-bold tracking-tight md:text-5xl">
           The site hit a snag.

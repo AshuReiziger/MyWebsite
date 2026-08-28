@@ -61,7 +61,7 @@ const SPEAKING_TOPICS = [
 
 export default function TeachPage() {
   return (
-    <>
+    <div className="theme-dark-fixed -mb-32 bg-paper pb-32 text-ink">
       <Section className="pt-16 md:pt-24">
         <div className="grid gap-10 md:grid-cols-2 md:items-center">
           <div>
@@ -143,6 +143,6 @@ export default function TeachPage() {
           </Link>
         </div>
       </Section>
-    </>
+    </div>
   );
 }

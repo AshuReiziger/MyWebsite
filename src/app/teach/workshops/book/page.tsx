@@ -12,15 +12,17 @@ export default async function BookWorkshopPage({ searchParams }: PageProps<"/tea
   const workshop = typeof params.workshop === "string" ? params.workshop : undefined;
 
   return (
-    <Section className="pt-16 md:pt-24">
-      <SectionHeading
-        eyebrow="Teach"
-        title="Book a Workshop"
-        description="Tell us which workshop, when, and for how many — we'll confirm availability and send payment details."
-      />
-      <div className="mt-12 max-w-2xl">
-        <WorkshopBookingForm initialWorkshopSlug={workshop} />
-      </div>
-    </Section>
+    <div className="theme-dark-fixed -mb-32 bg-paper pb-32 text-ink">
+      <Section className="pt-16 md:pt-24">
+        <SectionHeading
+          eyebrow="Teach"
+          title="Book a Workshop"
+          description="Tell us which workshop, when, and for how many — we'll confirm availability and send payment details."
+        />
+        <div className="mt-12 max-w-2xl">
+          <WorkshopBookingForm initialWorkshopSlug={workshop} />
+        </div>
+      </Section>
+    </div>
   );
 }

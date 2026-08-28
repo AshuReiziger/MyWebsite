@@ -12,15 +12,17 @@ export default function ThinkPage() {
   const articles = getAllThink();
 
   return (
-    <Section className="pt-16 md:pt-24">
-      <SectionHeading
-        title="Things I'm Thinking About"
-        description="A digital journal exploring the intersections of design, systems thinking, and intentional leadership."
-        centered
-      />
-      <div className="mt-12">
-        <ThinkIndex entries={articles} />
-      </div>
-    </Section>
+    <div className="theme-dark-fixed -mb-32 bg-paper pb-32 text-ink">
+      <Section className="pt-16 md:pt-24">
+        <SectionHeading
+          title="Things I'm Thinking About"
+          description="A digital journal exploring the intersections of design, systems thinking, and intentional leadership."
+          centered
+        />
+        <div className="mt-12">
+          <ThinkIndex entries={articles} />
+        </div>
+      </Section>
+    </div>
   );
 }

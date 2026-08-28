@@ -5,7 +5,7 @@ import { HeroReveal } from "@/components/HeroReveal";
 
 export function MentorshipDetailLayout({ track }: { track: MentorshipDetail }) {
   return (
-    <>
+    <div className="theme-dark-fixed -mb-32 bg-paper pb-32 text-ink">
       <Section className="pt-16 md:pt-24">
         <div className="mx-auto max-w-2xl text-center">
           <HeroReveal delay={0}>
@@ -127,6 +127,6 @@ export function MentorshipDetailLayout({ track }: { track: MentorshipDetail }) {
           </Link>
         </p>
       </Section>
-    </>
+    </div>
   );
 }

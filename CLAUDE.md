@@ -205,32 +205,57 @@ confirmed Iknite Studio pattern in `docs/DESIGN-REFERENCE-AUDIT.md` §1.5.
 Apply the same treatment to any future image-based card grid (e.g. a Team
 or additional Portfolio component) for visual consistency.
 
-## Home, Work, and About sections: dark theme (`theme-dark-fixed`)
+## Sitewide dark theme (`theme-dark-fixed`)
 
-`/`, `/work`, `/work/[slug]`, and `/about` are permanently dark — a
-deliberate art direction choice (`/work` from a screen-recording
-reference of `ulevus.com`'s Work section; the home page followed later
-per an updated Figma reference, applied to the whole page top-to-bottom
-rather than just the "Ventures" band it used previously; `/about` from
-a full HTML/CSS reference file, the first design reference this site
-received as literal markup rather than a screenshot — see "About page"
-below), not tied to the visitor's system light/dark preference.
-`Nav.tsx` matches: it applies `theme-dark-fixed` to its own `<header>`
-(plus an explicit `text-ink` so elements without their own color class —
-the logo, the mobile hamburger button — re-resolve to the new scope's
-color instead of the value inherited from `body`) whenever
-`usePathname()` is `/` or starts with `/work` or `/about`, via a small
-`isDarkRoute()` helper — the same per-route pattern already used for
-active-link highlighting. Footer stays its own always-
-dark global band regardless of route (see below). This is different
-from the site-wide `prefers-color-scheme` handling in
+Every page on the site is permanently dark — not tied to the visitor's
+system light/dark preference. This started as a deliberate art-direction
+choice scoped to `/`, `/work`, `/work/[slug]`, and `/about` (`/work` from
+a screen-recording reference of `ulevus.com`'s Work section; the home
+page followed later per an updated Figma reference, applied to the whole
+page top-to-bottom rather than just the "Ventures" band it used
+previously; `/about` from a full HTML/CSS reference file, the first
+design reference this site received as literal markup rather than a
+screenshot — see "About page" below), then was explicitly extended to
+every remaining page (Think, Teach and all its sub-pages, Resources and
+its detail/assessment pages, Build, Contact, and the 404/error/
+maintenance/offline states) per direct request. `Nav.tsx` matches: it
+applies `theme-dark-fixed` unconditionally to its own `<header>` (plus an
+explicit `text-ink` so elements without their own color class — the
+logo, the mobile hamburger button — re-resolve to the new scope's color
+instead of the value inherited from `body`) — there's no more per-route
+`isDarkRoute()` check now that every route is dark. Footer stays its own
+always-dark global band regardless of route (see below). This is
+different from the site-wide `prefers-color-scheme` handling in
 `globals.css`, which swaps `ink`/`paper`/etc. based on OS preference: the
 `.theme-dark-fixed` class (also in `globals.css`) overrides the same five
 token variables to their dark values unconditionally, so every `bg-ink`/
 `text-ink`/`text-muted`/`border-line`/`text-accent`/`bg-accent` utility
-inside it renders dark regardless of OS setting. Wrap a section's root
-in `theme-dark-fixed bg-paper text-ink` to opt it into this treatment —
-don't reach for raw hex values.
+inside it renders dark regardless of OS setting. Wrap a page's root in
+`theme-dark-fixed -mb-32 bg-paper pb-32 text-ink` to opt it into this
+treatment (the `-mb-32 pb-32` cancels Footer's `mt-32` gap — see below)
+— don't reach for raw hex values.
+
+Extending this to every remaining page turned out to be low-risk: a
+sitewide grep found zero raw/hardcoded Tailwind colors (`bg-white`,
+`text-gray-500`, etc.) anywhere in the codebase — every component already
+used the `ink`/`paper`/`muted`/`line`/`accent` token classes exclusively,
+so wrapping a page's root in `theme-dark-fixed` correctly re-themes
+everything inside it automatically. The `bg-ink ... text-paper` pattern
+used on every primary CTA button/pill sitewide is *intentionally*
+self-inverting — outside `theme-dark-fixed` it renders a dark button with
+light text, inside it the roles swap and it renders a light button with
+dark text — so those did not need touching. Two real issues did surface
+and got fixed while extending: `BuildSidebar.tsx`'s decorative gradient
+avatar used `to-ink` (the token-role-inversion gotcha below — fixed to
+`to-paper`), and `AssessmentFlow.tsx`'s unlock-modal backdrop used
+`bg-ink/55` as a dimming scrim, which would have inverted to a *light*
+overlay — fixed to a literal `bg-black/55` since a modal backdrop should
+always dim regardless of theme, not participate in the ink/paper swap.
+Also watch for Tailwind Typography's `.prose` modifier: `prose-neutral`
+hardcodes near-black text (it doesn't use CSS custom properties), so any
+`.prose` block on a `theme-dark-fixed` page must use `prose-invert`
+instead (see `CaseStudyLayout.tsx`, `ResourceDetailLayout.tsx`,
+`think/[slug]/page.tsx`) or its body text becomes unreadable dark-on-dark.
 
 Two gotchas this pattern introduces, both already handled in `WorkCard.tsx`
 and `CaseStudyLayout.tsx` — keep them in mind if either file is touched
@@ -474,9 +499,9 @@ itself uses the same 24px there as a one-off exception to its own
   columns, above a final centered copyright line ("© {year} Reiziger
   Ashu. All rights reserved.") — don't reintroduce the earlier layout
   where Newsletter was its own full-width row above the logo/nav row.
-- Nav itself goes dark (via `theme-dark-fixed` on its own `<header>`) on
-  routes that render permanently-dark page content — see "Home and Work
-  sections: dark theme" above for the mechanism and which routes qualify.
+- Nav itself is permanently dark (via `theme-dark-fixed` on its own
+  `<header>`, unconditionally now that every route is dark) — see
+  "Sitewide dark theme" above for the mechanism.
 
 ## Think index: filter, featured row, load more
 

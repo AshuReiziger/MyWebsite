@@ -91,7 +91,8 @@ export function AssessmentFlow({
   }
 
   return (
-    <Section className="pt-16 md:pt-24">
+    <div className="theme-dark-fixed -mb-32 bg-paper pb-32 text-ink">
+      <Section className="pt-16 md:pt-24">
       <div className="mx-auto flex max-w-2xl items-center justify-between">
         <Link href={`/resources/${slug}`} className="text-xs font-semibold uppercase tracking-widest text-muted hover:text-ink">
           &larr; Exit Assessment
@@ -332,7 +333,7 @@ export function AssessmentFlow({
       {showGate && result && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-6" role="dialog" aria-modal="true">
           <div
-            className="absolute inset-0 bg-ink/55"
+            className="absolute inset-0 bg-black/55"
             onClick={() => setShowGate(false)}
             aria-hidden
           />
@@ -362,6 +363,7 @@ export function AssessmentFlow({
           </div>
         </div>
       )}
-    </Section>
+      </Section>
+    </div>
   );
 }
