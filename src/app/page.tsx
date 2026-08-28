@@ -163,15 +163,13 @@ export default function Home() {
       </Section>
 
       {featuredResource && (
-        <Section className="pt-0">
-          <ResourceCTA
-            resource={featuredResource}
-            headline={featuredResource.frontmatter.heroHeadline}
-            body={`Download my free ${featuredResource.frontmatter.title} and evaluate your brand before investing in a redesign.`}
-            ctaLabel="Get the Free Guide →"
-            variant="centered"
-          />
-        </Section>
+        <ResourceCTA
+          resource={featuredResource}
+          headline={featuredResource.frontmatter.heroHeadline}
+          body={`Download my free ${featuredResource.frontmatter.title} and evaluate your brand before investing in a redesign.`}
+          ctaLabel="Get the Free Guide →"
+          variant="centered"
+        />
       )}
 
       <Section className="pt-0">
