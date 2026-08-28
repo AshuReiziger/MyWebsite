@@ -18,9 +18,8 @@ export default function WorkPage() {
           eyebrow="Portfolio"
           title="Where Ideas Become Visible"
           description="A collection of identities, campaigns, systems, and creative solutions built for people and organizations with something meaningful to communicate."
-          centered
         />
-        <div className="mx-auto mt-16 flex max-w-5xl flex-col gap-24">
+        <div className="mt-16 grid grid-cols-1 gap-x-8 gap-y-16 md:grid-cols-12">
           {work.map((entry, i) => (
             <WorkCard key={entry.slug} entry={entry} index={i} />
           ))}

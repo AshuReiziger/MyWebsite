@@ -288,6 +288,49 @@ study from `/work` automatically updates this grid — no changes needed
 here unless the curation logic itself (which entries, in what order)
 should change.
 
+## Work index and case study page: bento redesign
+
+`/work` (`WorkCard.tsx`) and `/work/[slug]` (`CaseStudyLayout.tsx`) were
+rebuilt from a pair of HTML/CSS reference files ("Selected Work" index +
+"Gorgias Connect" case study mockups) — same discipline as every other
+reference-driven pass this session: the layout/spacing/grid arithmetic was
+copied faithfully, but the mockups' own demo content (fabricated project
+names, a testimonial with leftover unedited placeholder text) was **not**
+reused. Real site content only — the mockup's testimonial section was
+dropped entirely since no per-case-study testimonial data exists in the
+content model.
+
+- **`WorkCard.tsx`** is now a hand-tuned 4-tile bento arrangement (`/work`
+  index only — confirmed via grep it has no other importers): a
+  full-width hero tile, two half-width tiles side by side, then a
+  full-width tile offset by one column (`COL_SPAN`/`ASPECT` arrays keyed
+  by index, falling back to a plain half-width tile for a hypothetical
+  5th+ entry). Each tile keeps the established grayscale→color
+  hover-image treatment and now shows the client name in a pill badge
+  over the image instead of a separate text panel.
+- **`CaseStudyLayout.tsx`** hero is now a 2-column split (`lg:grid-cols-12`,
+  text `lg:col-span-5`, cover image `lg:col-span-7` at `aspect-[4/5]`),
+  with a chips row of year/category/tags. **Chips must be deduplicated**
+  (`Array.from(new Set([year, category, ...tags]))`) — several entries'
+  `tags` array repeats the `category` value verbatim (e.g.
+  `sigma-studio-rebrand`: `category: "Brand Identity"`,
+  `tags: ["Brand Identity", "Strategy"]`), which would otherwise render
+  the same chip twice.
+- The `gallery` array's index usage changed: **indices 0–3 now feed a new
+  4-tile bento gallery** directly under the hero (replacing the old
+  pattern of one image alternating with each narrative beat), and the
+  Challenge/Insight/Strategy/Impact beats render as clean sequential
+  text-only blocks in a `max-w-3xl` column. Indices 4–6 are unchanged —
+  still the "05 — The Design" 3-tile image grid. This preserves the
+  mandatory Challenge→Insight→Strategy→Design→Impact structure (see
+  "Brand voice rules" above) with no content-model changes: the 5-part
+  narrative is intact, only which images sit next to which text moved.
+- **"Related Projects" was replaced with a single "Next Project" teaser**
+  — a centered link to the cyclic-next entry in `getAllWork()`'s order
+  (`work/[slug]/page.tsx` computes `next = allWork[(currentIndex + 1) %
+  allWork.length]`), matching the mockup's single-next-project pattern
+  rather than a grid of related cards.
+
 ## About page
 
 `/about` was rebuilt from a full HTML/CSS reference file the user

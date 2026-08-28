@@ -10,59 +10,88 @@ const BEATS: { key: keyof WorkFrontmatter; num: string; heading: string }[] = [
   { key: "impact", num: "04 — The Impact", heading: "Proven by Results" },
 ];
 
+const GALLERY_SPAN = [
+  "md:col-span-2 md:row-span-2 aspect-square md:aspect-auto",
+  "aspect-square",
+  "aspect-square",
+  "md:col-span-2 lg:col-span-1 aspect-[16/9] lg:aspect-square",
+];
+
 export function CaseStudyLayout({
   entry,
-  related,
+  next,
   children,
 }: {
   entry: ContentEntry<WorkFrontmatter>;
-  related: ContentEntry<WorkFrontmatter>[];
+  next: ContentEntry<WorkFrontmatter> | null;
   children: ReactNode;
 }) {
   const { frontmatter } = entry;
+  const chips = Array.from(
+    new Set([frontmatter.year, frontmatter.category, ...(frontmatter.tags ?? [])])
+  );
 
   return (
     <div className="theme-dark-fixed -mb-32 bg-paper pb-32 text-ink">
       <div className="mx-auto max-w-6xl px-6 pt-16 md:pt-24">
-        <p className="text-sm font-semibold uppercase tracking-widest text-accent">
-          {frontmatter.client} · {frontmatter.year} · {frontmatter.category}
-        </p>
-        <h1 className="mt-3 max-w-3xl font-display text-4xl font-bold tracking-tight md:text-5xl">
-          {frontmatter.title}
-        </h1>
-        <p className="mt-5 max-w-xl text-lg text-muted">{frontmatter.summary}</p>
-        <WorkImage
-          src={frontmatter.coverImage}
-          alt={frontmatter.title}
-          className="mt-12 aspect-[21/9] rounded-2xl bg-gradient-to-br from-accent/70 via-paper to-paper"
-        />
+        <div className="grid items-center gap-10 lg:grid-cols-12">
+          <div className="order-2 flex flex-col gap-8 lg:order-1 lg:col-span-5">
+            <h1 className="font-display text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
+              {frontmatter.title}
+            </h1>
+            <div className="flex flex-wrap gap-3">
+              {chips.map((chip) => (
+                <span
+                  key={chip}
+                  className="rounded-full border border-line px-4 py-1 text-xs font-semibold uppercase tracking-widest text-muted"
+                >
+                  {chip}
+                </span>
+              ))}
+            </div>
+            <p className="max-w-xl text-lg leading-relaxed text-muted">{frontmatter.summary}</p>
+          </div>
+          <div className="order-1 lg:order-2 lg:col-span-7">
+            <WorkImage
+              src={frontmatter.coverImage}
+              alt={frontmatter.title}
+              className="aspect-[4/5] rounded-2xl border border-line bg-gradient-to-br from-accent/30 via-paper to-paper grayscale transition-[filter] duration-700 hover:grayscale-0"
+            />
+          </div>
+        </div>
       </div>
 
-      <div className="mx-auto flex max-w-6xl flex-col gap-20 px-6 pt-20 md:gap-28 md:pt-28">
-        {BEATS.map(({ key, num, heading }, i) => (
-          <div key={key} className="grid gap-10 md:grid-cols-2 md:items-center md:gap-16">
-            <div className={i % 2 === 1 ? "md:order-2" : undefined}>
-              <p className="font-display text-sm font-bold text-accent">{num}</p>
-              <h2 className="mt-3 font-display text-2xl font-bold tracking-tight">{heading}</h2>
-              <p className="mt-4 text-lg leading-relaxed text-muted">{frontmatter[key]}</p>
-            </div>
+      <div className="mx-auto mt-20 max-w-6xl px-6 md:mt-28">
+        <div className="grid auto-rows-[minmax(220px,auto)] grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {[0, 1, 2, 3].map((i) => (
             <WorkImage
+              key={i}
               src={frontmatter.gallery?.[i]}
-              alt={`${frontmatter.title} — ${heading}`}
+              alt={`${frontmatter.title} — gallery image ${i + 1}`}
               className={
-                "aspect-[4/3] rounded-2xl bg-gradient-to-br from-accent/70 via-paper to-paper " +
-                (i % 2 === 1 ? "md:order-1" : "")
+                "overflow-hidden rounded-2xl border border-line bg-gradient-to-br from-accent/30 via-paper to-paper transition-transform duration-700 hover:scale-[1.02] " +
+                GALLERY_SPAN[i]
               }
             />
+          ))}
+        </div>
+      </div>
+
+      <div className="mx-auto flex max-w-3xl flex-col gap-16 px-6 pt-20 md:gap-20 md:pt-28">
+        {BEATS.map(({ key, num, heading }) => (
+          <div key={key}>
+            <p className="font-display text-sm font-bold text-accent">{num}</p>
+            <h2 className="mt-3 font-display text-2xl font-bold tracking-tight">{heading}</h2>
+            <p className="mt-4 text-lg leading-relaxed text-muted">{frontmatter[key]}</p>
           </div>
         ))}
 
         <div>
-          <p className="text-center font-display text-sm font-bold text-accent">05 — The Design</p>
-          <h2 className="mt-3 text-center font-display text-2xl font-bold tracking-tight">
+          <p className="font-display text-sm font-bold text-accent">05 — The Design</p>
+          <h2 className="mt-3 font-display text-2xl font-bold tracking-tight">
             Designing the Solution
           </h2>
-          <div className="mt-10 grid grid-cols-3 gap-6">
+          <div className="mt-8 grid grid-cols-3 gap-4">
             {[0, 1, 2].map((i) => (
               <WorkImage
                 key={i}
@@ -77,32 +106,17 @@ export function CaseStudyLayout({
 
       <div className="prose prose-invert mx-auto mt-20 max-w-6xl px-6 md:mt-28">{children}</div>
 
-      {related.length > 0 && (
-        <div className="mx-auto max-w-6xl px-6 pt-24 md:pt-28">
-          <h2 className="font-display text-2xl font-bold tracking-tight">Related Projects</h2>
-          <div className="mt-8 grid gap-6 sm:grid-cols-2">
-            {related.map((r) => (
-              <Link
-                key={r.slug}
-                href={`/work/${r.slug}`}
-                className="group overflow-hidden rounded-2xl border border-line transition-colors hover:border-accent/50"
-              >
-                <WorkImage
-                  src={r.frontmatter.coverImage}
-                  alt={r.frontmatter.title}
-                  className="aspect-video bg-gradient-to-br from-line to-muted/20"
-                />
-                <div className="p-6">
-                  <p className="text-xs font-semibold uppercase tracking-widest text-accent">
-                    {r.frontmatter.category}
-                  </p>
-                  <h3 className="mt-2 font-display text-xl font-bold tracking-tight group-hover:underline">
-                    {r.frontmatter.title}
-                  </h3>
-                </div>
-              </Link>
-            ))}
-          </div>
+      {next && (
+        <div className="mx-auto mt-24 flex max-w-6xl flex-col items-center gap-6 px-6 py-24 text-center md:mt-28">
+          <span className="rounded-full border border-line px-6 py-2 text-xs font-semibold uppercase tracking-widest text-muted">
+            Next Project
+          </span>
+          <Link href={`/work/${next.slug}`} className="group relative inline-block">
+            <h2 className="font-display text-3xl font-bold tracking-tight transition-colors group-hover:text-accent md:text-5xl">
+              {next.frontmatter.title}
+            </h2>
+            <div className="absolute bottom-0 left-0 h-[2px] w-0 bg-accent transition-all duration-500 ease-in-out group-hover:w-full" />
+          </Link>
         </div>
       )}
 

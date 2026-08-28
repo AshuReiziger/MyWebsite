@@ -24,12 +24,12 @@ export default async function WorkCaseStudyPage({ params }: PageProps<"/work/[sl
 
   if (!entry) notFound();
 
-  const related = getAllWork()
-    .filter((e) => e.slug !== slug)
-    .slice(0, 2);
+  const allWork = getAllWork();
+  const currentIndex = allWork.findIndex((e) => e.slug === slug);
+  const next = allWork.length > 1 ? allWork[(currentIndex + 1) % allWork.length] : null;
 
   return (
-    <CaseStudyLayout entry={entry} related={related}>
+    <CaseStudyLayout entry={entry} next={next}>
       <MDXRemote source={entry.content} />
     </CaseStudyLayout>
   );
