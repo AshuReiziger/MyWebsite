@@ -274,7 +274,7 @@ The home page's "Selected Work" band (right after the client-logos row)
 is `SelectedWorkGrid.tsx`, fed all of `getAllWork()` — every entry is a
 real, existing case study, not a fabricated preview. Unlike `WorkCard`
 (used on `/work`'s index), this component is deliberately rendered
-*outside* any `Section`'s `max-w-6xl` container — it's a direct sibling
+*outside* any `Section`'s `max-w-[1920px]` container — it's a direct sibling
 in the page fragment — so the grid is genuinely full-bleed edge-to-edge
 rather than centered/constrained. The first entry (most recently edited,
 same ordering convention as everywhere else) renders as a wide hero
@@ -382,10 +382,10 @@ existing `compact`/`inline`) used only by Home's "Free Resource" band —
 a fully centered stack (eyebrow, headline, description, button) with no
 left accent border, matching the Figma reference's callout panel. Unlike
 the other two variants, `centered` renders full-bleed: no rounded card,
-no `max-w-6xl` wrapper — it returns its own full-width band (using the
+no `max-w-[1920px]` wrapper — it returns its own full-width band (using the
 new `.panel-tint-strong` background, a 30%-accent version of
 `.panel-tint` for a more saturated callout color) with an inner
-`max-w-6xl` div just for centering the text/button, and `page.tsx`
+`max-w-[1920px]` div just for centering the text/button, and `page.tsx`
 renders it as a direct sibling rather than inside a `<Section>` so
 nothing constrains its width. The Think article "Go Deeper" placement
 still uses `inline` (the original rounded-card treatment) and is
@@ -397,7 +397,55 @@ this file.
 `Section` takes an optional `outerClassName` prop for backgrounds that
 should span the full viewport width (e.g. the dark navy "Ventures" band
 on Home and Build) — `className` alone only affects the centered
-`max-w-6xl` inner container. See `src/components/Section.tsx`.
+`max-w-[1920px]` inner container. See `src/components/Section.tsx`.
+
+## Content width and spacing scale
+
+The site's content column is capped at `max-w-[1920px]` — a flat pixel
+value, not a percentage of the viewport — centered with `mx-auto`. An
+earlier pass used `max-w-[min(90%,Npx)]` (a percentage that only capped
+out on very wide screens), but on any viewport narrower than roughly
+`N / 0.9` that percentage constraint was the *only* thing limiting width,
+so raising the pixel cap alone was invisible below that breakpoint —
+confusing on ordinary laptop screens (1440–1512px) where 90% was already
+tighter than the cap. Dropping the percentage entirely means the column
+now grows with the viewport (minus padding) on every screen up to
+1920px, not just very wide ones. This is a sitewide convention, not just
+`Section.tsx` — the same `mx-auto max-w-[1920px] px-3 md:px-10 ...`
+pattern is repeated in `Nav.tsx`, `Footer.tsx`, `CaseStudyLayout.tsx`,
+`ResourceCTA.tsx`'s `centered` variant, and the `build`/`contact` pages,
+so a future width change should touch all of these together (grep
+`max-w-\[1920px\]` to find every instance) rather than `Section.tsx`
+alone.
+
+This spacing scale — the width cap and the larger `md:` vertical section
+gaps below — was originally reverse-engineered from a supplied Gorgias
+Connect case-study mockup's Tailwind config (`spacing.container-max:
+1440px`, `margin-mobile: 24px`, `margin-desktop: 80px`, `gutter: 32px`,
+`section-gap: 160px`), then adjusted twice more per direct feedback: the
+width cap was raised in steps (1440px → 1680px → 1920px) and the
+`min(90%, Npx)` percentage constraint was dropped entirely in favor of a
+flat pixel cap (see the previous section), and the horizontal padding
+was tightened from the mockup's original `margin-mobile`/
+`margin-desktop` values down to `px-3 md:px-10` (12px mobile / 40px
+desktop) — so the current padding numbers no longer match the mockup's
+config 1:1, only the vertical section-gap value still does. One
+adaptation from the mockup's own spec remains: the mockup applies
+`section-gap` (160px) **uniformly at every breakpoint**, including
+mobile. The site instead only bumps the `md:` (desktop) value to the
+160px equivalent (`md:*-40`, `md:py-40` / `md:mt-40` / `md:pt-40`) and
+leaves mobile values unchanged, to avoid overwhelming small screens with
+the same gap used on desktop.
+
+Horizontal padding is `px-3 md:px-10` (12px mobile / 40px desktop)
+wherever the width-cap pattern above is used. `Nav.tsx` also picked up a
+fixed `h-20` (80px) height, matching the mockup's nav,
+replacing its previous `py-4`-driven height. Grid/flex gaps that play the
+mockup's "gutter" (32px) role were bumped to `gap-8` (e.g.
+`CaseStudyLayout`'s hero split, previously `gap-10`) — the gallery
+bento's `gap-6` (24px) was intentionally left alone since the mockup
+itself uses the same 24px there as a one-off exception to its own
+`gutter` token.
 
 ## Nav & Footer conventions
 
