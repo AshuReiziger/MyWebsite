@@ -16,7 +16,7 @@ const LINKS = [
 // Routes that render their own content permanently dark (theme-dark-fixed) —
 // the nav bar over them matches, rather than sitting as a light bar on a dark page.
 function isDarkRoute(pathname: string) {
-  return pathname === "/" || pathname.startsWith("/work");
+  return pathname === "/" || pathname.startsWith("/work") || pathname.startsWith("/about");
 }
 
 export function Nav() {
