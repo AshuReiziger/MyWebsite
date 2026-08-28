@@ -37,7 +37,7 @@ export function Nav() {
         dark && "theme-dark-fixed"
       )}
     >
-      <div className="relative mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+      <div className="relative mx-auto flex max-w-[90%] items-center justify-between px-6 py-4">
         <Link href="/" className="font-display text-lg tracking-tight">
           Reiziger Ashu
         </Link>

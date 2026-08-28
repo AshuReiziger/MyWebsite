@@ -28,7 +28,7 @@ export function Footer() {
 
   return (
     <footer className="mt-32 bg-ink text-paper">
-      <div className="mx-auto max-w-6xl px-6 py-16">
+      <div className="mx-auto max-w-[90%] px-6 py-16">
         <div className="grid gap-10 md:grid-cols-2">
           <div className="max-w-sm">
             <p className="font-display text-lg tracking-tight">Reiziger Ashu</p>

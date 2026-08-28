@@ -33,7 +33,7 @@ export function CaseStudyLayout({
 
   return (
     <div className="theme-dark-fixed -mb-32 bg-paper pb-32 text-ink">
-      <div className="mx-auto max-w-6xl px-6 pt-16 md:pt-24">
+      <div className="mx-auto max-w-[90%] px-6 pt-16 md:pt-24">
         <div className="grid items-center gap-10 lg:grid-cols-12">
           <div className="order-2 flex flex-col gap-8 lg:order-1 lg:col-span-5">
             <h1 className="font-display text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
@@ -61,7 +61,7 @@ export function CaseStudyLayout({
         </div>
       </div>
 
-      <div className="mx-auto mt-20 max-w-6xl px-6 md:mt-28">
+      <div className="mx-auto mt-20 max-w-[90%] px-6 md:mt-28">
         <div className="grid auto-rows-[minmax(220px,auto)] grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {[0, 1, 2, 3].map((i) => (
             <WorkImage
@@ -104,10 +104,10 @@ export function CaseStudyLayout({
         </div>
       </div>
 
-      <div className="prose prose-invert mx-auto mt-20 max-w-6xl px-6 md:mt-28">{children}</div>
+      <div className="prose prose-invert mx-auto mt-20 max-w-[90%] px-6 md:mt-28">{children}</div>
 
       {next && (
-        <div className="mx-auto mt-24 flex max-w-6xl flex-col items-center gap-6 px-6 py-24 text-center md:mt-28">
+        <div className="mx-auto mt-24 flex max-w-[90%] flex-col items-center gap-6 px-6 py-24 text-center md:mt-28">
           <span className="rounded-full border border-line px-6 py-2 text-xs font-semibold uppercase tracking-widest text-muted">
             Next Project
           </span>

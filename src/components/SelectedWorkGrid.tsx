@@ -5,7 +5,7 @@ import { ArrowRightIcon } from "@/components/icons";
 
 /**
  * Full-bleed, image-forward portfolio teaser for the home page — deliberately
- * rendered outside any Section's max-w-6xl container so the grid spans the
+ * rendered outside any Section's max-w-[90%] container so the grid spans the
  * full viewport width. The first entry runs as a wide hero tile, the rest
  * fill a masonry-style row beneath it.
  */
