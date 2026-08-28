@@ -125,6 +125,15 @@ needed):
 - `line` (`#e2e8f0`) — borders/dividers
 - `accent` (`#b5995d`, warm gold/bronze) — CTAs, eyebrows, active nav
   states, highlights
+
+**Dark-mode/`.theme-dark-fixed` values aren't a literal ink/paper swap** —
+they're their own tuned palette, refined against a real HTML/CSS
+reference (see "Home and Work sections" below for how that reference
+also drove the About page): `ink` `#ffffff`, `paper` `#0a0a0a`, `muted`
+`#a1a1a1`, `line` `#2a2a2a`, `accent` `#e6c279`. Both the
+`prefers-color-scheme: dark` media query and `.theme-dark-fixed` carry
+these same five values, kept in sync — update both blocks together.
+Light-mode values are unaffected by this and unchanged.
 - `font-display` (**Libre Caslon Text**, serif — only ships weights 400
   and 700, no 500/600) for headings, `font-body` (**Hanken Grotesk**,
   variable, full weight range) for body text. Because the display font
@@ -196,20 +205,23 @@ confirmed Iknite Studio pattern in `docs/DESIGN-REFERENCE-AUDIT.md` §1.5.
 Apply the same treatment to any future image-based card grid (e.g. a Team
 or additional Portfolio component) for visual consistency.
 
-## Home and Work sections: dark theme (`theme-dark-fixed`)
+## Home, Work, and About sections: dark theme (`theme-dark-fixed`)
 
-`/`, `/work`, and `/work/[slug]` are permanently dark — a deliberate art
-direction choice (`/work` from a screen-recording reference of
-`ulevus.com`'s Work section; the home page followed later per an updated
-Figma reference, applied to the whole page top-to-bottom rather than
-just the "Ventures" band it used previously), not tied to the visitor's
-system light/dark preference. `Nav.tsx` matches: it applies
-`theme-dark-fixed` to its own `<header>` (plus an explicit `text-ink` so
-elements without their own color class — the logo, the mobile hamburger
-button — re-resolve to the new scope's color instead of the value
-inherited from `body`) whenever `usePathname()` is `/` or starts with
-`/work`, via a small `isDarkRoute()` helper — the same per-route pattern
-already used for active-link highlighting. Footer stays its own always-
+`/`, `/work`, `/work/[slug]`, and `/about` are permanently dark — a
+deliberate art direction choice (`/work` from a screen-recording
+reference of `ulevus.com`'s Work section; the home page followed later
+per an updated Figma reference, applied to the whole page top-to-bottom
+rather than just the "Ventures" band it used previously; `/about` from
+a full HTML/CSS reference file, the first design reference this site
+received as literal markup rather than a screenshot — see "About page"
+below), not tied to the visitor's system light/dark preference.
+`Nav.tsx` matches: it applies `theme-dark-fixed` to its own `<header>`
+(plus an explicit `text-ink` so elements without their own color class —
+the logo, the mobile hamburger button — re-resolve to the new scope's
+color instead of the value inherited from `body`) whenever
+`usePathname()` is `/` or starts with `/work` or `/about`, via a small
+`isDarkRoute()` helper — the same per-route pattern already used for
+active-link highlighting. Footer stays its own always-
 dark global band regardless of route (see below). This is different
 from the site-wide `prefers-color-scheme` handling in
 `globals.css`, which swaps `ink`/`paper`/etc. based on OS preference: the
@@ -275,6 +287,40 @@ gradient overlay instead of a background. Adding or removing a case
 study from `/work` automatically updates this grid — no changes needed
 here unless the curation logic itself (which entries, in what order)
 should change.
+
+## About page
+
+`/about` was rebuilt from a full HTML/CSS reference file the user
+supplied (unlike every earlier design reference this session, which was
+a screenshot) — translated directly into the site's existing token
+system and component set rather than treated as a fresh design language
+of its own:
+- The reference's Journey timeline and "What guides my work" values
+  copy is *identical* to what was already live before this pass — this
+  was a pure layout/visual restyle, not new content. `JOURNEY`/`VALUES`
+  in `about/page.tsx` are unchanged.
+- The reference's portrait photo was a Google-hosted AI-tool asset URL,
+  not a real photo of Reiziger Ashu with rights to embed — the hero
+  instead gets the same gradient-placeholder treatment used for every
+  other empty image slot on the site (`from-accent/30 via-paper
+  to-paper`), ready to swap for a real photo later.
+- `Timeline.tsx` (shared with nowhere else currently) had one real bug
+  fix from this pass: the period label (e.g. "2021 — The Beginning")
+  was unconditionally `text-accent` for every entry; the reference only
+  golds the *current* entry's period label, muting the rest — now
+  conditional on `isCurrent`, matching the reference exactly.
+- "What guides my work" is a bento grid, not a uniform card grid:
+  Purpose spans `md:col-span-2`, Excellence/Curiosity/Integrity are
+  normal square cards, and Impact/Stewardship share the remaining
+  column as two stacked compact cards (small square bullet instead of
+  an `IconBadge`, smaller type) — `ValueCard`/`CompactValueCard` in
+  `about/page.tsx` implement the two treatments.
+- The Journey section sits in an alternating band via
+  `outerClassName="bg-ink/5 border-y border-line"` — reusing the same
+  "5%-opacity `ink` overlay on a dark background" technique already
+  established for the Ventures cards, not `.panel-tint` (that mixes in
+  `accent`, giving a warm tint; the reference's alternating band is a
+  neutral gray, not accent-tinted).
 
 ## Icon-card system
 

@@ -31,7 +31,12 @@ export function Timeline({
                 className={"h-1.5 w-1.5 rounded-full " + (isCurrent ? "bg-accent" : "bg-line")}
               />
             </span>
-            <p className="text-sm font-semibold uppercase tracking-widest text-accent">
+            <p
+              className={
+                "text-sm font-semibold uppercase tracking-widest " +
+                (isCurrent ? "text-accent" : "text-muted")
+              }
+            >
               {entry.period}
             </p>
             <h3 className="mt-1 font-display text-xl font-bold tracking-tight">{entry.title}</h3>

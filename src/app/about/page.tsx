@@ -87,17 +87,20 @@ const VALUES = [
 ];
 
 export default function AboutPage() {
+  const [purpose, excellence, curiosity, integrity, impact, stewardship] = VALUES;
+
   return (
-    <>
+    <div className="theme-dark-fixed -mb-32 bg-paper pb-32 text-ink">
       <Section className="pt-16 text-center md:pt-24">
         <SectionHeading centered divider title="The Designer Behind the Work" />
         <blockquote className="mx-auto mt-10 max-w-2xl border-l-2 border-accent pl-6 text-left font-display text-xl italic">
           &ldquo;I didn&apos;t begin designing because I wanted to make things look good. I began
           because I became fascinated by the power of ideas.&rdquo;
         </blockquote>
+        <div className="mx-auto mt-16 aspect-[16/9] w-full max-w-3xl overflow-hidden rounded-2xl border border-line bg-gradient-to-br from-accent/30 via-paper to-paper" />
       </Section>
 
-      <Section className="pt-0">
+      <Section outerClassName="bg-ink/5 border-y border-line">
         <div className="grid gap-10 md:grid-cols-[1fr_2fr]">
           <div>
             <h3 className="font-display text-2xl font-bold tracking-tight">The Journey</h3>
@@ -112,18 +115,45 @@ export default function AboutPage() {
 
       <Section className="pt-0">
         <SectionHeading centered divider title="What guides my work" />
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 md:grid-cols-3">
-          {VALUES.map((value) => (
-            <div key={value.title} className="rounded-2xl border border-line p-6">
-              <IconBadge>{value.icon}</IconBadge>
-              <h3 className="mt-5 font-display text-lg font-bold tracking-tight">
-                {value.title}
-              </h3>
-              <p className="mt-2 text-sm text-muted">{value.description}</p>
-            </div>
-          ))}
+        <div className="mt-12 grid auto-rows-[minmax(220px,auto)] grid-cols-1 gap-6 md:grid-cols-3">
+          <ValueCard value={purpose} className="md:col-span-2" />
+          <ValueCard value={excellence} />
+          <ValueCard value={curiosity} />
+          <ValueCard value={integrity} />
+          <div className="grid grid-rows-2 gap-6">
+            <CompactValueCard value={impact} />
+            <CompactValueCard value={stewardship} />
+          </div>
         </div>
       </Section>
-    </>
+    </div>
+  );
+}
+
+function ValueCard({
+  value,
+  className,
+}: {
+  value: (typeof VALUES)[number];
+  className?: string;
+}) {
+  return (
+    <div className={`rounded-2xl border border-line p-8 transition-colors hover:border-accent/50 ${className ?? ""}`}>
+      <IconBadge>{value.icon}</IconBadge>
+      <h3 className="mt-6 font-display text-lg font-bold tracking-tight">{value.title}</h3>
+      <p className="mt-3 text-muted">{value.description}</p>
+    </div>
+  );
+}
+
+function CompactValueCard({ value }: { value: (typeof VALUES)[number] }) {
+  return (
+    <div className="flex flex-col justify-center rounded-2xl border border-line p-6 transition-colors hover:border-accent/50">
+      <h3 className="flex items-center gap-2 font-display text-lg font-bold tracking-tight">
+        <span className="h-2 w-2 shrink-0 bg-accent" />
+        {value.title}
+      </h3>
+      <p className="mt-2 text-sm text-muted">{value.description}</p>
+    </div>
   );
 }
