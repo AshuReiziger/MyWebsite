@@ -62,13 +62,13 @@ export function ResourceCTA({
   );
 
   // Centered variant is a full-bleed band (no rounded card, no
-  // max-w-[min(90%,1920px)] constraint) — render it as a direct sibling in
+  // max-w-[1920px] constraint) — render it as a direct sibling in
   // the page, not inside a Section, so the background spans the full
   // viewport width.
   if (centered) {
     return (
       <div className="panel-tint-strong w-full py-16 md:py-20">
-        <div className="mx-auto flex max-w-[min(90%,1920px)] flex-col items-center px-6 text-center md:px-20">
+        <div className="mx-auto flex max-w-[1920px] flex-col items-center px-6 text-center md:px-20">
           {text}
           {cta}
         </div>
