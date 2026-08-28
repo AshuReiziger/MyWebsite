@@ -17,7 +17,7 @@ export function Section({
   const inner = (
     <div
       className={clsx(
-        "mx-auto max-w-[min(90%,1440px)] px-6 py-20 md:px-20 md:py-40",
+        "mx-auto max-w-[min(90%,1680px)] px-6 py-20 md:px-20 md:py-40",
         className
       )}
     >
@@ -36,7 +36,7 @@ export function Section({
   return (
     <section
       id={id}
-      className={clsx("mx-auto max-w-[min(90%,1440px)] px-6 py-20 md:px-20 md:py-40", className)}
+      className={clsx("mx-auto max-w-[min(90%,1680px)] px-6 py-20 md:px-20 md:py-40", className)}
     >
       {children}
     </section>
