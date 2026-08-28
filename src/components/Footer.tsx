@@ -29,27 +29,25 @@ export function Footer() {
   return (
     <footer className="mt-32 bg-ink text-paper">
       <div className="mx-auto max-w-6xl px-6 py-16">
-        <div className="border-b border-paper/10 pb-10">
-          <p className="text-xs font-semibold uppercase tracking-widest text-paper/60">
-            Newsletter
-          </p>
-          <p className="mt-2 max-w-sm text-sm text-paper/60">
-            Occasional notes on design, strategy, and creative leadership — no spam.
-          </p>
-          <div className="mt-4">
-            <NewsletterForm />
-          </div>
-        </div>
-
-        <div className="mt-10 flex flex-col gap-10 md:flex-row md:justify-between">
+        <div className="grid gap-10 md:grid-cols-2">
           <div className="max-w-sm">
             <p className="font-display text-lg tracking-tight">Reiziger Ashu</p>
-            <p className="mt-3 text-sm text-paper/60">
-              © {new Date().getFullYear()} Reiziger Ashu. Architecting intentional growth.
-            </p>
+            <p className="mt-3 text-sm text-paper/60">Architecting intentional growth.</p>
+
+            <div className="mt-8">
+              <p className="text-xs font-semibold uppercase tracking-widest text-paper/60">
+                Newsletter
+              </p>
+              <p className="mt-2 text-sm text-paper/60">
+                Occasional notes on design, strategy, and creative leadership — no spam.
+              </p>
+              <div className="mt-4">
+                <NewsletterForm />
+              </div>
+            </div>
           </div>
 
-          <div className="flex flex-col gap-6 sm:flex-row sm:gap-16">
+          <div className="flex gap-16 md:justify-end">
             <nav className="flex flex-col gap-2">
               {NAV_LINKS.map((link) => (
                 <Link
@@ -79,6 +77,12 @@ export function Footer() {
               ))}
             </nav>
           </div>
+        </div>
+
+        <div className="mt-12 border-t border-paper/10 pt-6">
+          <p className="text-sm text-paper/60">
+            © {new Date().getFullYear()} Reiziger Ashu. All rights reserved.
+          </p>
         </div>
       </div>
     </footer>
