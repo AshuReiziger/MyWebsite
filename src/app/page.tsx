@@ -155,7 +155,7 @@ export default function Home() {
           title="What I do"
           description="A holistic approach bridging the gap between high-level vision and execution."
         />
-        <div className="mt-12 grid gap-6 md:grid-cols-2">
+        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {CAPABILITIES.map((capability, i) => (
             <CapabilityCard key={capability.title} {...capability} index={i + 1} />
           ))}
@@ -169,6 +169,7 @@ export default function Home() {
             headline={featuredResource.frontmatter.heroHeadline}
             body={`Download my free ${featuredResource.frontmatter.title} and evaluate your brand before investing in a redesign.`}
             ctaLabel="Get the Free Guide →"
+            variant="centered"
           />
         </Section>
       )}
