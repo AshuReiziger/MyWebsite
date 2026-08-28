@@ -284,6 +284,17 @@ rounded-square accent-tinted wrapper). Used by `CapabilityCard` (Home,
 numbered 01–04), the Teach offerings grid, and the About values grid. Add
 new icons here rather than pulling in an icon library — keeps the visual
 weight consistent with the existing set instead of mixing icon styles.
+Home's "What I Do" grid renders these four cards in a single row on
+larger screens (`sm:grid-cols-2 lg:grid-cols-4`), per the Figma
+reference — not the 2×2 grid used in an earlier pass.
+
+`ResourceCTA.tsx` has a third `variant="centered"` (alongside the
+existing `compact`/`inline`) used only by Home's "Free Resource" band —
+a fully centered stack (eyebrow, headline, description, button) with no
+left accent border, matching the Figma reference's callout panel. The
+Think article "Go Deeper" placement still uses `inline` and is
+unaffected; don't change that variant's default styling when touching
+this file.
 
 ## Full-bleed sections
 

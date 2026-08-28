@@ -26,31 +26,42 @@ export function ResourceCTA({
   headline?: string;
   body?: string;
   ctaLabel?: string;
-  variant?: "compact" | "inline";
+  variant?: "compact" | "inline" | "centered";
 }) {
   const { slug, frontmatter } = resource;
   const resolvedHeadline = headline ?? frontmatter.heroHeadline ?? frontmatter.title;
   const resolvedBody = body ?? frontmatter.description;
   const resolvedCta = ctaLabel ?? `Get the Free ${frontmatter.type} →`;
+  const centered = variant === "centered";
 
   return (
     <div
       className={clsx(
-        "panel-tint rounded-2xl border-l-2 border-accent p-6 md:p-8",
+        "panel-tint rounded-2xl p-6 md:p-8",
+        centered
+          ? "flex flex-col items-center text-center"
+          : "border-l-2 border-accent",
         variant === "compact" && "flex flex-col gap-5 md:flex-row md:items-center md:justify-between"
       )}
     >
-      <div>
+      <div className={centered ? "max-w-xl" : undefined}>
         <p className="text-xs font-semibold uppercase tracking-widest text-accent">{eyebrow}</p>
         <h3 className="mt-2 font-display text-xl font-bold tracking-tight md:text-2xl">
           {resolvedHeadline}
         </h3>
-        {resolvedBody && <p className="mt-2 max-w-xl text-muted">{resolvedBody}</p>}
+        {resolvedBody && (
+          <p className={clsx("mt-2 text-muted", centered ? "mx-auto max-w-md" : "max-w-xl")}>
+            {resolvedBody}
+          </p>
+        )}
       </div>
       <Link
         href={`/resources/${slug}`}
         onClick={() => track("resource_cta_click", { resource: slug, variant })}
-        className="inline-flex shrink-0 items-center gap-2 self-start rounded-full bg-ink px-6 py-3 text-sm font-semibold uppercase tracking-wide text-paper transition-opacity hover:opacity-90 md:self-auto"
+        className={clsx(
+          "inline-flex shrink-0 items-center gap-2 rounded-full bg-ink px-6 py-3 text-sm font-semibold uppercase tracking-wide text-paper transition-opacity hover:opacity-90",
+          centered ? "mt-6" : "self-start md:self-auto"
+        )}
       >
         {resolvedCta}
       </Link>
