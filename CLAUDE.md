@@ -274,7 +274,7 @@ The home page's "Selected Work" band (right after the client-logos row)
 is `SelectedWorkGrid.tsx`, fed all of `getAllWork()` — every entry is a
 real, existing case study, not a fabricated preview. Unlike `WorkCard`
 (used on `/work`'s index), this component is deliberately rendered
-*outside* any `Section`'s `max-w-[min(90%,1680px)]` container — it's a direct sibling
+*outside* any `Section`'s `max-w-[min(90%,1920px)]` container — it's a direct sibling
 in the page fragment — so the grid is genuinely full-bleed edge-to-edge
 rather than centered/constrained. The first entry (most recently edited,
 same ordering convention as everywhere else) renders as a wide hero
@@ -382,10 +382,10 @@ existing `compact`/`inline`) used only by Home's "Free Resource" band —
 a fully centered stack (eyebrow, headline, description, button) with no
 left accent border, matching the Figma reference's callout panel. Unlike
 the other two variants, `centered` renders full-bleed: no rounded card,
-no `max-w-[min(90%,1680px)]` wrapper — it returns its own full-width band (using the
+no `max-w-[min(90%,1920px)]` wrapper — it returns its own full-width band (using the
 new `.panel-tint-strong` background, a 30%-accent version of
 `.panel-tint` for a more saturated callout color) with an inner
-`max-w-[min(90%,1680px)]` div just for centering the text/button, and `page.tsx`
+`max-w-[min(90%,1920px)]` div just for centering the text/button, and `page.tsx`
 renders it as a direct sibling rather than inside a `<Section>` so
 nothing constrains its width. The Think article "Go Deeper" placement
 still uses `inline` (the original rounded-card treatment) and is
@@ -397,18 +397,18 @@ this file.
 `Section` takes an optional `outerClassName` prop for backgrounds that
 should span the full viewport width (e.g. the dark navy "Ventures" band
 on Home and Build) — `className` alone only affects the centered
-`max-w-[min(90%,1680px)]` inner container. See `src/components/Section.tsx`.
+`max-w-[min(90%,1920px)]` inner container. See `src/components/Section.tsx`.
 
 ## Content width and spacing scale
 
-The site's content column is capped at `max-w-[min(90%,1680px)]` —
+The site's content column is capped at `max-w-[min(90%,1920px)]` —
 90% of the viewport, but never wider than 1440px on very large screens
 — centered with `mx-auto`. This is a sitewide convention, not just
-`Section.tsx` — the same `mx-auto max-w-[min(90%,1680px)] px-6 ...`
+`Section.tsx` — the same `mx-auto max-w-[min(90%,1920px)] px-6 ...`
 pattern is repeated in `Nav.tsx`, `Footer.tsx`, `CaseStudyLayout.tsx`,
 `ResourceCTA.tsx`'s `centered` variant, and the `build`/`contact` pages,
 so a future width change should touch all of these together (grep
-`max-w-\[min(90%,1680px)\]` to find every instance) rather than
+`max-w-\[min(90%,1920px)\]` to find every instance) rather than
 `Section.tsx` alone.
 
 This spacing scale — the width cap, the responsive horizontal padding,
