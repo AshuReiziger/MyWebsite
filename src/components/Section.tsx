@@ -15,7 +15,14 @@ export function Section({
   id?: string;
 }) {
   const inner = (
-    <div className={clsx("mx-auto max-w-[90%] px-6 py-20 md:py-28", className)}>{children}</div>
+    <div
+      className={clsx(
+        "mx-auto max-w-[min(90%,1440px)] px-6 py-20 md:px-20 md:py-40",
+        className
+      )}
+    >
+      {children}
+    </div>
   );
 
   if (outerClassName) {
@@ -27,7 +34,10 @@ export function Section({
   }
 
   return (
-    <section id={id} className={clsx("mx-auto max-w-[90%] px-6 py-20 md:py-28", className)}>
+    <section
+      id={id}
+      className={clsx("mx-auto max-w-[min(90%,1440px)] px-6 py-20 md:px-20 md:py-40", className)}
+    >
       {children}
     </section>
   );
