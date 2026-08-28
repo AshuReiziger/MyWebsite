@@ -291,8 +291,15 @@ reference — not the 2×2 grid used in an earlier pass.
 `ResourceCTA.tsx` has a third `variant="centered"` (alongside the
 existing `compact`/`inline`) used only by Home's "Free Resource" band —
 a fully centered stack (eyebrow, headline, description, button) with no
-left accent border, matching the Figma reference's callout panel. The
-Think article "Go Deeper" placement still uses `inline` and is
+left accent border, matching the Figma reference's callout panel. Unlike
+the other two variants, `centered` renders full-bleed: no rounded card,
+no `max-w-6xl` wrapper — it returns its own full-width band (using the
+new `.panel-tint-strong` background, a 30%-accent version of
+`.panel-tint` for a more saturated callout color) with an inner
+`max-w-6xl` div just for centering the text/button, and `page.tsx`
+renders it as a direct sibling rather than inside a `<Section>` so
+nothing constrains its width. The Think article "Go Deeper" placement
+still uses `inline` (the original rounded-card treatment) and is
 unaffected; don't change that variant's default styling when touching
 this file.
 

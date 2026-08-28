@@ -59,3 +59,10 @@ h4 {
 .panel-tint {
   background: color-mix(in srgb, var(--color-accent) 12%, var(--color-paper));
 }
+
+/* Richer accent-tinted band for full-bleed callouts (e.g. Home's "Free
+   Resource" section) — same color-mix mechanism as .panel-tint, just a
+   higher accent percentage for a more saturated background. */
+.panel-tint-strong {
+  background: color-mix(in srgb, var(--color-accent) 30%, var(--color-paper));
+}
