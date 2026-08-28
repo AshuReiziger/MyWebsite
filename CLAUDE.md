@@ -411,34 +411,35 @@ confusing on ordinary laptop screens (1440–1512px) where 90% was already
 tighter than the cap. Dropping the percentage entirely means the column
 now grows with the viewport (minus padding) on every screen up to
 1920px, not just very wide ones. This is a sitewide convention, not just
-`Section.tsx` — the same `mx-auto max-w-[1920px] px-6 ...` pattern is
-repeated in `Nav.tsx`, `Footer.tsx`, `CaseStudyLayout.tsx`,
+`Section.tsx` — the same `mx-auto max-w-[1920px] px-3 md:px-10 ...`
+pattern is repeated in `Nav.tsx`, `Footer.tsx`, `CaseStudyLayout.tsx`,
 `ResourceCTA.tsx`'s `centered` variant, and the `build`/`contact` pages,
 so a future width change should touch all of these together (grep
 `max-w-\[1920px\]` to find every instance) rather than `Section.tsx`
 alone.
 
-This spacing scale — the width cap, the responsive horizontal padding,
-and the larger `md:` vertical section gaps below — was reverse-engineered
-from a supplied Gorgias Connect case-study mockup's Tailwind config
-(`spacing.container-max: 1440px`, `margin-mobile: 24px`,
-`margin-desktop: 80px`, `gutter: 32px`, `section-gap: 160px`), not
-invented from scratch. Two adaptations were made rather than copying the
-mockup's raw values 1:1:
-- The mockup's width is a **fixed** 1440px cap; the site combines that
-  with the pre-existing `90%`-of-viewport behavior via `min()`, so the
-  column still scales down gracefully on mid-size screens instead of
-  jumping straight to a fixed pixel width.
-- The mockup applies `section-gap` (160px) **uniformly at every
-  breakpoint**, including mobile. The site instead only bumps the `md:`
-  (desktop) value to the 160px equivalent (`md:*-40`, `md:py-40` /
-  `md:mt-40` / `md:pt-40`) and leaves mobile values unchanged, to avoid
-  overwhelming small screens with the same gap used on desktop.
+This spacing scale — the width cap and the larger `md:` vertical section
+gaps below — was originally reverse-engineered from a supplied Gorgias
+Connect case-study mockup's Tailwind config (`spacing.container-max:
+1440px`, `margin-mobile: 24px`, `margin-desktop: 80px`, `gutter: 32px`,
+`section-gap: 160px`), then adjusted twice more per direct feedback: the
+width cap was raised in steps (1440px → 1680px → 1920px) and the
+`min(90%, Npx)` percentage constraint was dropped entirely in favor of a
+flat pixel cap (see the previous section), and the horizontal padding
+was tightened from the mockup's original `margin-mobile`/
+`margin-desktop` values down to `px-3 md:px-10` (12px mobile / 40px
+desktop) — so the current padding numbers no longer match the mockup's
+config 1:1, only the vertical section-gap value still does. One
+adaptation from the mockup's own spec remains: the mockup applies
+`section-gap` (160px) **uniformly at every breakpoint**, including
+mobile. The site instead only bumps the `md:` (desktop) value to the
+160px equivalent (`md:*-40`, `md:py-40` / `md:mt-40` / `md:pt-40`) and
+leaves mobile values unchanged, to avoid overwhelming small screens with
+the same gap used on desktop.
 
-Horizontal padding follows the mockup's breakpoint step directly:
-`px-6 md:px-20` (24px mobile / 80px desktop, matching `margin-mobile`/
-`margin-desktop`) wherever the width-cap pattern above is used. `Nav.tsx`
-also picked up a fixed `h-20` (80px) height, matching the mockup's nav,
+Horizontal padding is `px-3 md:px-10` (12px mobile / 40px desktop)
+wherever the width-cap pattern above is used. `Nav.tsx` also picked up a
+fixed `h-20` (80px) height, matching the mockup's nav,
 replacing its previous `py-4`-driven height. Grid/flex gaps that play the
 mockup's "gutter" (32px) role were bumped to `gap-8` (e.g.
 `CaseStudyLayout`'s hero split, previously `gap-10`) — the gallery

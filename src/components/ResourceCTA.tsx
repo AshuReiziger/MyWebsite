@@ -68,7 +68,7 @@ export function ResourceCTA({
   if (centered) {
     return (
       <div className="panel-tint-strong w-full py-16 md:py-20">
-        <div className="mx-auto flex max-w-[1920px] flex-col items-center px-6 text-center md:px-20">
+        <div className="mx-auto flex max-w-[1920px] flex-col items-center px-3 text-center md:px-10">
           {text}
           {cta}
         </div>

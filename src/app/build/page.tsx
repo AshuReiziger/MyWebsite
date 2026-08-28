@@ -77,7 +77,7 @@ function OutlinedLink({ href, children }: { href: string; children: ReactNode })
 
 export default function BuildPage() {
   return (
-    <div className="mx-auto max-w-[1920px] px-6 py-16 md:px-20 md:py-24">
+    <div className="mx-auto max-w-[1920px] px-3 py-16 md:px-10 md:py-24">
       <div className="grid gap-12 md:grid-cols-[220px_1fr]">
         <BuildSidebar />
 
