@@ -312,6 +312,13 @@ on Home and Build) — `className` alone only affects the centered
   `text-accent`.
 - Footer is a full-bleed `bg-ink` band (not bordered/light) with the nav
   list including Home, and the current route highlighted in `accent`.
+  Layout is two columns per the Figma reference: left column is
+  logo + tagline ("Architecting intentional growth.") + the Newsletter
+  block stacked vertically; right column holds the nav-links and
+  social-links lists side by side. A single divider sits below both
+  columns, above a final centered copyright line ("© {year} Reiziger
+  Ashu. All rights reserved.") — don't reintroduce the earlier layout
+  where Newsletter was its own full-width row above the logo/nav row.
 - Nav itself goes dark (via `theme-dark-fixed` on its own `<header>`) on
   routes that render permanently-dark page content — see "Home and Work
   sections: dark theme" above for the mechanism and which routes qualify.
