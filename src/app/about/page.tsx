@@ -100,7 +100,7 @@ export default function AboutPage() {
         </blockquote>
       </Section>
 
-      <div className="group relative mt-16 mb-[5px] h-screen w-full overflow-hidden bg-gradient-to-br from-accent/30 via-paper to-paper">
+      <div className="group relative mb-[10px] mt-16 aspect-[4/5] w-full overflow-hidden bg-gradient-to-br from-accent/30 via-paper to-paper md:aspect-auto md:h-screen">
         <Image
           src="/images/reiziger-ashu-portrait.jpg"
           alt="Reiziger Ashu"
@@ -122,7 +122,7 @@ export default function AboutPage() {
         </div>
       </Section>
 
-      <Section className="pt-0">
+      <Section className="pb-8 pt-0 md:pb-40">
         <SectionHeading centered divider title="What guides my work" />
         <div className="mt-12 grid auto-rows-[minmax(220px,auto)] grid-cols-1 gap-6 md:grid-cols-3">
           <ValueCard value={purpose} className="md:col-span-2" />

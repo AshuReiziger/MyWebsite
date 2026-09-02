@@ -401,8 +401,12 @@ of its own:
   to the photo's native `989/1280` ratio so it rendered fully uncropped,
   but that produced a container far taller than any viewport and wasn't
   what was meant by "full width and height"; `h-screen` is what actually
-  reads as a full-viewport band). The photo is `object-cover` (cropped
-  to fill, same as every other image slot) with
+  reads as a full-viewport band) **only from `md:` up** — on mobile it's
+  `aspect-[4/5]` instead, since `h-screen` on a narrow, already-tall
+  phone viewport made the band dominate almost the entire scroll (a
+  regression caught only by checking the actual rendered mobile page,
+  not just resizing the desktop layout). The photo is `object-cover`
+  (cropped to fill, same as every other image slot) with
   `object-[50%_22%]` rather than the default `object-center`, biasing
   the crop toward the top ~22% of the frame so the face stays in view
   instead of being cropped out when the wide/short viewport-shaped box
@@ -413,16 +417,16 @@ of its own:
   defeats "full width" — with the intro `Section` above it losing its
   touching `pb` (`pb-0 md:pb-0`) so the image butts directly against
   the quote above with no gap. Below the image, the gap to the Journey
-  `Section` is a literal `mb-[5px]` on the image's own wrapper (an
+  `Section` is a literal `mb-[10px]` on the image's own wrapper (an
   explicit pixel value, not a spacing-scale step, per direct request
-  for "about 5px" rather than the flush zero-gap used above it) — the
-  Journey Section's `pt-0 md:pt-0` stays, since the 5px lives on the
-  image side of that boundary, not the Section's own padding; its
-  bottom padding is unchanged (`pb-20 md:pb-40`) since only the shared
-  edge with the image needed adjusting. The image also carries the same
-  `grayscale` → `group-hover:grayscale-0` treatment as `WorkCard.tsx`
-  (desaturated by default, full color on hover — the wrapping `div` is
-  `group`).
+  for "about 10px" — raised from an initial 5px — rather than the flush
+  zero-gap used above it) — the Journey Section's `pt-0 md:pt-0` stays,
+  since the gap lives on the image side of that boundary, not the
+  Section's own padding; its bottom padding is unchanged
+  (`pb-20 md:pb-40`) since only the shared edge with the image needed
+  adjusting. The image also carries the same `grayscale` →
+  `group-hover:grayscale-0` treatment as `WorkCard.tsx` (desaturated by
+  default, full color on hover — the wrapping `div` is `group`).
 - `Timeline.tsx` (shared with nowhere else currently) had one real bug
   fix from this pass: the period label (e.g. "2021 — The Beginning")
   was unconditionally `text-accent` for every entry; the reference only
@@ -433,7 +437,18 @@ of its own:
   normal square cards, and Impact/Stewardship share the remaining
   column as two stacked compact cards (small square bullet instead of
   an `IconBadge`, smaller type) — `ValueCard`/`CompactValueCard` in
-  `about/page.tsx` implement the two treatments.
+  `about/page.tsx` implement the two treatments. This closing `Section`
+  uses `pb-8 md:pb-40` rather than the sitewide-default bottom padding
+  (`pb-20 md:pb-40`, the same value every other `theme-dark-fixed` page
+  leaves untouched on its final section): on mobile, that default 80px
+  stacked with the root wrapper's own `pb-32` (128px, there to recreate
+  Footer's cancelled `mt-32` — see "Sitewide dark theme" above) to leave
+  ~200px of empty space before the footer, visibly excessive on a short
+  mobile viewport. Reduced to 80px total (`pb-8` + the wrapper's 128px)
+  for mobile only; the `md:pb-40` desktop value is untouched since the
+  gap wasn't flagged there. This is a page-specific override, not a
+  sitewide convention change — every other page's final section still
+  uses the default.
 - The Journey section sits in an alternating band via
   `outerClassName="bg-ink/5 border-y border-line"` — reusing the same
   "5%-opacity `ink` overlay on a dark background" technique already
