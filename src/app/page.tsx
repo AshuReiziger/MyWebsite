@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { Section, SectionHeading } from "@/components/Section";
 import { CapabilityCard, type Capability } from "@/components/CapabilityCard";
@@ -107,12 +106,14 @@ export default function Home() {
           </div>
           <HeroReveal delay={0.15}>
             <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-gradient-to-br from-accent/30 via-paper to-paper">
-              <Image
-                src="/images/reiziger-ashu-portrait.jpg"
-                alt="Reiziger Ashu"
-                fill
-                priority
-                className="object-cover"
+              <video
+                src="/videos/reiziger-ashu-hero.mp4"
+                poster="/images/reiziger-ashu-hero-poster.jpg"
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="absolute inset-0 h-full w-full object-cover"
               />
             </div>
           </HeroReveal>

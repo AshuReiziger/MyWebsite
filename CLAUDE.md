@@ -205,17 +205,27 @@ confirmed Iknite Studio pattern in `docs/DESIGN-REFERENCE-AUDIT.md` §1.5.
 Apply the same treatment to any future image-based card grid (e.g. a Team
 or additional Portfolio component) for visual consistency.
 
-## Home page hero portrait
+## Home page hero media
 
 `src/app/page.tsx`'s hero image slot (previously the `from-accent/30
 via-paper to-paper` gradient placeholder, same as every other empty
-image slot on the site) now renders a real portrait of Reiziger Ashu via
-`next/image`, at `public/images/reiziger-ashu-portrait.jpg`. The
-gradient classes were kept on the wrapping `div` as a fallback backdrop
-(harmless — the photo is opaque and covers it via `fill` + `object-cover`)
-rather than removed, matching `WorkImage.tsx`'s established
-"gradient-behind, real-image-on-top" layering convention elsewhere in the
-codebase.
+image slot on the site) briefly held a real portrait of Reiziger Ashu
+via `next/image` before being swapped for a looping background video
+per direct request: a plain `<video>` element (not `next/image` — video
+isn't covered by that component) at `public/videos/
+reiziger-ashu-hero.mp4`, `autoPlay muted loop playsInline` (required
+combination for autoplay to actually work on mobile Safari), with
+`poster="/images/reiziger-ashu-hero-poster.jpg"` (first frame,
+extracted with `ffmpeg -update 1 -frames:v 1`) shown while it loads.
+Sized with `absolute inset-0 h-full w-full object-cover` inside the same
+`relative aspect-[4/5] overflow-hidden` wrapper div used for every other
+hero/gallery slot, so the video's native 9:16 crops to fit exactly like
+`next/image`'s `fill` + `object-cover` would. The gradient classes stay
+on the wrapper as a fallback backdrop for the same reason as elsewhere.
+The still portrait photo remains at `public/images/
+reiziger-ashu-portrait.jpg`, unused but not deleted, in case a static
+image is wanted again later (e.g. as the `poster` for a future video, or
+back as the hero itself).
 
 ## Sitewide dark theme (`theme-dark-fixed`)
 
