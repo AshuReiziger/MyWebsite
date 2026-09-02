@@ -100,7 +100,7 @@ export default function AboutPage() {
         </blockquote>
       </Section>
 
-      <div className="group relative mb-[10px] mt-16 aspect-[4/5] w-full overflow-hidden bg-gradient-to-br from-accent/30 via-paper to-paper md:aspect-auto md:h-screen">
+      <div className="group relative mt-16 aspect-[4/5] w-full overflow-hidden bg-gradient-to-br from-accent/30 via-paper to-paper md:aspect-auto md:h-screen">
         <Image
           src="/images/reiziger-ashu-portrait.jpg"
           alt="Reiziger Ashu"
@@ -109,7 +109,7 @@ export default function AboutPage() {
         />
       </div>
 
-      <Section outerClassName="bg-ink/5 border-y border-line" className="pb-20 pt-0 md:pb-40 md:pt-0">
+      <Section outerClassName="bg-ink/5 border-y border-line" className="pb-20 pt-[10px] md:pb-40">
         <div className="grid gap-10 md:grid-cols-[1fr_2fr]">
           <div>
             <h3 className="font-display text-2xl font-bold tracking-tight">The Journey</h3>

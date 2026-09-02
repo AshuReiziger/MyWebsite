@@ -417,14 +417,13 @@ of its own:
   defeats "full width" — with the intro `Section` above it losing its
   touching `pb` (`pb-0 md:pb-0`) so the image butts directly against
   the quote above with no gap. Below the image, the gap to the Journey
-  `Section` is a literal `mb-[10px]` on the image's own wrapper (an
-  explicit pixel value, not a spacing-scale step, per direct request
-  for "about 10px" — raised from an initial 5px — rather than the flush
-  zero-gap used above it) — the Journey Section's `pt-0 md:pt-0` stays,
-  since the gap lives on the image side of that boundary, not the
-  Section's own padding; its bottom padding is unchanged
-  (`pb-20 md:pb-40`) since only the shared edge with the image needed
-  adjusting. The image also carries the same `grayscale` →
+  `Section` lives on the Journey Section's own `pt-[10px]` (moved there
+  from an earlier attempt that put it on the image's own `mb-[10px]` —
+  the visible gap looked identical either way, but the user traced a
+  separate mobile spacing complaint to *this* boundary and asked for
+  the pixel value to live on the Journey Section's side instead, so it
+  reads as that section's own top inset rather than a trailing margin
+  hanging off the image). The image also carries the same `grayscale` →
   `group-hover:grayscale-0` treatment as `WorkCard.tsx` (desaturated by
   default, full color on hover — the wrapping `div` is `group`).
 - `Timeline.tsx` (shared with nowhere else currently) had one real bug
