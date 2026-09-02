@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { Section, SectionHeading } from "@/components/Section";
 import { Timeline, type TimelineEntry } from "@/components/Timeline";
 import { IconBadge } from "@/components/icons";
@@ -97,7 +98,14 @@ export default function AboutPage() {
           &ldquo;I didn&apos;t begin designing because I wanted to make things look good. I began
           because I became fascinated by the power of ideas.&rdquo;
         </blockquote>
-        <div className="mx-auto mt-16 aspect-[16/9] w-full max-w-3xl overflow-hidden rounded-2xl border border-line bg-gradient-to-br from-accent/30 via-paper to-paper" />
+        <div className="relative mt-16 aspect-[989/1280] w-full overflow-hidden rounded-2xl border border-line bg-gradient-to-br from-accent/30 via-paper to-paper">
+          <Image
+            src="/images/reiziger-ashu-portrait.jpg"
+            alt="Reiziger Ashu"
+            fill
+            className="object-cover"
+          />
+        </div>
       </Section>
 
       <Section outerClassName="bg-ink/5 border-y border-line">

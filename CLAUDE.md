@@ -391,9 +391,19 @@ of its own:
   in `about/page.tsx` are unchanged.
 - The reference's portrait photo was a Google-hosted AI-tool asset URL,
   not a real photo of Reiziger Ashu with rights to embed — the hero
-  instead gets the same gradient-placeholder treatment used for every
+  initially got the same gradient-placeholder treatment used for every
   other empty image slot on the site (`from-accent/30 via-paper
-  to-paper`), ready to swap for a real photo later.
+  to-paper`), later swapped for the real portrait at `public/images/
+  reiziger-ashu-portrait.jpg` (see "Home page hero media" above — same
+  file, reused here). Unlike every other image slot on the site, this
+  one is deliberately **not** cropped to a fixed `aspect-*` box: per
+  direct request it spans the full section width with no `max-w`, and
+  the container's `aspect-[989/1280]` matches the photo's own native
+  pixel dimensions exactly, so the full portrait renders uncropped
+  top-to-bottom rather than being cut down to fit an arbitrary ratio —
+  a deliberately different treatment from the `fill`+`object-cover`
+  crop-to-box pattern used everywhere else (`WorkImage.tsx`, the home
+  hero), not a bug if it looks unusually tall.
 - `Timeline.tsx` (shared with nowhere else currently) had one real bug
   fix from this pass: the period label (e.g. "2021 — The Beginning")
   was unconditionally `text-accent` for every entry; the reference only
