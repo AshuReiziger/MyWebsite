@@ -395,15 +395,18 @@ of its own:
   other empty image slot on the site (`from-accent/30 via-paper
   to-paper`), later swapped for the real portrait at `public/images/
   reiziger-ashu-portrait.jpg` (see "Home page hero media" above — same
-  file, reused here). Unlike every other image slot on the site, this
-  one is deliberately **not** cropped to a fixed `aspect-*` box: per
-  direct request it spans the full section width with no `max-w`, and
-  the container's `aspect-[989/1280]` matches the photo's own native
-  pixel dimensions exactly, so the full portrait renders uncropped
-  top-to-bottom rather than being cut down to fit an arbitrary ratio —
-  a deliberately different treatment from the `fill`+`object-cover`
-  crop-to-box pattern used everywhere else (`WorkImage.tsx`, the home
-  hero), not a bug if it looks unusually tall.
+  file, reused here). The container spans the full section width (no
+  `max-w`) and is `h-screen` (100% of the *viewport* height, not the
+  photo's own aspect ratio — an earlier pass tried sizing the container
+  to the photo's native `989/1280` ratio so it rendered fully uncropped,
+  but that produced a container far taller than any viewport and wasn't
+  what was meant by "full width and height"; `h-screen` is what actually
+  reads as a full-viewport band). The photo is `object-cover` (cropped
+  to fill, same as every other image slot) with
+  `object-[50%_22%]` rather than the default `object-center`, biasing
+  the crop toward the top ~22% of the frame so the face stays in view
+  instead of being cropped out when the wide/short viewport-shaped box
+  crops most of this portrait-oriented photo's height away.
 - `Timeline.tsx` (shared with nowhere else currently) had one real bug
   fix from this pass: the period label (e.g. "2021 — The Beginning")
   was unconditionally `text-accent` for every entry; the reference only

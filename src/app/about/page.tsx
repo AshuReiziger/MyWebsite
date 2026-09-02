@@ -98,12 +98,12 @@ export default function AboutPage() {
           &ldquo;I didn&apos;t begin designing because I wanted to make things look good. I began
           because I became fascinated by the power of ideas.&rdquo;
         </blockquote>
-        <div className="relative mt-16 aspect-[989/1280] w-full overflow-hidden rounded-2xl border border-line bg-gradient-to-br from-accent/30 via-paper to-paper">
+        <div className="relative mt-16 h-screen w-full overflow-hidden rounded-2xl border border-line bg-gradient-to-br from-accent/30 via-paper to-paper">
           <Image
             src="/images/reiziger-ashu-portrait.jpg"
             alt="Reiziger Ashu"
             fill
-            className="object-cover"
+            className="object-cover object-[50%_22%]"
           />
         </div>
       </Section>
