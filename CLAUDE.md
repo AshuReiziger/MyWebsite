@@ -205,6 +205,18 @@ confirmed Iknite Studio pattern in `docs/DESIGN-REFERENCE-AUDIT.md` §1.5.
 Apply the same treatment to any future image-based card grid (e.g. a Team
 or additional Portfolio component) for visual consistency.
 
+## Home page hero portrait
+
+`src/app/page.tsx`'s hero image slot (previously the `from-accent/30
+via-paper to-paper` gradient placeholder, same as every other empty
+image slot on the site) now renders a real portrait of Reiziger Ashu via
+`next/image`, at `public/images/reiziger-ashu-portrait.jpg`. The
+gradient classes were kept on the wrapping `div` as a fallback backdrop
+(harmless — the photo is opaque and covers it via `fill` + `object-cover`)
+rather than removed, matching `WorkImage.tsx`'s established
+"gradient-behind, real-image-on-top" layering convention elsewhere in the
+codebase.
+
 ## Sitewide dark theme (`theme-dark-fixed`)
 
 Every page on the site is permanently dark — not tied to the visitor's

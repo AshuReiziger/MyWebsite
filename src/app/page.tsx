@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Section, SectionHeading } from "@/components/Section";
 import { CapabilityCard, type Capability } from "@/components/CapabilityCard";
@@ -105,7 +106,15 @@ export default function Home() {
             </HeroReveal>
           </div>
           <HeroReveal delay={0.15}>
-            <div className="aspect-[4/5] rounded-2xl bg-gradient-to-br from-accent/30 via-paper to-paper" />
+            <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-gradient-to-br from-accent/30 via-paper to-paper">
+              <Image
+                src="/images/reiziger-ashu-portrait.jpg"
+                alt="Reiziger Ashu"
+                fill
+                priority
+                className="object-cover"
+              />
+            </div>
           </HeroReveal>
         </div>
       </Section>
