@@ -406,7 +406,17 @@ of its own:
   `object-[50%_22%]` rather than the default `object-center`, biasing
   the crop toward the top ~22% of the frame so the face stays in view
   instead of being cropped out when the wide/short viewport-shaped box
-  crops most of this portrait-oriented photo's height away.
+  crops most of this portrait-oriented photo's height away. It's
+  rendered as a direct child of the page's root div rather than inside
+  a `Section` — `Section`'s own `max-w-[1920px]`/`px-3 md:px-10` inner
+  container would otherwise inset it from the viewport edges, which
+  defeats "full width" — with the intro `Section` above it and the
+  Journey `Section` below it losing their touching `pb`/`pt` (the intro
+  Section's `pb-0 md:pb-0`, the Journey Section's `pt-0 md:pt-0`) so the
+  image butts directly against both neighbors with no gap. The
+  Journey Section's own bottom padding is preserved
+  (`pb-20 md:pb-40`) since only the *shared edge* with the image needed
+  closing, not its spacing from the section after it.
 - `Timeline.tsx` (shared with nowhere else currently) had one real bug
   fix from this pass: the period label (e.g. "2021 — The Beginning")
   was unconditionally `text-accent` for every entry; the reference only

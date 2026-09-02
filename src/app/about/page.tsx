@@ -92,23 +92,24 @@ export default function AboutPage() {
 
   return (
     <div className="theme-dark-fixed -mb-32 bg-paper pb-32 text-ink">
-      <Section className="pt-16 text-center md:pt-24">
+      <Section className="pb-0 pt-16 text-center md:pb-0 md:pt-24">
         <SectionHeading centered divider title="The Designer Behind the Work" />
         <blockquote className="mx-auto mt-10 max-w-2xl border-l-2 border-accent pl-6 text-left font-display text-xl italic">
           &ldquo;I didn&apos;t begin designing because I wanted to make things look good. I began
           because I became fascinated by the power of ideas.&rdquo;
         </blockquote>
-        <div className="relative mt-16 h-screen w-full overflow-hidden rounded-2xl border border-line bg-gradient-to-br from-accent/30 via-paper to-paper">
-          <Image
-            src="/images/reiziger-ashu-portrait.jpg"
-            alt="Reiziger Ashu"
-            fill
-            className="object-cover object-[50%_22%]"
-          />
-        </div>
       </Section>
 
-      <Section outerClassName="bg-ink/5 border-y border-line">
+      <div className="relative mt-16 h-screen w-full overflow-hidden bg-gradient-to-br from-accent/30 via-paper to-paper">
+        <Image
+          src="/images/reiziger-ashu-portrait.jpg"
+          alt="Reiziger Ashu"
+          fill
+          className="object-cover object-[50%_22%]"
+        />
+      </div>
+
+      <Section outerClassName="bg-ink/5 border-y border-line" className="pb-20 pt-0 md:pb-40 md:pt-0">
         <div className="grid gap-10 md:grid-cols-[1fr_2fr]">
           <div>
             <h3 className="font-display text-2xl font-bold tracking-tight">The Journey</h3>
