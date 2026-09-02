@@ -410,13 +410,19 @@ of its own:
   rendered as a direct child of the page's root div rather than inside
   a `Section` — `Section`'s own `max-w-[1920px]`/`px-3 md:px-10` inner
   container would otherwise inset it from the viewport edges, which
-  defeats "full width" — with the intro `Section` above it and the
-  Journey `Section` below it losing their touching `pb`/`pt` (the intro
-  Section's `pb-0 md:pb-0`, the Journey Section's `pt-0 md:pt-0`) so the
-  image butts directly against both neighbors with no gap. The
-  Journey Section's own bottom padding is preserved
-  (`pb-20 md:pb-40`) since only the *shared edge* with the image needed
-  closing, not its spacing from the section after it.
+  defeats "full width" — with the intro `Section` above it losing its
+  touching `pb` (`pb-0 md:pb-0`) so the image butts directly against
+  the quote above with no gap. Below the image, the gap to the Journey
+  `Section` is a literal `mb-[5px]` on the image's own wrapper (an
+  explicit pixel value, not a spacing-scale step, per direct request
+  for "about 5px" rather than the flush zero-gap used above it) — the
+  Journey Section's `pt-0 md:pt-0` stays, since the 5px lives on the
+  image side of that boundary, not the Section's own padding; its
+  bottom padding is unchanged (`pb-20 md:pb-40`) since only the shared
+  edge with the image needed adjusting. The image also carries the same
+  `grayscale` → `group-hover:grayscale-0` treatment as `WorkCard.tsx`
+  (desaturated by default, full color on hover — the wrapping `div` is
+  `group`).
 - `Timeline.tsx` (shared with nowhere else currently) had one real bug
   fix from this pass: the period label (e.g. "2021 — The Beginning")
   was unconditionally `text-accent` for every entry; the reference only

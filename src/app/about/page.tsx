@@ -100,12 +100,12 @@ export default function AboutPage() {
         </blockquote>
       </Section>
 
-      <div className="relative mt-16 h-screen w-full overflow-hidden bg-gradient-to-br from-accent/30 via-paper to-paper">
+      <div className="group relative mt-16 mb-[5px] h-screen w-full overflow-hidden bg-gradient-to-br from-accent/30 via-paper to-paper">
         <Image
           src="/images/reiziger-ashu-portrait.jpg"
           alt="Reiziger Ashu"
           fill
-          className="object-cover object-[50%_22%]"
+          className="object-cover object-[50%_22%] grayscale transition-[filter] duration-700 group-hover:grayscale-0"
         />
       </div>
 
