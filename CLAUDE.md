@@ -134,16 +134,17 @@ also drove the About page): `ink` `#ffffff`, `paper` `#0a0a0a`, `muted`
 `prefers-color-scheme: dark` media query and `.theme-dark-fixed` carry
 these same five values, kept in sync — update both blocks together.
 Light-mode values are unaffected by this and unchanged.
-- `font-display` (**Libre Caslon Text**, serif — only ships weights 400
-  and 700, no 500/600) for headings, `font-body` (**Hanken Grotesk**,
-  variable, full weight range) for body text. Because the display font
-  has only two weights, headings must use `font-normal` or `font-bold`
-  only — never `font-medium`/`font-semibold` on anything with
-  `font-display`, since that weight doesn't exist in the loaded font
-  file and will silently fall back. Hierarchy: hero `h1`s are
-  `font-bold` at a large size (no italic/extra-bold treatment — this
-  font doesn't have those), card/section titles are `font-bold` at
-  smaller sizes.
+- `font-display` (**Montserrat**, sans-serif, variable — full weight
+  range, both normal and italic styles) for headings, `font-body`
+  (**Hanken Grotesk**, variable, full weight range) for body text. Both
+  are now sans-serif — there is deliberately no serif font on the site
+  as of this pass (see "Font/palette history" below). Since Montserrat
+  ships the full weight range (unlike the earlier two-weight-only Libre
+  Caslon Text), `font-medium`/`font-semibold` are safe to use on
+  `font-display` elements now, though the existing headings still stick
+  to `font-normal`/`font-bold` since nothing has needed a new weight
+  yet. Hierarchy: hero `h1`s are `font-bold` at a large size, card/
+  section titles are `font-bold` at smaller sizes.
 
 **Hero `h1`/subtext `p` sizing is the browser's own UA default, not a
 bespoke scale.** Every page's hero `<h1>` (and, on the pages that route
@@ -180,28 +181,39 @@ stage `h1` and its results stage `h1`; the results stage's own subtext
 `border-l-2 border-accent pl-6` treatment on Contact/Build) was left
 untouched — only the size utilities changed.
 
-**Source of truth:** this entire token set — colors, fonts, the
-icon-badge card style, the dark "Ventures" band, the underline-style
-contact form, the dot-timeline with a highlighted current node — comes
-directly from a Figma design (Google Stitch export) the user supplied as
-full-resolution page screenshots, including a dedicated style-guide frame
-("Strategic Narrative") with exact hex values and font names. Treat those
-screenshots as the design spec going forward, ranking above earlier
-iterations in this file's history below. **Do not revert to Fraunces,
-Montserrat, or the orange/warm-neutral palette** without the user
-explicitly asking to change direction again.
+**Source of truth:** the colors, the icon-badge card style, the dark
+"Ventures" band, the underline-style contact form, and the dot-timeline
+with a highlighted current node all come directly from a Figma design
+(Google Stitch export) the user supplied as full-resolution page
+screenshots, including a dedicated style-guide frame ("Strategic
+Narrative") with exact hex values. Treat those screenshots as the
+design spec for color/layout going forward. **The font choice is a
+deliberate, later exception to that Figma spec** — see the history
+below — so don't use the screenshots' Libre Caslon Text as a reason to
+revert the font. **Do not revert to Fraunces or the orange/warm-neutral
+palette** without the user explicitly asking to change direction again.
 
-**Font/palette history (for context only, not to be reintroduced):**
-shipped first with Fraunces (serif) + a warm orange accent, after
-reverse-engineering three reference sites (see
+**Font/palette history (for context only, not to be reintroduced except
+where noted):** shipped first with Fraunces (serif) + a warm orange
+accent, after reverse-engineering three reference sites (see
 `docs/DESIGN-REFERENCE-AUDIT.md`) — a serif-display + sans-body pairing
 confirmed at Iknite Studio (Marcellus + Outfit). Then swapped to
 Montserrat (sans) per explicit request for a Montserrat/Gilroy-family
 font (Gilroy itself isn't available via `next/font/google` — commercial
-font, no Google Fonts distribution). Then superseded again by the Figma
-design above, which uses a serif display font once more (Libre Caslon
-Text) but is a different, more specific source than the earlier
-audit-driven guess — don't conflate the two serif choices.
+font, no Google Fonts distribution). Then superseded by the Figma
+design above, which used a serif display font instead (Libre Caslon
+Text) — a different, more specific source than the earlier audit-driven
+guess, not to be conflated with the first Fraunces pass. **Then reverted
+back to Montserrat** per a second explicit request, this time keeping
+every other Figma-sourced token (colors, layout, icon/card system)
+unchanged — only `font-display` changed, from Libre Caslon Text back to
+Montserrat, wired the same way `font-body`/Hanken Grotesk already was
+(a variable Google font via `next/font/google`, no need for a fixed
+`weight` array). `h1`–`h4`'s CSS fallback stack (`globals.css`) changed
+from `Georgia, serif` to `Arial, Helvetica, sans-serif` to match — this
+matters for `global-error.tsx` specifically, since it can't use
+`next/font` variables (see "Error, offline, and maintenance states"
+below) and so actually renders its fallback font on a real failure.
 
 ## Motion
 
@@ -646,8 +658,9 @@ different problem — don't conflate them:
   `import "./globals.css"` directly, since it replaces `layout.tsx`
   entirely rather than nesting inside it — `next/font` variables from
   `layout.tsx` won't be defined here, so headings silently fall back to
-  Georgia. This is expected and fine for a catastrophic-failure screen;
-  don't try to duplicate the font loading here.
+  the CSS fallback stack (`Arial, Helvetica, sans-serif`, see "Design
+  tokens" above). This is expected and fine for a catastrophic-failure
+  screen; don't try to duplicate the font loading here.
 - **`src/app/maintenance/page.tsx`** + **`src/proxy.ts`** — a deliberate,
   manually-toggled "site is down for scheduled work" state, gated by the
   `MAINTENANCE_MODE` environment variable. When set to the string
