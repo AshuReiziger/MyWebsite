@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { Section, SectionHeading } from "@/components/Section";
 import { Timeline, type TimelineEntry } from "@/components/Timeline";
 import { IconBadge } from "@/components/icons";
@@ -91,16 +92,24 @@ export default function AboutPage() {
 
   return (
     <div className="theme-dark-fixed -mb-32 bg-paper pb-32 text-ink">
-      <Section className="pt-16 text-center md:pt-24">
+      <Section className="pb-0 pt-16 text-center md:pb-0 md:pt-24">
         <SectionHeading centered divider title="The Designer Behind the Work" />
         <blockquote className="mx-auto mt-10 max-w-2xl border-l-2 border-accent pl-6 text-left font-display text-xl italic">
           &ldquo;I didn&apos;t begin designing because I wanted to make things look good. I began
           because I became fascinated by the power of ideas.&rdquo;
         </blockquote>
-        <div className="mx-auto mt-16 aspect-[16/9] w-full max-w-3xl overflow-hidden rounded-2xl border border-line bg-gradient-to-br from-accent/30 via-paper to-paper" />
       </Section>
 
-      <Section outerClassName="bg-ink/5 border-y border-line">
+      <div className="group relative mt-16 aspect-[4/5] w-full overflow-hidden bg-gradient-to-br from-accent/30 via-paper to-paper md:aspect-auto md:h-screen">
+        <Image
+          src="/images/reiziger-ashu-portrait.jpg"
+          alt="Reiziger Ashu"
+          fill
+          className="object-cover object-[50%_22%] grayscale transition-[filter] duration-700 group-hover:grayscale-0"
+        />
+      </div>
+
+      <Section outerClassName="bg-ink/5 border-y border-line" className="pb-20 pt-[10px] md:pb-40">
         <div className="grid gap-10 md:grid-cols-[1fr_2fr]">
           <div>
             <h3 className="font-display text-2xl font-bold tracking-tight">The Journey</h3>
@@ -113,7 +122,7 @@ export default function AboutPage() {
         </div>
       </Section>
 
-      <Section className="pt-0">
+      <Section className="pb-8 pt-0 md:pb-40">
         <SectionHeading centered divider title="What guides my work" />
         <div className="mt-12 grid auto-rows-[minmax(220px,auto)] grid-cols-1 gap-6 md:grid-cols-3">
           <ValueCard value={purpose} className="md:col-span-2" />

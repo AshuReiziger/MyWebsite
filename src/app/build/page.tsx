@@ -77,18 +77,19 @@ function OutlinedLink({ href, children }: { href: string; children: ReactNode })
 
 export default function BuildPage() {
   return (
-    <div className="mx-auto max-w-[1920px] px-3 py-16 md:px-10 md:py-24">
-      <div className="grid gap-12 md:grid-cols-[220px_1fr]">
+    <div className="theme-dark-fixed -mb-32 bg-paper pb-32 text-ink">
+      <div className="mx-auto max-w-[1920px] px-3 py-16 md:px-10 md:py-24">
+        <div className="grid gap-12 md:grid-cols-[220px_1fr]">
         <BuildSidebar />
 
         <div className="flex flex-col gap-20">
           <div>
-            <h1 className="border-l-2 border-accent pl-6 font-display text-4xl uppercase leading-tight tracking-tight md:text-5xl">
+            <h1 className="border-l-2 border-accent pl-6 font-display text-[2em] uppercase leading-tight tracking-tight">
               <span className="font-bold">I don&apos;t only work on projects.</span>
               <br />
               <span className="text-muted">I build platforms.</span>
             </h1>
-            <p className="mt-6 max-w-xl text-lg text-muted">
+            <p className="mt-6 max-w-xl text-muted">
               My practice extends beyond individual design outputs. I engineer ecosystems —
               ventures and educational platforms designed to scale strategic clarity and
               develop the next generation of creative leadership.
@@ -171,6 +172,7 @@ export default function BuildPage() {
             </div>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

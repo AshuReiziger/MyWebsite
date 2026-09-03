@@ -9,15 +9,17 @@ export const metadata: Metadata = {
 
 export default function SpeakingPage() {
   return (
-    <Section className="pt-16 md:pt-24">
-      <SectionHeading
-        eyebrow="Teach"
-        title="Invite Me to Speak"
-        description="Tell me about your event and what you're hoping to cover — I'll follow up to confirm fit and availability."
-      />
-      <div className="mt-12 max-w-2xl">
-        <SpeakingForm />
-      </div>
-    </Section>
+    <div className="theme-dark-fixed -mb-32 bg-paper pb-32 text-ink">
+      <Section className="pt-16 md:pt-24">
+        <SectionHeading
+          eyebrow="Teach"
+          title="Invite Me to Speak"
+          description="Tell me about your event and what you're hoping to cover — I'll follow up to confirm fit and availability."
+        />
+        <div className="mt-12 max-w-2xl">
+          <SpeakingForm />
+        </div>
+      </Section>
+    </div>
   );
 }

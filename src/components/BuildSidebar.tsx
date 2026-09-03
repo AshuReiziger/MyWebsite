@@ -27,7 +27,7 @@ export function BuildSidebar() {
   return (
     <aside className="md:sticky md:top-24 md:self-start">
       <div className="flex items-center gap-3">
-        <div className="h-14 w-14 shrink-0 rounded-xl bg-gradient-to-br from-accent/60 to-ink" />
+        <div className="h-14 w-14 shrink-0 rounded-xl bg-gradient-to-br from-accent/60 to-paper" />
         <div>
           <p className="font-display text-base tracking-tight">Reiziger Ashu</p>
           <p className="text-sm text-muted">Designer &amp; Strategist</p>

@@ -76,12 +76,12 @@ export default function Home() {
               </p>
             </HeroReveal>
             <HeroReveal delay={0.1}>
-              <h1 className="mt-4 font-display text-4xl uppercase leading-tight tracking-tight md:text-6xl">
+              <h1 className="mt-4 font-display text-[2em] uppercase leading-tight tracking-tight">
                 I don&apos;t just design things. I design what they can become.
               </h1>
             </HeroReveal>
             <HeroReveal delay={0.2}>
-              <p className="mt-6 max-w-2xl text-lg text-muted md:text-xl">
+              <p className="mt-6 max-w-2xl text-muted">
                 I&apos;m Reiziger Ashu — a designer, strategist, educator, and creative leader
                 passionate about using design to help people and organizations discover who
                 they are, communicate what they believe, and build what they envision.
@@ -105,7 +105,17 @@ export default function Home() {
             </HeroReveal>
           </div>
           <HeroReveal delay={0.15}>
-            <div className="aspect-[4/5] rounded-2xl bg-gradient-to-br from-accent/30 via-paper to-paper" />
+            <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-gradient-to-br from-accent/30 via-paper to-paper">
+              <video
+                src="/videos/reiziger-ashu-hero.mp4"
+                poster="/images/reiziger-ashu-hero-poster.jpg"
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+            </div>
           </HeroReveal>
         </div>
       </Section>

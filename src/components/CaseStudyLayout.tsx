@@ -36,7 +36,7 @@ export function CaseStudyLayout({
       <div className="mx-auto max-w-[1920px] px-3 pt-16 md:px-10 md:pt-24">
         <div className="grid items-center gap-8 lg:grid-cols-12">
           <div className="order-2 flex flex-col gap-8 lg:order-1 lg:col-span-5">
-            <h1 className="font-display text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
+            <h1 className="font-display text-[2em] font-bold tracking-tight">
               {frontmatter.title}
             </h1>
             <div className="flex flex-wrap gap-3">
@@ -49,7 +49,7 @@ export function CaseStudyLayout({
                 </span>
               ))}
             </div>
-            <p className="max-w-xl text-lg leading-relaxed text-muted">{frontmatter.summary}</p>
+            <p className="max-w-xl leading-relaxed text-muted">{frontmatter.summary}</p>
           </div>
           <div className="order-1 lg:order-2 lg:col-span-7">
             <WorkImage

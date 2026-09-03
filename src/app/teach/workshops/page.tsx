@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function WorkshopsPage() {
   return (
-    <>
+    <div className="theme-dark-fixed -mb-32 bg-paper pb-32 text-ink">
       <Section className="pt-16 md:pt-24">
         <SectionHeading
           eyebrow="Teach"
@@ -63,6 +63,6 @@ export default function WorkshopsPage() {
           </Link>
         </div>
       </Section>
-    </>
+    </div>
   );
 }

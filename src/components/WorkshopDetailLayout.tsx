@@ -5,19 +5,19 @@ import { HeroReveal } from "@/components/HeroReveal";
 
 export function WorkshopDetailLayout({ workshop }: { workshop: WorkshopDetail }) {
   return (
-    <>
+    <div className="theme-dark-fixed -mb-32 bg-paper pb-32 text-ink">
       <Section className="pt-16 md:pt-24">
         <div className="mx-auto max-w-2xl text-center">
           <HeroReveal delay={0}>
             <p className="text-sm font-semibold uppercase tracking-widest text-accent">Workshop</p>
           </HeroReveal>
           <HeroReveal delay={0.1}>
-            <h1 className="mt-4 font-display text-4xl font-bold leading-tight tracking-tight md:text-5xl">
+            <h1 className="mt-4 font-display text-[2em] font-bold leading-tight tracking-tight">
               {workshop.title}
             </h1>
           </HeroReveal>
           <HeroReveal delay={0.2}>
-            <p className="mt-6 text-lg text-muted">{workshop.subhead}</p>
+            <p className="mt-6 text-muted">{workshop.subhead}</p>
           </HeroReveal>
           <HeroReveal delay={0.3}>
             <Link
@@ -128,6 +128,6 @@ export function WorkshopDetailLayout({ workshop }: { workshop: WorkshopDetail })
           </Link>
         </p>
       </Section>
-    </>
+    </div>
   );
 }

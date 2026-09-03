@@ -61,14 +61,14 @@ const SPEAKING_TOPICS = [
 
 export default function TeachPage() {
   return (
-    <>
+    <div className="theme-dark-fixed -mb-32 bg-paper pb-32 text-ink">
       <Section className="pt-16 md:pt-24">
         <div className="grid gap-10 md:grid-cols-2 md:items-center">
           <div>
-            <h1 className="font-display text-4xl uppercase leading-tight tracking-tight md:text-5xl">
+            <h1 className="font-display text-[2em] uppercase leading-tight tracking-tight">
               I believe knowledge should multiply.
             </h1>
-            <p className="mt-6 max-w-md text-lg text-muted">
+            <p className="mt-6 max-w-md text-muted">
               Everything I learn shouldn&apos;t end with me. Part of my work is helping other
               creatives develop the thinking, skills, systems, and character required to use
               their gifts meaningfully.
@@ -143,6 +143,6 @@ export default function TeachPage() {
           </Link>
         </div>
       </Section>
-    </>
+    </div>
   );
 }

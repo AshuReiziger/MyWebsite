@@ -145,6 +145,41 @@ Light-mode values are unaffected by this and unchanged.
   font doesn't have those), card/section titles are `font-bold` at
   smaller sizes.
 
+**Hero `h1`/subtext `p` sizing is the browser's own UA default, not a
+bespoke scale.** Every page's hero `<h1>` (and, on the pages that route
+their heading through `SectionHeading` instead — Work, Think, About's
+intro, etc. — that component's own `h2`/`p` sizing is unrelated and
+untouched) previously carried a bespoke, per-page responsive scale
+(`text-4xl md:text-5xl`/`text-6xl`/`lg:text-6xl`, `text-3xl` on
+`AssessmentFlow`'s results-stage heading) and the accompanying subtext
+`<p>` carried `text-lg`/`md:text-xl`. Tailwind's preflight resets
+headings to `font-size: inherit`, so simply deleting those classes would
+have shrunk hero `h1`s to body-text size instead of the browser's native
+~2em — the explicit fix is `text-[2em]` on every hero `h1` (flat, no
+responsive breakpoint — this is deliberately not a fluid/responsive
+scale, since "standard/browser-default" means one fixed size) and
+dropping `text-lg`/`text-xl` off the subtext `p` entirely so it falls
+back to the same base size as regular body copy. This is a real,
+explicit request to standardize hero typography to browser-default
+sizing sitewide — don't reintroduce the old bespoke `text-4xl`+
+responsive scale without the user asking to change direction again. All
+17 hero `h1` instances got this treatment: `page.tsx` (Home),
+`about` has no raw hero `h1` (uses `SectionHeading`, unaffected),
+`work/[slug]` (`CaseStudyLayout.tsx`), `think/[slug]/page.tsx`,
+`teach/page.tsx`, `teach/mentorship/[slug]`
+(`MentorshipDetailLayout.tsx`), `teach/workshops/[slug]`
+(`WorkshopDetailLayout.tsx`), `resources/page.tsx`,
+`resources/[slug]` (`ResourceDetailLayout.tsx`),
+`resources/[slug]/assessment` (`AssessmentFlow.tsx` — both its intro
+stage `h1` and its results stage `h1`; the results stage's own subtext
+`p` already had no size utility, so it needed no change), `build/page.tsx`,
+`contact/page.tsx`, and the five error/offline/maintenance states
+(`not-found.tsx`, `error.tsx`, `global-error.tsx`, `offline/page.tsx`,
+`maintenance/page.tsx`). Non-size styling on each heading (uppercase,
+`leading-tight`, `tracking-tight`, `font-bold` where present, the
+`border-l-2 border-accent pl-6` treatment on Contact/Build) was left
+untouched — only the size utilities changed.
+
 **Source of truth:** this entire token set — colors, fonts, the
 icon-badge card style, the dark "Ventures" band, the underline-style
 contact form, the dot-timeline with a highlighted current node — comes
@@ -205,32 +240,79 @@ confirmed Iknite Studio pattern in `docs/DESIGN-REFERENCE-AUDIT.md` §1.5.
 Apply the same treatment to any future image-based card grid (e.g. a Team
 or additional Portfolio component) for visual consistency.
 
-## Home, Work, and About sections: dark theme (`theme-dark-fixed`)
+## Home page hero media
 
-`/`, `/work`, `/work/[slug]`, and `/about` are permanently dark — a
-deliberate art direction choice (`/work` from a screen-recording
-reference of `ulevus.com`'s Work section; the home page followed later
-per an updated Figma reference, applied to the whole page top-to-bottom
-rather than just the "Ventures" band it used previously; `/about` from
-a full HTML/CSS reference file, the first design reference this site
-received as literal markup rather than a screenshot — see "About page"
-below), not tied to the visitor's system light/dark preference.
-`Nav.tsx` matches: it applies `theme-dark-fixed` to its own `<header>`
-(plus an explicit `text-ink` so elements without their own color class —
-the logo, the mobile hamburger button — re-resolve to the new scope's
-color instead of the value inherited from `body`) whenever
-`usePathname()` is `/` or starts with `/work` or `/about`, via a small
-`isDarkRoute()` helper — the same per-route pattern already used for
-active-link highlighting. Footer stays its own always-
-dark global band regardless of route (see below). This is different
-from the site-wide `prefers-color-scheme` handling in
+`src/app/page.tsx`'s hero image slot (previously the `from-accent/30
+via-paper to-paper` gradient placeholder, same as every other empty
+image slot on the site) briefly held a real portrait of Reiziger Ashu
+via `next/image` before being swapped for a looping background video
+per direct request: a plain `<video>` element (not `next/image` — video
+isn't covered by that component) at `public/videos/
+reiziger-ashu-hero.mp4`, `autoPlay muted loop playsInline` (required
+combination for autoplay to actually work on mobile Safari), with
+`poster="/images/reiziger-ashu-hero-poster.jpg"` (first frame,
+extracted with `ffmpeg -update 1 -frames:v 1`) shown while it loads.
+Sized with `absolute inset-0 h-full w-full object-cover` inside the same
+`relative aspect-[4/5] overflow-hidden` wrapper div used for every other
+hero/gallery slot, so the video's native 9:16 crops to fit exactly like
+`next/image`'s `fill` + `object-cover` would. The gradient classes stay
+on the wrapper as a fallback backdrop for the same reason as elsewhere.
+The still portrait photo remains at `public/images/
+reiziger-ashu-portrait.jpg`, unused but not deleted, in case a static
+image is wanted again later (e.g. as the `poster` for a future video, or
+back as the hero itself).
+
+## Sitewide dark theme (`theme-dark-fixed`)
+
+Every page on the site is permanently dark — not tied to the visitor's
+system light/dark preference. This started as a deliberate art-direction
+choice scoped to `/`, `/work`, `/work/[slug]`, and `/about` (`/work` from
+a screen-recording reference of `ulevus.com`'s Work section; the home
+page followed later per an updated Figma reference, applied to the whole
+page top-to-bottom rather than just the "Ventures" band it used
+previously; `/about` from a full HTML/CSS reference file, the first
+design reference this site received as literal markup rather than a
+screenshot — see "About page" below), then was explicitly extended to
+every remaining page (Think, Teach and all its sub-pages, Resources and
+its detail/assessment pages, Build, Contact, and the 404/error/
+maintenance/offline states) per direct request. `Nav.tsx` matches: it
+applies `theme-dark-fixed` unconditionally to its own `<header>` (plus an
+explicit `text-ink` so elements without their own color class — the
+logo, the mobile hamburger button — re-resolve to the new scope's color
+instead of the value inherited from `body`) — there's no more per-route
+`isDarkRoute()` check now that every route is dark. Footer stays its own
+always-dark global band regardless of route (see below). This is
+different from the site-wide `prefers-color-scheme` handling in
 `globals.css`, which swaps `ink`/`paper`/etc. based on OS preference: the
 `.theme-dark-fixed` class (also in `globals.css`) overrides the same five
 token variables to their dark values unconditionally, so every `bg-ink`/
 `text-ink`/`text-muted`/`border-line`/`text-accent`/`bg-accent` utility
-inside it renders dark regardless of OS setting. Wrap a section's root
-in `theme-dark-fixed bg-paper text-ink` to opt it into this treatment —
-don't reach for raw hex values.
+inside it renders dark regardless of OS setting. Wrap a page's root in
+`theme-dark-fixed -mb-32 bg-paper pb-32 text-ink` to opt it into this
+treatment (the `-mb-32 pb-32` cancels Footer's `mt-32` gap — see below)
+— don't reach for raw hex values.
+
+Extending this to every remaining page turned out to be low-risk: a
+sitewide grep found zero raw/hardcoded Tailwind colors (`bg-white`,
+`text-gray-500`, etc.) anywhere in the codebase — every component already
+used the `ink`/`paper`/`muted`/`line`/`accent` token classes exclusively,
+so wrapping a page's root in `theme-dark-fixed` correctly re-themes
+everything inside it automatically. The `bg-ink ... text-paper` pattern
+used on every primary CTA button/pill sitewide is *intentionally*
+self-inverting — outside `theme-dark-fixed` it renders a dark button with
+light text, inside it the roles swap and it renders a light button with
+dark text — so those did not need touching. Two real issues did surface
+and got fixed while extending: `BuildSidebar.tsx`'s decorative gradient
+avatar used `to-ink` (the token-role-inversion gotcha below — fixed to
+`to-paper`), and `AssessmentFlow.tsx`'s unlock-modal backdrop used
+`bg-ink/55` as a dimming scrim, which would have inverted to a *light*
+overlay — fixed to a literal `bg-black/55` since a modal backdrop should
+always dim regardless of theme, not participate in the ink/paper swap.
+Also watch for Tailwind Typography's `.prose` modifier: `prose-neutral`
+hardcodes near-black text (it doesn't use CSS custom properties), so any
+`.prose` block on a `theme-dark-fixed` page must use `prose-invert`
+instead (see `CaseStudyLayout.tsx`, `ResourceDetailLayout.tsx`,
+`think/[slug]/page.tsx`) or its body text becomes unreadable dark-on-dark.
 
 Two gotchas this pattern introduces, both already handled in `WorkCard.tsx`
 and `CaseStudyLayout.tsx` — keep them in mind if either file is touched
@@ -344,9 +426,41 @@ of its own:
   in `about/page.tsx` are unchanged.
 - The reference's portrait photo was a Google-hosted AI-tool asset URL,
   not a real photo of Reiziger Ashu with rights to embed — the hero
-  instead gets the same gradient-placeholder treatment used for every
+  initially got the same gradient-placeholder treatment used for every
   other empty image slot on the site (`from-accent/30 via-paper
-  to-paper`), ready to swap for a real photo later.
+  to-paper`), later swapped for the real portrait at `public/images/
+  reiziger-ashu-portrait.jpg` (see "Home page hero media" above — same
+  file, reused here). The container spans the full section width (no
+  `max-w`) and is `h-screen` (100% of the *viewport* height, not the
+  photo's own aspect ratio — an earlier pass tried sizing the container
+  to the photo's native `989/1280` ratio so it rendered fully uncropped,
+  but that produced a container far taller than any viewport and wasn't
+  what was meant by "full width and height"; `h-screen` is what actually
+  reads as a full-viewport band) **only from `md:` up** — on mobile it's
+  `aspect-[4/5]` instead, since `h-screen` on a narrow, already-tall
+  phone viewport made the band dominate almost the entire scroll (a
+  regression caught only by checking the actual rendered mobile page,
+  not just resizing the desktop layout). The photo is `object-cover`
+  (cropped to fill, same as every other image slot) with
+  `object-[50%_22%]` rather than the default `object-center`, biasing
+  the crop toward the top ~22% of the frame so the face stays in view
+  instead of being cropped out when the wide/short viewport-shaped box
+  crops most of this portrait-oriented photo's height away. It's
+  rendered as a direct child of the page's root div rather than inside
+  a `Section` — `Section`'s own `max-w-[1920px]`/`px-3 md:px-10` inner
+  container would otherwise inset it from the viewport edges, which
+  defeats "full width" — with the intro `Section` above it losing its
+  touching `pb` (`pb-0 md:pb-0`) so the image butts directly against
+  the quote above with no gap. Below the image, the gap to the Journey
+  `Section` lives on the Journey Section's own `pt-[10px]` (moved there
+  from an earlier attempt that put it on the image's own `mb-[10px]` —
+  the visible gap looked identical either way, but the user traced a
+  separate mobile spacing complaint to *this* boundary and asked for
+  the pixel value to live on the Journey Section's side instead, so it
+  reads as that section's own top inset rather than a trailing margin
+  hanging off the image). The image also carries the same `grayscale` →
+  `group-hover:grayscale-0` treatment as `WorkCard.tsx` (desaturated by
+  default, full color on hover — the wrapping `div` is `group`).
 - `Timeline.tsx` (shared with nowhere else currently) had one real bug
   fix from this pass: the period label (e.g. "2021 — The Beginning")
   was unconditionally `text-accent` for every entry; the reference only
@@ -357,7 +471,18 @@ of its own:
   normal square cards, and Impact/Stewardship share the remaining
   column as two stacked compact cards (small square bullet instead of
   an `IconBadge`, smaller type) — `ValueCard`/`CompactValueCard` in
-  `about/page.tsx` implement the two treatments.
+  `about/page.tsx` implement the two treatments. This closing `Section`
+  uses `pb-8 md:pb-40` rather than the sitewide-default bottom padding
+  (`pb-20 md:pb-40`, the same value every other `theme-dark-fixed` page
+  leaves untouched on its final section): on mobile, that default 80px
+  stacked with the root wrapper's own `pb-32` (128px, there to recreate
+  Footer's cancelled `mt-32` — see "Sitewide dark theme" above) to leave
+  ~200px of empty space before the footer, visibly excessive on a short
+  mobile viewport. Reduced to 80px total (`pb-8` + the wrapper's 128px)
+  for mobile only; the `md:pb-40` desktop value is untouched since the
+  gap wasn't flagged there. This is a page-specific override, not a
+  sitewide convention change — every other page's final section still
+  uses the default.
 - The Journey section sits in an alternating band via
   `outerClassName="bg-ink/5 border-y border-line"` — reusing the same
   "5%-opacity `ink` overlay on a dark background" technique already
@@ -474,9 +599,9 @@ itself uses the same 24px there as a one-off exception to its own
   columns, above a final centered copyright line ("© {year} Reiziger
   Ashu. All rights reserved.") — don't reintroduce the earlier layout
   where Newsletter was its own full-width row above the logo/nav row.
-- Nav itself goes dark (via `theme-dark-fixed` on its own `<header>`) on
-  routes that render permanently-dark page content — see "Home and Work
-  sections: dark theme" above for the mechanism and which routes qualify.
+- Nav itself is permanently dark (via `theme-dark-fixed` on its own
+  `<header>`, unconditionally now that every route is dark) — see
+  "Sitewide dark theme" above for the mechanism.
 
 ## Think index: filter, featured row, load more
 
