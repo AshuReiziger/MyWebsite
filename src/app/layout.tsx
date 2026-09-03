@@ -1,15 +1,14 @@
 import type { Metadata } from "next";
-import { Libre_Caslon_Text, Hanken_Grotesk } from "next/font/google";
+import { Montserrat, Hanken_Grotesk } from "next/font/google";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
 import "./globals.css";
 
-const libreCaslonText = Libre_Caslon_Text({
-  variable: "--font-libre-caslon-text",
+const montserrat = Montserrat({
+  variable: "--font-montserrat",
   subsets: ["latin"],
-  weight: ["400", "700"],
   style: ["normal", "italic"],
 });
 
@@ -28,7 +27,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${libreCaslonText.variable} ${hankenGrotesk.variable} h-full antialiased`}
+      className={`${montserrat.variable} ${hankenGrotesk.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
         <Nav />
