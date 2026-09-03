@@ -11,10 +11,10 @@ export default function MaintenancePage() {
         <p className="text-sm font-semibold uppercase tracking-widest text-accent">
           Be Right Back
         </p>
-        <h1 className="mt-4 font-display text-4xl font-bold tracking-tight md:text-5xl">
+        <h1 className="mt-4 font-display text-[2em] font-bold tracking-tight">
           A quick refresh is underway.
         </h1>
-        <p className="mt-4 max-w-md text-lg text-muted">
+        <p className="mt-4 max-w-md text-muted">
           The site is offline briefly for scheduled updates. Check back shortly — or use the
           WhatsApp button if it&apos;s urgent.
         </p>

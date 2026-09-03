@@ -28,12 +28,12 @@ export function ResourceDetailLayout({ entry }: { entry: ContentEntry<ResourceFr
               </p>
             </HeroReveal>
             <HeroReveal delay={0.1}>
-              <h1 className="mt-4 font-display text-4xl font-bold leading-tight tracking-tight md:text-5xl">
+              <h1 className="mt-4 font-display text-[2em] font-bold leading-tight tracking-tight">
                 {frontmatter.heroHeadline ?? frontmatter.title}
               </h1>
             </HeroReveal>
             <HeroReveal delay={0.2}>
-              <p className="mt-6 max-w-md text-lg text-muted">
+              <p className="mt-6 max-w-md text-muted">
                 {frontmatter.heroSubcopy ?? frontmatter.longDescription}
               </p>
             </HeroReveal>

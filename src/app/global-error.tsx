@@ -12,10 +12,10 @@ export default function GlobalError({
     <html lang="en">
       <body className="theme-dark-fixed flex min-h-screen flex-col items-center justify-center bg-paper px-6 text-center text-ink antialiased">
         <p className="text-sm font-semibold uppercase tracking-widest text-accent">Error</p>
-        <h1 className="mt-4 font-display text-4xl font-bold tracking-tight md:text-5xl">
+        <h1 className="mt-4 font-display text-[2em] font-bold tracking-tight">
           The site hit a snag.
         </h1>
-        <p className="mt-4 max-w-md text-lg text-muted">
+        <p className="mt-4 max-w-md text-muted">
           Something went wrong at the top level. Try reloading — if this keeps happening, reach
           out via the WhatsApp button once the page recovers.
         </p>

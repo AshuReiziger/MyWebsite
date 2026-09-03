@@ -76,12 +76,12 @@ export default function Home() {
               </p>
             </HeroReveal>
             <HeroReveal delay={0.1}>
-              <h1 className="mt-4 font-display text-4xl uppercase leading-tight tracking-tight md:text-6xl">
+              <h1 className="mt-4 font-display text-[2em] uppercase leading-tight tracking-tight">
                 I don&apos;t just design things. I design what they can become.
               </h1>
             </HeroReveal>
             <HeroReveal delay={0.2}>
-              <p className="mt-6 max-w-2xl text-lg text-muted md:text-xl">
+              <p className="mt-6 max-w-2xl text-muted">
                 I&apos;m Reiziger Ashu — a designer, strategist, educator, and creative leader
                 passionate about using design to help people and organizations discover who
                 they are, communicate what they believe, and build what they envision.

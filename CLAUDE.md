@@ -145,6 +145,41 @@ Light-mode values are unaffected by this and unchanged.
   font doesn't have those), card/section titles are `font-bold` at
   smaller sizes.
 
+**Hero `h1`/subtext `p` sizing is the browser's own UA default, not a
+bespoke scale.** Every page's hero `<h1>` (and, on the pages that route
+their heading through `SectionHeading` instead — Work, Think, About's
+intro, etc. — that component's own `h2`/`p` sizing is unrelated and
+untouched) previously carried a bespoke, per-page responsive scale
+(`text-4xl md:text-5xl`/`text-6xl`/`lg:text-6xl`, `text-3xl` on
+`AssessmentFlow`'s results-stage heading) and the accompanying subtext
+`<p>` carried `text-lg`/`md:text-xl`. Tailwind's preflight resets
+headings to `font-size: inherit`, so simply deleting those classes would
+have shrunk hero `h1`s to body-text size instead of the browser's native
+~2em — the explicit fix is `text-[2em]` on every hero `h1` (flat, no
+responsive breakpoint — this is deliberately not a fluid/responsive
+scale, since "standard/browser-default" means one fixed size) and
+dropping `text-lg`/`text-xl` off the subtext `p` entirely so it falls
+back to the same base size as regular body copy. This is a real,
+explicit request to standardize hero typography to browser-default
+sizing sitewide — don't reintroduce the old bespoke `text-4xl`+
+responsive scale without the user asking to change direction again. All
+17 hero `h1` instances got this treatment: `page.tsx` (Home),
+`about` has no raw hero `h1` (uses `SectionHeading`, unaffected),
+`work/[slug]` (`CaseStudyLayout.tsx`), `think/[slug]/page.tsx`,
+`teach/page.tsx`, `teach/mentorship/[slug]`
+(`MentorshipDetailLayout.tsx`), `teach/workshops/[slug]`
+(`WorkshopDetailLayout.tsx`), `resources/page.tsx`,
+`resources/[slug]` (`ResourceDetailLayout.tsx`),
+`resources/[slug]/assessment` (`AssessmentFlow.tsx` — both its intro
+stage `h1` and its results stage `h1`; the results stage's own subtext
+`p` already had no size utility, so it needed no change), `build/page.tsx`,
+`contact/page.tsx`, and the five error/offline/maintenance states
+(`not-found.tsx`, `error.tsx`, `global-error.tsx`, `offline/page.tsx`,
+`maintenance/page.tsx`). Non-size styling on each heading (uppercase,
+`leading-tight`, `tracking-tight`, `font-bold` where present, the
+`border-l-2 border-accent pl-6` treatment on Contact/Build) was left
+untouched — only the size utilities changed.
+
 **Source of truth:** this entire token set — colors, fonts, the
 icon-badge card style, the dark "Ventures" band, the underline-style
 contact form, the dot-timeline with a highlighted current node — comes

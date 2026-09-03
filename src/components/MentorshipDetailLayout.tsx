@@ -12,12 +12,12 @@ export function MentorshipDetailLayout({ track }: { track: MentorshipDetail }) {
             <p className="text-sm font-semibold uppercase tracking-widest text-accent">Mentorship</p>
           </HeroReveal>
           <HeroReveal delay={0.1}>
-            <h1 className="mt-4 font-display text-4xl font-bold leading-tight tracking-tight md:text-5xl">
+            <h1 className="mt-4 font-display text-[2em] font-bold leading-tight tracking-tight">
               {track.title}
             </h1>
           </HeroReveal>
           <HeroReveal delay={0.2}>
-            <p className="mt-6 text-lg text-muted">{track.subhead}</p>
+            <p className="mt-6 text-muted">{track.subhead}</p>
           </HeroReveal>
           <HeroReveal delay={0.3}>
             <Link

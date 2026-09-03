@@ -12,10 +12,10 @@ export default function ContactPage() {
       <div className="mx-auto max-w-[1920px] px-3 py-16 md:px-10 md:py-24">
         <div className="grid gap-12 md:grid-cols-2">
           <div>
-            <h1 className="border-l-2 border-accent pl-6 font-display text-4xl uppercase leading-tight tracking-tight md:text-5xl">
+            <h1 className="border-l-2 border-accent pl-6 font-display text-[2em] uppercase leading-tight tracking-tight">
               Have an idea worth building?
             </h1>
-            <p className="mt-6 max-w-md text-lg text-muted">
+            <p className="mt-6 max-w-md text-muted">
               Whether you&apos;re developing a brand, solving a communication problem, building a
               creative team, or exploring an idea that needs structure, I&apos;d love to hear
               about it.

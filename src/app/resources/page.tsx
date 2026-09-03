@@ -21,12 +21,12 @@ export default function ResourcesPage() {
             <p className="text-sm font-semibold uppercase tracking-widest text-accent">Teach</p>
           </HeroReveal>
           <HeroReveal delay={0.1}>
-            <h1 className="mt-4 font-display text-4xl uppercase leading-tight tracking-tight md:text-5xl">
+            <h1 className="mt-4 font-display text-[2em] uppercase leading-tight tracking-tight">
               Tools to help you think, build &amp; create better.
             </h1>
           </HeroReveal>
           <HeroReveal delay={0.2}>
-            <p className="mt-6 text-lg text-muted">
+            <p className="mt-6 text-muted">
               Free guides, frameworks, checklists and templates I&apos;ve created to help
               creatives, entrepreneurs and organizations develop stronger ideas, brands and
               systems.

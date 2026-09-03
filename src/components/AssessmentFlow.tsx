@@ -109,10 +109,10 @@ export function AssessmentFlow({
           <p className="text-sm font-semibold uppercase tracking-widest text-accent">
             Free Assessment &middot; {frontmatter.category}
           </p>
-          <h1 className="mt-4 font-display text-4xl font-bold uppercase leading-tight tracking-tight md:text-5xl">
+          <h1 className="mt-4 font-display text-[2em] font-bold uppercase leading-tight tracking-tight">
             {frontmatter.heroHeadline ?? frontmatter.title}
           </h1>
-          <p className="mx-auto mt-6 max-w-md text-lg text-muted">
+          <p className="mx-auto mt-6 max-w-md text-muted">
             Answer {questions.length} quick questions and get an instant score across {areas.length} areas of your
             brand &mdash; positioning, messaging, visual identity and more.
           </p>
@@ -215,7 +215,7 @@ export function AssessmentFlow({
             <p className="text-sm font-semibold uppercase tracking-widest text-accent">
               {stage === "unlocked" ? "Your Results · Unlocked" : "Your Results"}
             </p>
-            <h1 className="mt-3 font-display text-3xl font-bold tracking-tight">
+            <h1 className="mt-3 font-display text-[2em] font-bold tracking-tight">
               {stage === "unlocked" ? "Here’s where your brand stands." : `Your ${frontmatter.title} is ready.`}
             </h1>
             <p className="mx-auto mt-3 max-w-sm text-muted">
