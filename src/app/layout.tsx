@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Montserrat, Hanken_Grotesk } from "next/font/google";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
@@ -35,6 +36,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Footer />
         <WhatsAppButton />
         <ServiceWorkerRegister />
+        <Script src="/sigma-companion-widget.js" strategy="afterInteractive" />
       </body>
     </html>
   );
