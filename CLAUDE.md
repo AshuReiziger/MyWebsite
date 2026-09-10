@@ -134,16 +134,17 @@ also drove the About page): `ink` `#ffffff`, `paper` `#0a0a0a`, `muted`
 `prefers-color-scheme: dark` media query and `.theme-dark-fixed` carry
 these same five values, kept in sync — update both blocks together.
 Light-mode values are unaffected by this and unchanged.
-- `font-display` (**Libre Caslon Text**, serif — only ships weights 400
-  and 700, no 500/600) for headings, `font-body` (**Hanken Grotesk**,
-  variable, full weight range) for body text. Because the display font
-  has only two weights, headings must use `font-normal` or `font-bold`
-  only — never `font-medium`/`font-semibold` on anything with
-  `font-display`, since that weight doesn't exist in the loaded font
-  file and will silently fall back. Hierarchy: hero `h1`s are
-  `font-bold` at a large size (no italic/extra-bold treatment — this
-  font doesn't have those), card/section titles are `font-bold` at
-  smaller sizes.
+- `font-display` (**Montserrat**, sans-serif, variable — full weight
+  range, both normal and italic styles) for headings, `font-body`
+  (**Hanken Grotesk**, variable, full weight range) for body text. Both
+  are now sans-serif — there is deliberately no serif font on the site
+  as of this pass (see "Font/palette history" below). Since Montserrat
+  ships the full weight range (unlike the earlier two-weight-only Libre
+  Caslon Text), `font-medium`/`font-semibold` are safe to use on
+  `font-display` elements now, though the existing headings still stick
+  to `font-normal`/`font-bold` since nothing has needed a new weight
+  yet. Hierarchy: hero `h1`s are `font-bold` at a large size, card/
+  section titles are `font-bold` at smaller sizes.
 
 **Hero `h1`/subtext `p` sizing is the browser's own UA default, not a
 bespoke scale.** Every page's hero `<h1>` (and, on the pages that route
@@ -180,28 +181,39 @@ stage `h1` and its results stage `h1`; the results stage's own subtext
 `border-l-2 border-accent pl-6` treatment on Contact/Build) was left
 untouched — only the size utilities changed.
 
-**Source of truth:** this entire token set — colors, fonts, the
-icon-badge card style, the dark "Ventures" band, the underline-style
-contact form, the dot-timeline with a highlighted current node — comes
-directly from a Figma design (Google Stitch export) the user supplied as
-full-resolution page screenshots, including a dedicated style-guide frame
-("Strategic Narrative") with exact hex values and font names. Treat those
-screenshots as the design spec going forward, ranking above earlier
-iterations in this file's history below. **Do not revert to Fraunces,
-Montserrat, or the orange/warm-neutral palette** without the user
-explicitly asking to change direction again.
+**Source of truth:** the colors, the icon-badge card style, the dark
+"Ventures" band, the underline-style contact form, and the dot-timeline
+with a highlighted current node all come directly from a Figma design
+(Google Stitch export) the user supplied as full-resolution page
+screenshots, including a dedicated style-guide frame ("Strategic
+Narrative") with exact hex values. Treat those screenshots as the
+design spec for color/layout going forward. **The font choice is a
+deliberate, later exception to that Figma spec** — see the history
+below — so don't use the screenshots' Libre Caslon Text as a reason to
+revert the font. **Do not revert to Fraunces or the orange/warm-neutral
+palette** without the user explicitly asking to change direction again.
 
-**Font/palette history (for context only, not to be reintroduced):**
-shipped first with Fraunces (serif) + a warm orange accent, after
-reverse-engineering three reference sites (see
+**Font/palette history (for context only, not to be reintroduced except
+where noted):** shipped first with Fraunces (serif) + a warm orange
+accent, after reverse-engineering three reference sites (see
 `docs/DESIGN-REFERENCE-AUDIT.md`) — a serif-display + sans-body pairing
 confirmed at Iknite Studio (Marcellus + Outfit). Then swapped to
 Montserrat (sans) per explicit request for a Montserrat/Gilroy-family
 font (Gilroy itself isn't available via `next/font/google` — commercial
-font, no Google Fonts distribution). Then superseded again by the Figma
-design above, which uses a serif display font once more (Libre Caslon
-Text) but is a different, more specific source than the earlier
-audit-driven guess — don't conflate the two serif choices.
+font, no Google Fonts distribution). Then superseded by the Figma
+design above, which used a serif display font instead (Libre Caslon
+Text) — a different, more specific source than the earlier audit-driven
+guess, not to be conflated with the first Fraunces pass. **Then reverted
+back to Montserrat** per a second explicit request, this time keeping
+every other Figma-sourced token (colors, layout, icon/card system)
+unchanged — only `font-display` changed, from Libre Caslon Text back to
+Montserrat, wired the same way `font-body`/Hanken Grotesk already was
+(a variable Google font via `next/font/google`, no need for a fixed
+`weight` array). `h1`–`h4`'s CSS fallback stack (`globals.css`) changed
+from `Georgia, serif` to `Arial, Helvetica, sans-serif` to match — this
+matters for `global-error.tsx` specifically, since it can't use
+`next/font` variables (see "Error, offline, and maintenance states"
+below) and so actually renders its fallback font on a real failure.
 
 ## Motion
 
@@ -646,8 +658,9 @@ different problem — don't conflate them:
   `import "./globals.css"` directly, since it replaces `layout.tsx`
   entirely rather than nesting inside it — `next/font` variables from
   `layout.tsx` won't be defined here, so headings silently fall back to
-  Georgia. This is expected and fine for a catastrophic-failure screen;
-  don't try to duplicate the font loading here.
+  the CSS fallback stack (`Arial, Helvetica, sans-serif`, see "Design
+  tokens" above). This is expected and fine for a catastrophic-failure
+  screen; don't try to duplicate the font loading here.
 - **`src/app/maintenance/page.tsx`** + **`src/proxy.ts`** — a deliberate,
   manually-toggled "site is down for scheduled work" state, gated by the
   `MAINTENANCE_MODE` environment variable. When set to the string
@@ -673,6 +686,90 @@ None of these four render real navigation content when active by design
 (no case-study links, no "recent work" — they're deliberately minimal),
 matching the rest of the site's restraint rather than trying to be a
 mini-homepage.
+
+## Sigma Companion widget (`/api/companion`)
+
+A sitewide floating chat widget — "Sigma Companion" — that puts Sigma
+Studio's five-pillar methodology (THINK → CREATE → DESIGN → LEAD →
+TRANSFORM) in front of any visitor as an AI decision-support tool for
+design/brand questions. Delivered as a standalone `sigma-companion-
+webapp.zip` (its own would-be separate Vercel deployment + a `<script>`-
+tag embed, decoupled from this site's stack since the stack wasn't known
+yet at the time it was built) and **ported directly into this site**
+instead of being deployed as a second project, once it was clear both
+would live under the same Vercel account and this site's stack was
+already known — running two Vercel projects (and two sets of env vars,
+two dashboards to check) for one small feature wasn't worth the
+decoupling benefit once the "any stack" reason for it no longer applied.
+The original zip's own deploy attempt (via a different session/tool)
+hit persistent Vercel permission errors trying to create a separate
+`sigma-companion` project — porting it in as a route on this already-
+working project sidesteps that entirely, since it deploys with the rest
+of the site.
+
+- **`src/app/api/companion/systemPrompt.ts`** — the methodology, verbatim
+  from the original delivery, as a plain exported string constant. This
+  is the proprietary "Tier 3" asset (per the original Concept Brief) —
+  it must only ever be imported by `route.ts` (a server-only Route
+  Handler), never by a client component, so it's never bundled into
+  browser JS.
+- **`src/app/api/companion/route.ts`** — `POST` handler, ported from the
+  original `api/companion.js` Vercel serverless function to a Next.js
+  Route Handler (`NextResponse.json`, no manual `req.method`/CORS
+  handling needed — Next already 405s unsupported methods, and CORS is
+  moot now that the widget calls same-origin `/api/companion` instead of
+  a separate domain). Same validation/behavior as the original: requires
+  `message` (400 if missing/too long), clamps `history` to the last 20
+  well-formed `{role, content}` pairs, 500 with a clear error if
+  `ANTHROPIC_API_KEY` is unset (checked first, same pattern as the
+  contact form's missing-`RESEND_API_KEY` case), 502 if the upstream
+  Anthropic call itself fails. Requires an `ANTHROPIC_API_KEY`
+  environment variable (Vercel project settings, and `.env.local` for
+  local testing — same convention as `RESEND_API_KEY`). Optional
+  `SIGMA_COMPANION_MODEL` overrides the default model
+  (`claude-sonnet-4-5-20250929`) without a code change.
+- **`public/sigma-companion-widget.js`** — the visitor-facing chat
+  widget, ported from the original `widget.js` essentially unchanged in
+  logic (vanilla JS, zero dependencies, resolves its own API base from
+  `document.currentScript`'s origin — still correct now that it's
+  same-origin, no modification needed there). Two things *were* changed
+  from the original:
+  1. **Color palette** — the original shipped Sigma Studio's own
+     standalone light-mode colors (gold/near-black/near-white). Since
+     this site is permanently dark (`theme-dark-fixed`, see "Sitewide
+     dark theme" above), the widget's colors were swapped to match this
+     site's `.theme-dark-fixed` token values exactly (`#e6c279` accent,
+     `#0a0a0a` background, `#2a2a2a` borders, `#ffffff` text, `#a1a1a1`
+     muted) instead of keeping Sigma Companion's own separate palette —
+     a light chat panel would otherwise look jarring against the dark
+     site. Dark text (`#0a0a0a`) on the gold accent buttons/user-message
+     bubbles, not white, for contrast.
+  2. **Launcher position** — the original's `bottom:20px;right:20px`
+     would sit directly on top of `WhatsAppButton.tsx`'s existing
+     `fixed bottom-6 right-6` (24px) 56px-tall button. Moved to
+     `bottom:96px;right:24px` (both launcher and panel, so the two
+     states share one footprint) — 24px + 56px + a 16px gap — so the two
+     floating launchers stack cleanly instead of overlapping.
+  Loaded sitewide via `<Script src="/sigma-companion-widget.js"
+  strategy="afterInteractive" />` in `layout.tsx`, next to
+  `WhatsAppButton`/`ServiceWorkerRegister` — not a React component,
+  since the original widget's self-contained vanilla-JS approach (one
+  script, resolves its own config from its own `<script>` tag) had no
+  reason to be rewritten as one; wrapping a script tag in `next/script`
+  was the smaller change.
+- Visitor conversation history lives only in `sessionStorage` on the
+  visitor's own device — nothing is logged server-side (matches the
+  original delivery; the original README flagged this and rate limiting
+  as open follow-ups for once there's real traffic — neither is
+  implemented here yet, same as it wasn't in the original zip).
+- The original zip's `test/companion.test.js` (mocked Node smoke tests,
+  no test runner in this project) wasn't ported in as a file — this
+  project has no test suite anywhere else either (every other API route
+  is verified by hand the same way: curl the running server through each
+  validation branch). Its cases (happy path, missing message, wrong
+  method, missing key, history clamping, upstream error) were re-run by
+  hand against `route.ts` instead when this was ported in, with the same
+  results.
 
 ## Contact form email (`/api/contact`)
 

@@ -8,7 +8,7 @@
   --color-line: #e2e8f0;
   --color-accent: #b5995d;
 
-  --font-display: var(--font-libre-caslon-text);
+  --font-display: var(--font-montserrat);
   --font-body: var(--font-hanken-grotesk);
 }
 
@@ -42,7 +42,7 @@ h1,
 h2,
 h3,
 h4 {
-  font-family: var(--font-display), Georgia, serif;
+  font-family: var(--font-display), Arial, Helvetica, sans-serif;
 }
 
 /* Sections that are always dark by design (Work index, case studies) —
