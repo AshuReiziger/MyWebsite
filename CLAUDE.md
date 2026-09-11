@@ -771,6 +771,71 @@ of the site.
   hand against `route.ts` instead when this was ported in, with the same
   results.
 
+**File attachments** — added after the initial port-in, per direct
+request: a visitor can attach up to `MAX_ATTACHMENTS` (3) images (PNG/
+JPEG/WebP/GIF) or PDFs via a 📎 button in `sigma-companion-widget.js`'s
+input row, so Sigma Companion can look at an actual logo/mockup/brand
+doc instead of only a typed description of one.
+
+- **Attachments are single-turn only — never persisted or resent.** This
+  is the key design constraint and the reason the implementation looks
+  the way it does. The Anthropic Messages API is stateless per request,
+  so every turn resends the full `history`; if attachment file data were
+  stored in `history` (and `sessionStorage`, which the widget persists
+  history to) the same way text is, both the request payload and the
+  browser's storage would grow without bound as a conversation went on
+  — risking Vercel Functions' request body limit (Vercel Functions cap
+  request bodies at a few MB) on a long conversation with several
+  attached files. Instead, `attachments` is a separate top-level field
+  in the `POST /api/companion` body, sent only on the turn a file was
+  just picked; `history` entries stay exactly what they always were —
+  plain `{role, content: string}` pairs. When a message had attachments,
+  the widget pushes a plain-text stand-in into `history` instead of the
+  file itself: `"<typed text>\n\n[Attached: logo.png, brief.pdf]"` (or
+  just the bracket note if the visitor sent no text). Claude only ever
+  "sees" the actual image/PDF pixels/bytes on the turn it was attached;
+  later turns carry forward only the filename reference and whatever the
+  assistant already said about it — the same way a human conversation
+  keeps discussing something shown once without re-displaying it every
+  reply.
+- **`src/app/api/companion/route.ts`** validates `attachments` (an
+  optional array of `{mediaType, data}`, `data` being base64 with no
+  `data:...;base64,` prefix) before building the request to Anthropic:
+  rejects >3 attachments, any `mediaType` outside the PNG/JPEG/WebP/GIF/
+  PDF allowlist, malformed base64, or a combined decoded size over
+  `MAX_ATTACHMENTS_TOTAL_BYTES` (4MB) — each rejection is a 400 with a
+  specific message, not a generic failure. `message` validation was
+  loosened to allow an empty string when at least one attachment is
+  present (previously always required). Valid attachments become
+  Anthropic content blocks — `{type:"image", source:{type:"base64",
+  media_type, data}}` for images, `{type:"document", ...}` for PDFs —
+  prepended to a trailing text block for that one new user message only;
+  every `history` message keeps its plain-string `content` as before,
+  untouched by any of this.
+- **`public/sigma-companion-widget.js`** resizes images client-side
+  before sending — a `<canvas>` draw-and-`toDataURL("image/jpeg", 0.85)`
+  pass scales any image down so its longest edge is ≤
+  `MAX_IMAGE_DIMENSION` (1568px, Anthropic's documented recommended max
+  for vision input — a larger image costs more input tokens for no
+  quality benefit Claude can actually use). PDFs can't be resized this
+  way and are read as-is via `FileReader.readAsDataURL`, so a large PDF
+  is the one case that can still hit the 4MB combined cap — the error
+  message says so plainly rather than failing silently. A row of
+  removable chips (`#sc-attach-tray`, hidden via `:empty{display:none}`
+  when there's nothing pending) shows what's queued before sending, with
+  an image thumbnail or a 📄 document icon per chip. The `send()` flow
+  builds two different things from the same `pendingAttachments` array:
+  the *live* rendering of the user's own chat bubble (thumbnails + the
+  typed text, via `addUserMessageEl()` — no visible "[Attached: ...]"
+  clutter, since the thumbnails already show what was attached) and the
+  *stored* `history` entry (plain text with the bracket note, per the
+  single-turn design above) — these intentionally diverge, so don't try
+  to unify them into one code path. A reload restores history from
+  `sessionStorage` through the original, unmodified `addMessage()`
+  function, which has no thumbnails to show — the bracket note is what a
+  visitor sees for a past attachment after a refresh, which is expected,
+  not a bug.
+
 ## Contact form email (`/api/contact`)
 
 Sends via [Resend](https://resend.com) to `ashu.reiziger45@gmail.com`
