@@ -600,6 +600,37 @@ Home's "What I Do" grid renders these four cards in a single row on
 larger screens (`sm:grid-cols-2 lg:grid-cols-4`), per the Figma
 reference — not the 2×2 grid used in an earlier pass.
 
+**Two of the four Teach offerings cards (`/teach`'s `OFFERINGS` array)
+carry a photo background**, per direct request — real photos the user
+supplied, not stock/placeholder images. `Design Training` uses
+`public/images/teach/design-training.jpg` (a solo shot: hands on a
+laptop showing the Photoshop splash screen) and `Workshops` uses
+`public/images/teach/workshops.jpg` (two people collaborating over a
+laptop, editing a graphic) — matched to each card's own copy (solo
+"technical mastery" vs. "collaborative sessions"). `Mentorship` and
+`Free Resources` were intentionally left as plain bordered cards: the
+user sent 4 images but 2 arrived corrupted (solid-black JPEGs, confirmed
+via `PIL`'s `getextrema()` returning `(0, 0)` — a failed upload, not
+intentional content), and the user chose to ship the 2 working images
+now rather than block on the other 2. Add backgrounds for the remaining
+two cards the same way once real images exist for them: add an
+`image` field to that offering's entry in `OFFERINGS`.
+
+Implementation follows the same `grayscale` → `group-hover:grayscale-0`
+treatment as `WorkCard.tsx` (see "Image treatment" above): a `next/image`
+with `fill` sits behind the card content at `-z-10`, with a
+`from-paper/90 via-paper/75 to-paper/90` gradient scrim (also `-z-10`,
+between the image and the text) so the card copy stays legible over the
+photo — `paper` resolves to the dark token inside this page's
+`theme-dark-fixed` wrap, so the scrim reads as a dark tint, not a light
+one (the same token-role gotcha documented under "Sitewide dark theme").
+Cards with an image get `min-h-[280px]` added to their otherwise-shared
+`cardClassName` so the photo has room to show past the card's natural
+content height; cards without an image are unaffected. The `Link`/`div`
+branching (whether the card has an `href`) was already conditional
+before this change and is untouched — only the inner content (`inner`)
+gained the optional image + scrim layer.
+
 `ResourceCTA.tsx` has a third `variant="centered"` (alongside the
 existing `compact`/`inline`) used only by Home's "Free Resource" band —
 a fully centered stack (eyebrow, headline, description, button) with no
