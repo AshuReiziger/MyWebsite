@@ -600,21 +600,26 @@ Home's "What I Do" grid renders these four cards in a single row on
 larger screens (`sm:grid-cols-2 lg:grid-cols-4`), per the Figma
 reference — not the 2×2 grid used in an earlier pass.
 
-**Two of the four Teach offerings cards (`/teach`'s `OFFERINGS` array)
+**Three of the four Teach offerings cards (`/teach`'s `OFFERINGS` array)
 carry a photo background**, per direct request — real photos the user
 supplied, not stock/placeholder images. `Design Training` uses
 `public/images/teach/design-training.jpg` (a solo shot: hands on a
-laptop showing the Photoshop splash screen) and `Workshops` uses
+laptop showing the Photoshop splash screen), `Workshops` uses
 `public/images/teach/workshops.jpg` (two people collaborating over a
-laptop, editing a graphic) — matched to each card's own copy (solo
-"technical mastery" vs. "collaborative sessions"). `Mentorship` and
-`Free Resources` were intentionally left as plain bordered cards: the
-user sent 4 images but 2 arrived corrupted (solid-black JPEGs, confirmed
-via `PIL`'s `getextrema()` returning `(0, 0)` — a failed upload, not
-intentional content), and the user chose to ship the 2 working images
-now rather than block on the other 2. Add backgrounds for the remaining
-two cards the same way once real images exist for them: add an
-`image` field to that offering's entry in `OFFERINGS`.
+laptop, editing a graphic), and `Free Resources` uses
+`public/images/teach/free-resources.jpg` (a desk with design-reference
+books, pencils, and a tablet showing color/branding tiles) — matched to
+each card's own copy (solo "technical mastery" vs. "collaborative
+sessions" vs. "practical guides, frameworks and tools"). `Mentorship` is
+the one card still plain/bordered: of the 6 images sent across two
+messages for this, only 3 ever arrived intact — the other 3 (the 2nd
+image in the first batch, then the 2nd image in the follow-up batch)
+came through as solid-black JPEGs (confirmed via `PIL`'s
+`getextrema()` returning `(0, 0)` — a failed upload each time, not
+intentional content). The user chose to ship each working image as it
+arrived rather than block on the rest. Add a background for `Mentorship`
+the same way once a real image exists for it: add an `image` field to
+its entry in `OFFERINGS`.
 
 Implementation follows the same `grayscale` → `group-hover:grayscale-0`
 treatment as `WorkCard.tsx` (see "Image treatment" above): a `next/image`
@@ -624,9 +629,21 @@ between the image and the text) so the card copy stays legible over the
 photo — `paper` resolves to the dark token inside this page's
 `theme-dark-fixed` wrap, so the scrim reads as a dark tint, not a light
 one (the same token-role gotcha documented under "Sitewide dark theme").
-Cards with an image get `min-h-[280px]` added to their otherwise-shared
-`cardClassName` so the photo has room to show past the card's natural
-content height; cards without an image are unaffected. The `Link`/`div`
+**Cards with an image are squared, not rectangular** — `min-h-[360px]
+md:aspect-square` on their otherwise-shared `cardClassName`, per a
+direct follow-up request ("increase the height of the cards to make
+them more squared than rectangular"; the first pass only used a flat
+`min-h-[280px]`, which read as noticeably wide-and-short at the card's
+~660px rendered width on desktop). `md:aspect-square` forces the card's
+height to match its own width at that breakpoint; `min-h-[360px]` is the
+mobile-only fallback (single-column there, so no aspect-ratio is
+applied — a flat minimum height gives the photo reasonable room without
+forcing a literal square on a narrow viewport). The grid's default
+`align-items: stretch` means `Mentorship` (no image, no explicit height
+utility) automatically matches its row sibling's height — it shares a
+row with `Free Resources`, so it stretches to the same square height
+that card's `aspect-square` produces, without needing its own height
+class. Cards without an image are otherwise unaffected. The `Link`/`div`
 branching (whether the card has an `href`) was already conditional
 before this change and is untouched — only the inner content (`inner`)
 gained the optional image + scrim layer.

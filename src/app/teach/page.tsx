@@ -48,6 +48,7 @@ const OFFERINGS: {
     icon: <ResourcesIcon />,
     href: "/resources",
     cta: "Explore Resources",
+    image: "/images/teach/free-resources.jpg",
   },
 ];
 
@@ -101,7 +102,7 @@ export default function TeachPage() {
             );
 
             const cardClassName = `group relative isolate overflow-hidden rounded-2xl border border-line p-8 transition-colors hover:border-accent/50${
-              offering.image ? " min-h-[280px]" : ""
+              offering.image ? " min-h-[360px] md:aspect-square" : ""
             }`;
 
             const inner = offering.image ? (
