@@ -121,19 +121,17 @@
     ".sc-chip-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}",
     ".sc-chip-remove{background:none;border:none;color:" + MUTED + ";cursor:pointer;font-size:15px;line-height:1;padding:0;flex-shrink:0;}",
     ".sc-chip-remove:hover{color:" + TEXT + ";}",
-    "#sc-inputrow{border-top:1px solid " + LINE + ";padding:10px;display:flex;gap:8px;align-items:flex-end;background:" + SURFACE + ";}",
-    "#sc-attach-btn{flex-shrink:0;background:none;border:1px solid " + LINE + ";border-radius:10px;width:40px;height:40px;font-size:16px;cursor:pointer;color:" + TEXT + ";}",
-    "#sc-attach-btn:hover{border-color:" + ACCENT + ";}",
-    "#sc-attach-btn:disabled{opacity:.5;cursor:default;}",
-    "#sc-mic-btn{flex-shrink:0;background:none;border:1px solid " + LINE + ";border-radius:10px;width:40px;height:40px;font-size:16px;cursor:pointer;color:" + TEXT + ";}",
-    "#sc-mic-btn:hover{border-color:" + ACCENT + ";}",
-    "#sc-mic-btn:disabled{opacity:.5;cursor:default;}",
-    "#sc-mic-btn.listening{background:" + ACCENT + ";border-color:" + ACCENT + ";color:" + ACCENT_TEXT + ";animation:sc-pulse 1.1s ease-in-out infinite;}",
+    "#sc-inputrow{border-top:1px solid " + LINE + ";padding:10px;background:" + SURFACE + ";}",
+    "#sc-input-pill{display:flex;align-items:flex-end;gap:2px;background:" + BG + ";border:1px solid " + LINE + ";border-radius:22px;padding:5px 5px 5px 14px;}",
+    "#sc-input-pill:focus-within{border-color:" + ACCENT + ";}",
+    "#sc-attach-btn,#sc-mic-btn{flex-shrink:0;background:none;border:none;border-radius:50%;width:32px;height:32px;font-size:16px;line-height:1;cursor:pointer;color:" + TEXT + ";display:flex;align-items:center;justify-content:center;}",
+    "#sc-attach-btn:hover,#sc-mic-btn:hover{background:rgba(255,255,255,.08);}",
+    "#sc-attach-btn:disabled,#sc-mic-btn:disabled{opacity:.4;cursor:default;background:none;}",
+    "#sc-mic-btn.listening{background:" + ACCENT + ";color:" + ACCENT_TEXT + ";animation:sc-pulse 1.1s ease-in-out infinite;}",
     "@keyframes sc-pulse{0%,100%{opacity:1;}50%{opacity:.5;}}",
-    "#sc-input{flex:1;background:" + BG + ";color:" + TEXT + ";border:1px solid " + LINE + ";border-radius:10px;padding:9px 11px;font:14px/1.3 inherit;resize:none;height:40px;max-height:100px;}",
+    "#sc-input{flex:1;min-width:0;background:none;color:" + TEXT + ";border:none;outline:none;padding:7px 6px;font:14px/1.3 inherit;resize:none;height:34px;max-height:100px;}",
     "#sc-input::placeholder{color:" + MUTED + ";}",
-    "#sc-input:focus{outline:2px solid " + ACCENT + ";outline-offset:1px;}",
-    "#sc-send{background:" + ACCENT + ";color:" + ACCENT_TEXT + ";border:none;border-radius:10px;padding:0 16px;font-weight:600;cursor:pointer;}",
+    "#sc-send{flex-shrink:0;background:" + ACCENT + ";color:" + ACCENT_TEXT + ";border:none;border-radius:50%;width:32px;height:32px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;}",
     "#sc-send:disabled{opacity:.5;cursor:default;}",
     "#sc-footer{font-size:10px;color:" + MUTED + ";text-align:center;padding:6px 8px 8px;background:" + SURFACE + ";}",
     ".sc-typing{align-self:flex-start;color:" + MUTED + ";font-size:13px;font-style:italic;}",
@@ -163,11 +161,13 @@
     '<div id="sc-messages"></div>' +
     '<div id="sc-attach-tray"></div>' +
     '<div id="sc-inputrow">' +
+    '<div id="sc-input-pill">' +
     '<button id="sc-attach-btn" type="button" aria-label="Attach a file">📎</button>' +
-    '<button id="sc-mic-btn" type="button" aria-label="Speak your message">🎤</button>' +
     '<input id="sc-file-input" type="file" multiple accept="image/png,image/jpeg,image/webp,image/gif,application/pdf" style="display:none" />' +
     '<textarea id="sc-input" placeholder="Describe the decision you’re facing…" rows="1"></textarea>' +
-    '<button id="sc-send" type="button">Send</button>' +
+    '<button id="sc-mic-btn" type="button" aria-label="Speak your message">🎤</button>' +
+    '<button id="sc-send" type="button" aria-label="Send message">➤</button>' +
+    "</div>" +
     "</div>" +
     '<div id="sc-footer">Built on Sigma Studio’s five-pillar design methodology — AI-assisted, not a replacement for a full studio engagement.</div>';
   document.body.appendChild(panel);
@@ -225,7 +225,7 @@
   });
 
   inputEl.addEventListener("input", function () {
-    inputEl.style.height = "40px";
+    inputEl.style.height = "34px";
     inputEl.style.height = Math.min(inputEl.scrollHeight, 100) + "px";
   });
   inputEl.addEventListener("keydown", function (e) {
@@ -288,7 +288,7 @@
         }
       }
       inputEl.value = (finalTranscript + interim).trim();
-      inputEl.style.height = "40px";
+      inputEl.style.height = "34px";
       inputEl.style.height = Math.min(inputEl.scrollHeight, 100) + "px";
     };
     recognition.onerror = function () {
@@ -522,7 +522,7 @@
     if (!text && attachments.length === 0) return;
 
     inputEl.value = "";
-    inputEl.style.height = "40px";
+    inputEl.style.height = "34px";
     pendingAttachments = [];
     renderAttachTray();
 

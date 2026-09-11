@@ -1036,6 +1036,38 @@ that gap matters.
   other, so each button's visibility is gated on its own capability
   check, not both together.
 
+**Input row redesign — a single pill, not separate bordered controls**:
+per direct request with a reference screenshot (Claude's own web input
+bar — a rounded capsule containing a "+" button, the text field, a mic
+icon, and a filled circular send button, all inside one continuous
+border), the attach/mic/text/send controls were pulled out of their
+individual bordered boxes into one `#sc-input-pill` container
+(`border-radius:22px`, single `border`/`background`) nested inside
+`#sc-inputrow` (which keeps the top divider and outer padding). Inside
+the pill, `#sc-attach-btn`/`#sc-mic-btn` lost their own border/background
+and became flat 32px circular icon buttons (`background:none`, a subtle
+`rgba(255,255,255,.08)` hover fill — no visible box until hovered/
+active), `#sc-input` lost its own border/background/`:focus` outline
+(transparent, blends into the pill), and `#sc-send` changed from a
+text-label rectangular button ("Send") to a 32px filled accent circle
+with an arrow glyph (`➤`, `aria-label="Send message"` carries the
+accessible name now that the visible label is gone) — matching the
+reference's blue circular send button. `#sc-input-pill:focus-within`
+carries the focus ring now (border color switches to `ACCENT`) instead
+of `#sc-input:focus`, so the whole pill highlights when the text field
+is focused rather than just the input's own edge.
+
+**Button order changed to match the reference**: attach → text → mic →
+send (left to right), not attach → mic → text → send as in the original
+attachments-then-voice implementation — the mic sits immediately before
+the send button now, both inside the pill's trailing edge, matching
+where the reference screenshot places its mic and submit controls.
+`inputEl.style.height` resets (auto-resize on input, after `send()`,
+after a voice dictation) changed from `"40px"` to `"34px"` to match the
+input's smaller base height inside the tighter pill padding — grep
+`inputEl.style.height` if that base height changes again, there are
+three call sites that must stay in sync.
+
 ## Contact form email (`/api/contact`)
 
 Sends via [Resend](https://resend.com) to `ashu.reiziger45@gmail.com`
