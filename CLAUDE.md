@@ -274,6 +274,20 @@ reiziger-ashu-portrait.jpg`, unused but not deleted, in case a static
 image is wanted again later (e.g. as the `poster` for a future video, or
 back as the hero itself).
 
+**The hero `Section` itself is capped at `max-h-screen`** (100vh), per
+direct request — added to the same `className` that already carries
+`pt-16 md:pt-24` (`relative max-h-screen overflow-hidden pt-16
+md:pt-24`). Confirmed via Playwright at three sizes (1440×900, a short
+1512×760 laptop, and 390×844 mobile) that the section's rendered height
+exactly matches `window.innerHeight` at each. On mobile specifically,
+where the hero's grid stacks to a single column (text block, then the
+video, in source order), the text block alone often nearly fills 100vh
+by itself, so the video ends up mostly clipped below the fold within
+the capped section — a direct, visible consequence of this cap on
+narrow/short viewports, not a bug. If that trade-off ever needs
+revisiting (e.g. dropping the cap on mobile only, `md:max-h-screen`),
+that's a deliberate follow-up, not something to silently "fix" back.
+
 ## Sitewide dark theme (`theme-dark-fixed`)
 
 Every page on the site is permanently dark — not tied to the visitor's
