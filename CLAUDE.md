@@ -275,28 +275,51 @@ image is wanted again later (e.g. as the `poster` for a future video, or
 back as the hero itself).
 
 **The hero `Section` fills the viewport height on desktop** —
-`md:h-screen` on the same `className` that already carries `pt-16
-md:pt-24` (`relative overflow-hidden pt-16 md:h-screen md:pt-24`), per
-a direct request that the hero "fill the entire browser window on
+`md:h-dvh` on the same `className` that already carries `pt-16
+md:pt-24` (`relative overflow-hidden pt-16 md:h-dvh md:pt-24`), per a
+direct request that the hero "fill the entire browser window on
 standard desktop monitors" (referencing a common 1920×1080/16:9 hero
-sizing convention). **This went through two attempts** — the first used
-`max-h-screen` (a ceiling only), which turned out to make no visible
-difference on an ordinary monitor: the hero's natural content height
-was already shorter than 100vh there, so nothing was ever actually
-being clamped, and the change looked like a no-op. `h-screen` is a
-forced height instead, so the section always fills exactly one
-viewport regardless of content height — confirmed via Playwright at
-1920×1080 (the referenced size), 1440×900, and a 1512×982 laptop, each
-showing the section's rendered height exactly matching
-`window.innerHeight`. **Scoped to `md:` and up only** ("standard
-desktop monitors" was explicit in the request) — on mobile the section
-has no forced/capped height at all, so the hero's single-column stack
-(text block, then the video, in source order) just takes its natural
-height and scrolls normally, confirmed unclipped at 390×844. Do not
-apply `h-screen` (or any height cap) below `md:` without the user
-asking for that — the first attempt's `max-h-screen` (applied at every
-breakpoint) clipped the video almost entirely on mobile, which was
-flagged and corrected.
+sizing convention). **This went through three attempts:**
+1. `max-h-screen` (a ceiling only) — made no visible difference on an
+   ordinary monitor, since the hero's natural content height was
+   already shorter than 100vh there, so nothing was ever actually
+   being clamped. Looked like a no-op.
+2. `h-screen` (`height: 100vh`, forced rather than capped) — verified
+   via Playwright to render at exactly `window.innerHeight` at
+   1920×1080, 1440×900, and a 1512×982 laptop. Reported back as still
+   not filling the screen in one specific browser (Chrome, on the
+   user's machine) — investigated at length (video-compositing
+   artifacts, a Windows watermark bleeding into a screenshot, possible
+   stale cache) before the user clarified the actual complaint: the
+   hero rendered *taller* than one viewport in that browser, requiring
+   a scroll to reach the buttons — the opposite of `h-screen`'s
+   intended fixed-height, `overflow-hidden`-clipped behavior. Since
+   Chrome and Edge share the same rendering engine, this was diagnosed
+   as `100vh` itself being unreliable across the user's setup (a known
+   category of issue — `vh` doesn't always match the true visible
+   viewport when browser chrome/toolbars differ) rather than a real
+   engine-level bug worth chasing further.
+3. **`h-dvh`** (`height: 100dvh`, the CSS *dynamic* viewport height
+   unit — Tailwind ships this utility natively, confirmed in the
+   compiled output as `.md\:h-dvh{height:100dvh}`) — `dvh` is
+   specifically designed to track the actual rendered viewport rather
+   than a possibly-stale `100vh` value, which is the more robust
+   answer to "make it match the real screen it's being viewed on" than
+   continuing to debug `vh` inconsistencies one browser at a time. This
+   is the current, shipped value. Re-verified via Playwright at
+   1920×1080, 1440×900, and 390×844 (mobile) that desktop still renders
+   at exactly `window.innerHeight` and mobile remains unconstrained.
+**Scoped to `md:` and up only** ("standard desktop monitors" was
+explicit in the request) — on mobile the section has no forced/capped
+height at all, so the hero's single-column stack (text block, then the
+video, in source order) just takes its natural height and scrolls
+normally. Do not apply `h-dvh`/`h-screen` (or any height cap) below
+`md:` without the user asking for that — an early attempt applied
+`max-h-screen` at every breakpoint and clipped the video almost
+entirely on mobile, which was flagged and corrected. If a *shorter
+than 100dvh* hero is ever reported again on a specific device/browser,
+suspect that setup rather than re-guessing at the CSS unit again;
+`dvh` is the currently-correct, deliberate choice.
 
 ## Sitewide dark theme (`theme-dark-fixed`)
 
