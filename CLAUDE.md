@@ -986,6 +986,56 @@ doc instead of only a typed description of one.
   visitor sees for a past attachment after a refresh, which is expected,
   not a bug.
 
+**Voice** — added per direct request ("someone can not currently chat
+with the Sigma Companion with the help of voice"). Deliberately built
+on the browser's built-in **Web Speech API** first (no new backend, no
+third-party STT/TTS service/API key) rather than a paid service like
+ElevenLabs/Deepgram, since it ships free and needs zero new
+infrastructure — the tradeoff (accepted for this first pass) is that
+`SpeechRecognition` is Chrome/Edge-only (no Safari/Firefox support); a
+higher-quality/universal paid alternative can be layered in later if
+that gap matters.
+
+- **Mic input** (`#sc-mic-btn`, 🎤, in the input row next to the attach
+  button): click to start listening. `SpeechRecognition` runs with
+  `interimResults: true` so the visitor sees words fill `#sc-input`
+  live as they speak, and `continuous: false` so it naturally stops
+  after a pause — no separate "stop" step needed, though clicking the
+  mic again while listening also stops it early via `recognition.stop()`.
+  On the final result, the transcript **auto-sends** through the
+  existing `send()` flow (same code path as pressing Enter/Send) — this
+  matches how a voice assistant behaves, rather than just parking the
+  text in the input for a manual send. The button gets a `.listening`
+  class (solid accent fill + a `sc-pulse` opacity animation) while
+  active, and is included in `setBusy()` so it disables during a
+  request like the other input-row controls.
+- **Spoken replies** (`#sc-voice-toggle`, 🔇/🔊, in the header next to
+  Close): an independent on/off toggle — turning it on doesn't require
+  using the mic, and using the mic doesn't require it on. When on,
+  every new assistant reply is passed to `SpeechSynthesisUtterance` +
+  `speechSynthesis.speak()` right where it's added to the chat. This
+  hooks into `addMessage()`'s existing `persist !== false` branch (role
+  `"assistant"` only) rather than a separate call site, so it fires
+  exactly once per genuinely new reply and — for free — never fires for
+  the hardcoded initial greeting or a `sessionStorage` history restore
+  on reload (both call `addMessage(..., false)`, which already skips
+  that branch for the unrelated reason of not re-persisting). The
+  on/off preference is remembered via `sessionStorage`
+  (`sigmaCompanionVoiceReplies`), matching the file's existing pattern
+  for the conversation history itself. `speechSynthesis.cancel()` is
+  called when turning the toggle off mid-speech and when the panel is
+  closed, so a reply doesn't keep talking after the visitor has moved
+  on.
+- **Feature detection, no fallback UI**: `SpeechRecognitionCtor` (`window.
+  SpeechRecognition || window.webkitSpeechRecognition`) and `"speechSynthesis"
+  in window` are checked once at load; whichever button lacks support is
+  simply `display:none` rather than shown disabled with an explanatory
+  tooltip — keeps the input row uncluttered on unsupported browsers
+  instead of showing a control that can never work. The two features are
+  independent: a browser could in principle support one API without the
+  other, so each button's visibility is gated on its own capability
+  check, not both together.
+
 ## Contact form email (`/api/contact`)
 
 Sends via [Resend](https://resend.com) to `ashu.reiziger45@gmail.com`

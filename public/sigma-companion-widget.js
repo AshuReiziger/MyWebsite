@@ -15,6 +15,14 @@
  * brand doc, not just a description of one. Attachments are single-turn only —
  * see the note above MAX_ATTACHMENTS below for why they're never stored in
  * `history`/sessionStorage or resent on later requests.
+ *
+ * Voice (added after attachments): the mic button uses the browser's built-in
+ * Web Speech API (SpeechRecognition) to dictate a message — no new backend, no
+ * third-party speech service. It's Chrome/Edge-only (no Safari/Firefox support),
+ * so the button is simply hidden when the API isn't present rather than showing
+ * a broken control. The header's speaker toggle uses the matching SpeechSynthesis
+ * API to read Sigma Companion's replies aloud when turned on; both degrade to
+ * plain typing/reading if the browser lacks either API.
  */
 (function () {
   if (window.__sigmaCompanionLoaded) return;
@@ -32,6 +40,13 @@
   })();
   var API_URL = API_BASE + "/api/companion";
   var STORAGE_KEY = "sigmaCompanionHistory";
+  var VOICE_REPLIES_KEY = "sigmaCompanionVoiceReplies";
+
+  // Web Speech API — Chrome/Edge only (webkitSpeechRecognition is the vendor-
+  // prefixed name Chrome still ships). No polyfill/fallback service is used;
+  // the mic button and speaker toggle just hide themselves where unsupported.
+  var SpeechRecognitionCtor = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var speechSynthesisSupported = "speechSynthesis" in window;
 
   // Matches this site's .theme-dark-fixed token values (src/app/globals.css) —
   // the site is permanently dark, so the widget uses the same palette instead of
@@ -86,6 +101,9 @@
     "#sc-header{background:" + SURFACE + ";color:" + TEXT + ";padding:14px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid " + LINE + ";}",
     "#sc-header-title{font-weight:700;font-size:15px;}",
     "#sc-header-sub{font-size:11px;color:" + MUTED + ";margin-top:2px;}",
+    "#sc-header-actions{display:flex;align-items:center;gap:10px;}",
+    "#sc-voice-toggle{background:none;border:none;color:" + TEXT + ";font-size:16px;cursor:pointer;line-height:1;opacity:.8;}",
+    "#sc-voice-toggle:hover{opacity:1;}",
     "#sc-close{background:none;border:none;color:" + TEXT + ";font-size:20px;cursor:pointer;line-height:1;opacity:.8;}",
     "#sc-close:hover{opacity:1;}",
     "#sc-messages{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;}",
@@ -107,6 +125,11 @@
     "#sc-attach-btn{flex-shrink:0;background:none;border:1px solid " + LINE + ";border-radius:10px;width:40px;height:40px;font-size:16px;cursor:pointer;color:" + TEXT + ";}",
     "#sc-attach-btn:hover{border-color:" + ACCENT + ";}",
     "#sc-attach-btn:disabled{opacity:.5;cursor:default;}",
+    "#sc-mic-btn{flex-shrink:0;background:none;border:1px solid " + LINE + ";border-radius:10px;width:40px;height:40px;font-size:16px;cursor:pointer;color:" + TEXT + ";}",
+    "#sc-mic-btn:hover{border-color:" + ACCENT + ";}",
+    "#sc-mic-btn:disabled{opacity:.5;cursor:default;}",
+    "#sc-mic-btn.listening{background:" + ACCENT + ";border-color:" + ACCENT + ";color:" + ACCENT_TEXT + ";animation:sc-pulse 1.1s ease-in-out infinite;}",
+    "@keyframes sc-pulse{0%,100%{opacity:1;}50%{opacity:.5;}}",
     "#sc-input{flex:1;background:" + BG + ";color:" + TEXT + ";border:1px solid " + LINE + ";border-radius:10px;padding:9px 11px;font:14px/1.3 inherit;resize:none;height:40px;max-height:100px;}",
     "#sc-input::placeholder{color:" + MUTED + ";}",
     "#sc-input:focus{outline:2px solid " + ACCENT + ";outline-offset:1px;}",
@@ -132,12 +155,16 @@
     '<div id="sc-header">' +
     '<div><div id="sc-header-title">Sigma Companion</div>' +
     '<div id="sc-header-sub">Design &amp; brand decision support</div></div>' +
+    '<div id="sc-header-actions">' +
+    '<button id="sc-voice-toggle" type="button" aria-label="Turn on spoken replies" aria-pressed="false">🔇</button>' +
     '<button id="sc-close" type="button" aria-label="Close">×</button>' +
+    "</div>" +
     "</div>" +
     '<div id="sc-messages"></div>' +
     '<div id="sc-attach-tray"></div>' +
     '<div id="sc-inputrow">' +
     '<button id="sc-attach-btn" type="button" aria-label="Attach a file">📎</button>' +
+    '<button id="sc-mic-btn" type="button" aria-label="Speak your message">🎤</button>' +
     '<input id="sc-file-input" type="file" multiple accept="image/png,image/jpeg,image/webp,image/gif,application/pdf" style="display:none" />' +
     '<textarea id="sc-input" placeholder="Describe the decision you’re facing…" rows="1"></textarea>' +
     '<button id="sc-send" type="button">Send</button>' +
@@ -152,6 +179,25 @@
   var closeBtn = panel.querySelector("#sc-close");
   var attachBtn = panel.querySelector("#sc-attach-btn");
   var fileInput = panel.querySelector("#sc-file-input");
+  var micBtn = panel.querySelector("#sc-mic-btn");
+  var voiceToggleBtn = panel.querySelector("#sc-voice-toggle");
+
+  var recognition = null; // active SpeechRecognition instance while listening, else null
+  var voiceRepliesEnabled = false;
+  if (speechSynthesisSupported) {
+    try {
+      voiceRepliesEnabled = sessionStorage.getItem(VOICE_REPLIES_KEY) === "1";
+    } catch {
+      /* storage unavailable — spoken replies just default to off each load */
+    }
+  } else {
+    voiceToggleBtn.style.display = "none";
+  }
+  updateVoiceToggleUI();
+
+  if (!SpeechRecognitionCtor) {
+    micBtn.style.display = "none";
+  }
 
   var history = loadHistory();
   if (history.length === 0) {
@@ -174,6 +220,8 @@
   closeBtn.addEventListener("click", function () {
     panel.classList.remove("open");
     launcher.style.display = "flex";
+    if (recognition) recognition.stop();
+    if (speechSynthesisSupported) window.speechSynthesis.cancel();
   });
 
   inputEl.addEventListener("input", function () {
@@ -195,6 +243,90 @@
     handleFiles(fileInput.files);
     fileInput.value = ""; // allow re-picking the same file later
   });
+
+  if (SpeechRecognitionCtor) {
+    micBtn.addEventListener("click", function () {
+      if (recognition) {
+        recognition.stop(); // onend below finishes the turn
+        return;
+      }
+      startListening();
+    });
+  }
+
+  if (speechSynthesisSupported) {
+    voiceToggleBtn.addEventListener("click", function () {
+      voiceRepliesEnabled = !voiceRepliesEnabled;
+      if (!voiceRepliesEnabled) window.speechSynthesis.cancel();
+      try {
+        sessionStorage.setItem(VOICE_REPLIES_KEY, voiceRepliesEnabled ? "1" : "0");
+      } catch {
+        /* storage unavailable — preference just won't persist across reloads */
+      }
+      updateVoiceToggleUI();
+    });
+  }
+
+  // Dictates into #sc-input live (interim results included, so the visitor sees
+  // words appear as they speak) and auto-sends on the final result — matching
+  // how a voice assistant works rather than requiring a separate manual send.
+  function startListening() {
+    recognition = new SpeechRecognitionCtor();
+    recognition.lang = navigator.language || "en-US";
+    recognition.interimResults = true;
+    recognition.continuous = false;
+    recognition.maxAlternatives = 1;
+
+    var finalTranscript = "";
+    recognition.onresult = function (e) {
+      var interim = "";
+      for (var i = e.resultIndex; i < e.results.length; i++) {
+        if (e.results[i].isFinal) {
+          finalTranscript += e.results[i][0].transcript;
+        } else {
+          interim += e.results[i][0].transcript;
+        }
+      }
+      inputEl.value = (finalTranscript + interim).trim();
+      inputEl.style.height = "40px";
+      inputEl.style.height = Math.min(inputEl.scrollHeight, 100) + "px";
+    };
+    recognition.onerror = function () {
+      finalTranscript = ""; // don't auto-send a botched/interrupted attempt
+    };
+    recognition.onend = function () {
+      recognition = null;
+      micBtn.classList.remove("listening");
+      micBtn.setAttribute("aria-label", "Speak your message");
+      if (finalTranscript.trim()) {
+        inputEl.value = finalTranscript.trim();
+        send();
+      }
+    };
+    recognition.start();
+    micBtn.classList.add("listening");
+    micBtn.setAttribute("aria-label", "Stop listening");
+  }
+
+  function updateVoiceToggleUI() {
+    voiceToggleBtn.textContent = voiceRepliesEnabled ? "🔊" : "🔇";
+    voiceToggleBtn.setAttribute(
+      "aria-label",
+      voiceRepliesEnabled ? "Turn off spoken replies" : "Turn on spoken replies"
+    );
+    voiceToggleBtn.setAttribute("aria-pressed", voiceRepliesEnabled ? "true" : "false");
+  }
+
+  function speak(text) {
+    try {
+      window.speechSynthesis.cancel(); // interrupt any reply still being read
+      var utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = navigator.language || "en-US";
+      window.speechSynthesis.speak(utterance);
+    } catch {
+      /* speech synthesis unavailable/blocked — reply is still shown as text */
+    }
+  }
 
   function handleFiles(fileList) {
     Array.prototype.forEach.call(fileList, function (file) {
@@ -361,6 +493,9 @@
     if (persist !== false) {
       history.push({ role: role, content: content });
       saveHistory();
+      if (role === "assistant" && voiceRepliesEnabled) {
+        speak(content);
+      }
     }
   }
 
@@ -459,5 +594,6 @@
     sendBtn.disabled = busy;
     inputEl.disabled = busy;
     attachBtn.disabled = busy;
+    micBtn.disabled = busy;
   }
 })();
