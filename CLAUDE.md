@@ -274,19 +274,29 @@ reiziger-ashu-portrait.jpg`, unused but not deleted, in case a static
 image is wanted again later (e.g. as the `poster` for a future video, or
 back as the hero itself).
 
-**The hero `Section` itself is capped at `max-h-screen`** (100vh), per
-direct request — added to the same `className` that already carries
-`pt-16 md:pt-24` (`relative max-h-screen overflow-hidden pt-16
-md:pt-24`). Confirmed via Playwright at three sizes (1440×900, a short
-1512×760 laptop, and 390×844 mobile) that the section's rendered height
-exactly matches `window.innerHeight` at each. On mobile specifically,
-where the hero's grid stacks to a single column (text block, then the
-video, in source order), the text block alone often nearly fills 100vh
-by itself, so the video ends up mostly clipped below the fold within
-the capped section — a direct, visible consequence of this cap on
-narrow/short viewports, not a bug. If that trade-off ever needs
-revisiting (e.g. dropping the cap on mobile only, `md:max-h-screen`),
-that's a deliberate follow-up, not something to silently "fix" back.
+**The hero `Section` fills the viewport height on desktop** —
+`md:h-screen` on the same `className` that already carries `pt-16
+md:pt-24` (`relative overflow-hidden pt-16 md:h-screen md:pt-24`), per
+a direct request that the hero "fill the entire browser window on
+standard desktop monitors" (referencing a common 1920×1080/16:9 hero
+sizing convention). **This went through two attempts** — the first used
+`max-h-screen` (a ceiling only), which turned out to make no visible
+difference on an ordinary monitor: the hero's natural content height
+was already shorter than 100vh there, so nothing was ever actually
+being clamped, and the change looked like a no-op. `h-screen` is a
+forced height instead, so the section always fills exactly one
+viewport regardless of content height — confirmed via Playwright at
+1920×1080 (the referenced size), 1440×900, and a 1512×982 laptop, each
+showing the section's rendered height exactly matching
+`window.innerHeight`. **Scoped to `md:` and up only** ("standard
+desktop monitors" was explicit in the request) — on mobile the section
+has no forced/capped height at all, so the hero's single-column stack
+(text block, then the video, in source order) just takes its natural
+height and scrolls normally, confirmed unclipped at 390×844. Do not
+apply `h-screen` (or any height cap) below `md:` without the user
+asking for that — the first attempt's `max-h-screen` (applied at every
+breakpoint) clipped the video almost entirely on mobile, which was
+flagged and corrected.
 
 ## Sitewide dark theme (`theme-dark-fixed`)
 

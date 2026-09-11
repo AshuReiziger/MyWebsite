@@ -63,7 +63,7 @@ export default function Home() {
 
   return (
     <div className="theme-dark-fixed -mb-32 bg-paper pb-32 text-ink">
-      <Section className="relative max-h-screen overflow-hidden pt-16 md:pt-24">
+      <Section className="relative overflow-hidden pt-16 md:h-screen md:pt-24">
         <div
           aria-hidden
           className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-gradient-to-br from-accent/10 via-muted/10 to-transparent blur-3xl"
