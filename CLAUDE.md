@@ -326,6 +326,22 @@ for that — an early attempt applied `max-h-screen` at every breakpoint
 and clipped the video almost entirely on mobile, which was flagged and
 corrected.
 
+**Top padding is a flat `pt-[10px]` at every breakpoint** — per direct
+request, replacing the sitewide-default `pt-16 md:pt-24` this Section
+started with. Written as `pt-[10px] md:h-[calc(100dvh-81px)]
+md:pt-[10px]` — note **both** the unprefixed `pt-[10px]` and an
+explicit `md:pt-[10px]` are needed, not just one: `Section`'s own base
+classes (`Section.tsx`) include `md:py-40`, and Tailwind emits
+responsive (`md:`) rules after unprefixed ones in the compiled
+stylesheet, so without the explicit `md:pt-[10px]` override, `md:py-40`
+silently wins the top-padding value back on desktop (confirmed by
+measuring `getComputedStyle(...).paddingTop` — it read `160px`, not
+`10px`, until the `md:` override was added). This is the general
+pattern any time a page's own `className` needs to override *only one
+side* of `Section`'s default `py-*`/`px-*` shorthand at a *specific*
+breakpoint — an unprefixed override alone is not enough if the default
+being overridden is itself breakpoint-scoped.
+
 ## Sitewide dark theme (`theme-dark-fixed`)
 
 Every page on the site is permanently dark — not tied to the visitor's
