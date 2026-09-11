@@ -342,6 +342,15 @@ side* of `Section`'s default `py-*`/`px-*` shorthand at a *specific*
 breakpoint — an unprefixed override alone is not enough if the default
 being overridden is itself breakpoint-scoped.
 
+The same `pt-[10px] md:pt-[10px]` treatment was later applied to
+`/teach`'s hero `Section` too, per a direct follow-up request — that
+hero has no `h-[calc(...)]` height override (unlike Home's), so its
+className is just `pt-[10px] md:pt-[10px]`. Verified the same way (
+`getComputedStyle(...).paddingTop` reads `10px` at both mobile and
+desktop) rather than assumed, since the `md:py-40` cascade gotcha above
+applies to any `Section` the same way regardless of what else is in its
+className.
+
 **Hero copy was simplified from three text elements to two**, per direct
 request: the small uppercase `text-accent` eyebrow ("Reiziger Ashu") and
 the separate `h1` tagline ("I don't just design things...") were
