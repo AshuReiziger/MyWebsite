@@ -63,7 +63,7 @@ export default function Home() {
 
   return (
     <div className="theme-dark-fixed -mb-32 bg-paper pb-32 text-ink">
-      <Section className="relative overflow-hidden pt-16 md:h-[calc(100dvh-81px)] md:pt-24">
+      <Section className="relative overflow-hidden pt-[10px] md:h-[calc(100dvh-81px)] md:pt-[10px]">
         <div
           aria-hidden
           className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-gradient-to-br from-accent/10 via-muted/10 to-transparent blur-3xl"
@@ -71,20 +71,15 @@ export default function Home() {
         <div className="grid gap-10 md:grid-cols-[1.3fr_1fr] md:items-center">
           <div>
             <HeroReveal delay={0}>
-              <p className="text-sm font-semibold uppercase tracking-widest text-accent">
+              <h1 className="font-display text-[2em] font-bold uppercase leading-tight tracking-tight">
                 Reiziger Ashu
-              </p>
-            </HeroReveal>
-            <HeroReveal delay={0.1}>
-              <h1 className="mt-4 font-display text-[2em] uppercase leading-tight tracking-tight">
-                I don&apos;t just design things. I design what they can become.
               </h1>
             </HeroReveal>
             <HeroReveal delay={0.2}>
               <p className="mt-6 max-w-2xl text-muted">
-                I&apos;m Reiziger Ashu — a designer, strategist, educator, and creative leader
-                passionate about using design to help people and organizations discover who
-                they are, communicate what they believe, and build what they envision.
+                Designer, strategist, educator, and creative leader passionate about using
+                design to help people and organizations discover who they are, communicate
+                what they believe, and build what they envision.
               </p>
             </HeroReveal>
             <HeroReveal delay={0.3}>

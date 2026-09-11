@@ -326,6 +326,40 @@ for that — an early attempt applied `max-h-screen` at every breakpoint
 and clipped the video almost entirely on mobile, which was flagged and
 corrected.
 
+**Top padding is a flat `pt-[10px]` at every breakpoint** — per direct
+request, replacing the sitewide-default `pt-16 md:pt-24` this Section
+started with. Written as `pt-[10px] md:h-[calc(100dvh-81px)]
+md:pt-[10px]` — note **both** the unprefixed `pt-[10px]` and an
+explicit `md:pt-[10px]` are needed, not just one: `Section`'s own base
+classes (`Section.tsx`) include `md:py-40`, and Tailwind emits
+responsive (`md:`) rules after unprefixed ones in the compiled
+stylesheet, so without the explicit `md:pt-[10px]` override, `md:py-40`
+silently wins the top-padding value back on desktop (confirmed by
+measuring `getComputedStyle(...).paddingTop` — it read `160px`, not
+`10px`, until the `md:` override was added). This is the general
+pattern any time a page's own `className` needs to override *only one
+side* of `Section`'s default `py-*`/`px-*` shorthand at a *specific*
+breakpoint — an unprefixed override alone is not enough if the default
+being overridden is itself breakpoint-scoped.
+
+**Hero copy was simplified from three text elements to two**, per direct
+request: the small uppercase `text-accent` eyebrow ("Reiziger Ashu") and
+the separate `h1` tagline ("I don't just design things...") were
+collapsed into one `h1` — "Reiziger Ashu" itself now fills the h1 role,
+keeping the sitewide hero-`h1` treatment (`font-display text-[2em]
+uppercase leading-tight tracking-tight`) plus an explicit `font-bold`
+(700 weight, per direct request) rather than the sitewide default
+`font-normal`. The subtext `p` right below it dropped its
+"I'm Reiziger Ashu — a designer..." lead-in and now opens directly with
+"Designer, strategist, educator, and creative leader passionate about
+using design to help people and organizations discover who they are,
+communicate what they believe, and build what they envision." — the
+same "Designer. Strategist. Educator. Creative Leader." brand-voice
+title from the brand voice rules above, not new copy. This keeps
+exactly one `h1` on the homepage (there was none otherwise, since the
+old tagline `h1` is gone) rather than leaving the hero without a
+heading element.
+
 ## Sitewide dark theme (`theme-dark-fixed`)
 
 Every page on the site is permanently dark — not tied to the visitor's
@@ -565,6 +599,70 @@ weight consistent with the existing set instead of mixing icon styles.
 Home's "What I Do" grid renders these four cards in a single row on
 larger screens (`sm:grid-cols-2 lg:grid-cols-4`), per the Figma
 reference — not the 2×2 grid used in an earlier pass.
+
+**All four Teach offerings cards (`/teach`'s `OFFERINGS` array) carry a
+photo background and no icon badge**, per direct request — real photos
+the user supplied, not stock/placeholder images. `Design Training` uses
+`public/images/teach/design-training.jpg` (a solo shot: hands on a
+laptop showing the Photoshop splash screen), `Workshops` uses
+`public/images/teach/workshops.jpg` (two people collaborating over a
+laptop, editing a graphic), `Mentorship` uses
+`public/images/teach/mentorship.jpg` (a small group reviewing printed
+planning documents alongside a laptop), and `Free Resources` uses
+`public/images/teach/free-resources.jpg` (a desk with design-reference
+books, pencils, and a tablet showing color/branding tiles) — matched to
+each card's own copy (solo "technical mastery" vs. "collaborative
+sessions" vs. "1-on-1 guidance" vs. "practical guides, frameworks and
+tools"). Getting all four took three rounds: the user sent images in
+batches of 4, then 2, then 1, and several arrived as solid-black JPEGs
+(confirmed via `PIL`'s `getextrema()` returning `(0, 0)` — a failed
+upload each time, not intentional content) — each round shipped
+whichever image(s) came through intact rather than blocking on the
+rest, until all four cards had a real photo.
+
+The `icon`/`IconBadge` treatment every other icon-card grid on the site
+uses (see "Icon-card system" above) was **removed** from this specific
+grid per a direct follow-up request ("remove the icons from the
+cards") — once every card carries a full-bleed photo, the icon badge
+was redundant. `OFFERINGS`' `icon: ReactNode` field was dropped
+entirely (not just unrendered) along with the now-unused
+`CompassIcon`/`WorkshopIcon`/`MentorshipIcon`/`ResourcesIcon`/
+`IconBadge` imports, rather than leaving dead code. This is scoped to
+`/teach`'s offerings grid only — `icons.tsx`/`IconBadge` are still used
+elsewhere (Home's `CapabilityCard`, the About values grid) and are
+untouched; don't remove icons from those without a separate explicit
+request. `ArrowRightIcon` (the small arrow inside each card's CTA link,
+e.g. "See Workshops →") stayed — that's a link affordance, not the icon
+badge the request was about.
+
+Implementation follows the same `grayscale` → `group-hover:grayscale-0`
+treatment as `WorkCard.tsx` (see "Image treatment" above): a `next/image`
+with `fill` sits behind the card content at `-z-10`, with a
+`from-paper/90 via-paper/75 to-paper/90` gradient scrim (also `-z-10`,
+between the image and the text) so the card copy stays legible over the
+photo — `paper` resolves to the dark token inside this page's
+`theme-dark-fixed` wrap, so the scrim reads as a dark tint, not a light
+one (the same token-role gotcha documented under "Sitewide dark theme").
+**Cards with an image are squared, not rectangular** — `min-h-[360px]
+md:aspect-square` on their otherwise-shared `cardClassName`, per a
+direct follow-up request ("increase the height of the cards to make
+them more squared than rectangular"; the first pass only used a flat
+`min-h-[280px]`, which read as noticeably wide-and-short at the card's
+~660px rendered width on desktop). `md:aspect-square` forces the card's
+height to match its own width at that breakpoint; `min-h-[360px]` is the
+mobile-only fallback (single-column there, so no aspect-ratio is
+applied — a flat minimum height gives the photo reasonable room without
+forcing a literal square on a narrow viewport). Since all four cards now
+carry an `image`, this height treatment applies uniformly, but the
+`offering.image ? ... : ""` conditional was kept (rather than hardcoded)
+so a future icon-only/imageless card added to this array would still
+size correctly via the grid's default `align-items: stretch` row
+behavior — see the git history around this change for that fallback in
+action, from when `Mentorship` was still image-less and stretched to
+match its row sibling. The `Link`/`div` branching (whether the card has
+an `href`) was already conditional before the photo-background change
+and is untouched — only the inner content (`inner`) gained the optional
+image + scrim layer.
 
 `ResourceCTA.tsx` has a third `variant="centered"` (alongside the
 existing `compact`/`inline`) used only by Home's "Free Resource" band —

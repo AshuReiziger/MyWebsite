@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import type { ReactNode } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { Section, SectionHeading } from "@/components/Section";
-import { IconBadge, CompassIcon, WorkshopIcon, MentorshipIcon, ResourcesIcon, ArrowRightIcon } from "@/components/icons";
+import { ArrowRightIcon } from "@/components/icons";
 
 export const metadata: Metadata = {
   title: "Teach — Reiziger Ashu",
@@ -12,38 +12,38 @@ export const metadata: Metadata = {
 const OFFERINGS: {
   title: string;
   description: string;
-  icon: ReactNode;
   href?: string;
   cta?: string;
+  image?: string;
 }[] = [
   {
     title: "Design Training",
     description:
       "Structured programs designed to elevate technical mastery and conceptual thinking for mid-level designers aiming for senior roles.",
-    icon: <CompassIcon />,
+    image: "/images/teach/design-training.jpg",
   },
   {
     title: "Workshops",
     description:
       "Intensive, collaborative sessions focusing on specific strategic frameworks, design systems, or creative leadership challenges.",
-    icon: <WorkshopIcon />,
     href: "/teach/workshops",
     cta: "See Workshops",
+    image: "/images/teach/workshops.jpg",
   },
   {
     title: "Mentorship",
     description:
       "1-on-1 guidance focusing on career trajectory, portfolio refinement, and navigating the complexities of the design industry.",
-    icon: <MentorshipIcon />,
     href: "/teach/mentorship",
     cta: "See Mentorship Tracks",
+    image: "/images/teach/mentorship.jpg",
   },
   {
     title: "Free Resources",
     description: "Practical guides, frameworks and tools for designers, creatives and organizations.",
-    icon: <ResourcesIcon />,
     href: "/resources",
     cta: "Explore Resources",
+    image: "/images/teach/free-resources.jpg",
   },
 ];
 
@@ -83,8 +83,7 @@ export default function TeachPage() {
           {OFFERINGS.map((offering) => {
             const content = (
               <>
-                <IconBadge>{offering.icon}</IconBadge>
-                <h3 className="mt-5 font-display text-lg font-bold tracking-tight">
+                <h3 className="font-display text-lg font-bold tracking-tight">
                   {offering.title}
                 </h3>
                 <p className="mt-2 text-muted">{offering.description}</p>
@@ -96,21 +95,36 @@ export default function TeachPage() {
               </>
             );
 
+            const cardClassName = `group relative isolate overflow-hidden rounded-2xl border border-line p-8 transition-colors hover:border-accent/50${
+              offering.image ? " min-h-[360px] md:aspect-square" : ""
+            }`;
+
+            const inner = offering.image ? (
+              <>
+                <Image
+                  src={offering.image}
+                  alt=""
+                  fill
+                  className="-z-10 object-cover grayscale transition-[filter,transform] duration-700 group-hover:scale-105 group-hover:grayscale-0"
+                />
+                <div className="absolute inset-0 -z-10 bg-gradient-to-br from-paper/90 via-paper/75 to-paper/90" />
+                {content}
+              </>
+            ) : (
+              content
+            );
+
             if (offering.href) {
               return (
-                <Link
-                  key={offering.title}
-                  href={offering.href}
-                  className="group rounded-2xl border border-line p-8 transition-colors hover:border-accent/50"
-                >
-                  {content}
+                <Link key={offering.title} href={offering.href} className={cardClassName}>
+                  {inner}
                 </Link>
               );
             }
 
             return (
-              <div key={offering.title} className="rounded-2xl border border-line p-8">
-                {content}
+              <div key={offering.title} className={cardClassName}>
+                {inner}
               </div>
             );
           })}
