@@ -342,6 +342,24 @@ side* of `Section`'s default `py-*`/`px-*` shorthand at a *specific*
 breakpoint — an unprefixed override alone is not enough if the default
 being overridden is itself breakpoint-scoped.
 
+**Hero copy was simplified from three text elements to two**, per direct
+request: the small uppercase `text-accent` eyebrow ("Reiziger Ashu") and
+the separate `h1` tagline ("I don't just design things...") were
+collapsed into one `h1` — "Reiziger Ashu" itself now fills the h1 role,
+keeping the sitewide hero-`h1` treatment (`font-display text-[2em]
+uppercase leading-tight tracking-tight`) plus an explicit `font-bold`
+(700 weight, per direct request) rather than the sitewide default
+`font-normal`. The subtext `p` right below it dropped its
+"I'm Reiziger Ashu — a designer..." lead-in and now opens directly with
+"Designer, strategist, educator, and creative leader passionate about
+using design to help people and organizations discover who they are,
+communicate what they believe, and build what they envision." — the
+same "Designer. Strategist. Educator. Creative Leader." brand-voice
+title from the brand voice rules above, not new copy. This keeps
+exactly one `h1` on the homepage (there was none otherwise, since the
+old tagline `h1` is gone) rather than leaving the hero without a
+heading element.
+
 ## Sitewide dark theme (`theme-dark-fixed`)
 
 Every page on the site is permanently dark — not tied to the visitor's

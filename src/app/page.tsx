@@ -71,20 +71,15 @@ export default function Home() {
         <div className="grid gap-10 md:grid-cols-[1.3fr_1fr] md:items-center">
           <div>
             <HeroReveal delay={0}>
-              <p className="text-sm font-semibold uppercase tracking-widest text-accent">
+              <h1 className="font-display text-[2em] font-bold uppercase leading-tight tracking-tight">
                 Reiziger Ashu
-              </p>
-            </HeroReveal>
-            <HeroReveal delay={0.1}>
-              <h1 className="mt-4 font-display text-[2em] uppercase leading-tight tracking-tight">
-                I don&apos;t just design things. I design what they can become.
               </h1>
             </HeroReveal>
             <HeroReveal delay={0.2}>
               <p className="mt-6 max-w-2xl text-muted">
-                I&apos;m Reiziger Ashu — a designer, strategist, educator, and creative leader
-                passionate about using design to help people and organizations discover who
-                they are, communicate what they believe, and build what they envision.
+                Designer, strategist, educator, and creative leader passionate about using
+                design to help people and organizations discover who they are, communicate
+                what they believe, and build what they envision.
               </p>
             </HeroReveal>
             <HeroReveal delay={0.3}>
