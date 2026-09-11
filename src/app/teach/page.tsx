@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Section, SectionHeading } from "@/components/Section";
-import { IconBadge, CompassIcon, WorkshopIcon, MentorshipIcon, ResourcesIcon, ArrowRightIcon } from "@/components/icons";
+import { ArrowRightIcon } from "@/components/icons";
 
 export const metadata: Metadata = {
   title: "Teach — Reiziger Ashu",
@@ -13,7 +12,6 @@ export const metadata: Metadata = {
 const OFFERINGS: {
   title: string;
   description: string;
-  icon: ReactNode;
   href?: string;
   cta?: string;
   image?: string;
@@ -22,14 +20,12 @@ const OFFERINGS: {
     title: "Design Training",
     description:
       "Structured programs designed to elevate technical mastery and conceptual thinking for mid-level designers aiming for senior roles.",
-    icon: <CompassIcon />,
     image: "/images/teach/design-training.jpg",
   },
   {
     title: "Workshops",
     description:
       "Intensive, collaborative sessions focusing on specific strategic frameworks, design systems, or creative leadership challenges.",
-    icon: <WorkshopIcon />,
     href: "/teach/workshops",
     cta: "See Workshops",
     image: "/images/teach/workshops.jpg",
@@ -38,14 +34,13 @@ const OFFERINGS: {
     title: "Mentorship",
     description:
       "1-on-1 guidance focusing on career trajectory, portfolio refinement, and navigating the complexities of the design industry.",
-    icon: <MentorshipIcon />,
     href: "/teach/mentorship",
     cta: "See Mentorship Tracks",
+    image: "/images/teach/mentorship.jpg",
   },
   {
     title: "Free Resources",
     description: "Practical guides, frameworks and tools for designers, creatives and organizations.",
-    icon: <ResourcesIcon />,
     href: "/resources",
     cta: "Explore Resources",
     image: "/images/teach/free-resources.jpg",
@@ -88,8 +83,7 @@ export default function TeachPage() {
           {OFFERINGS.map((offering) => {
             const content = (
               <>
-                <IconBadge>{offering.icon}</IconBadge>
-                <h3 className="mt-5 font-display text-lg font-bold tracking-tight">
+                <h3 className="font-display text-lg font-bold tracking-tight">
                   {offering.title}
                 </h3>
                 <p className="mt-2 text-muted">{offering.description}</p>

@@ -600,26 +600,40 @@ Home's "What I Do" grid renders these four cards in a single row on
 larger screens (`sm:grid-cols-2 lg:grid-cols-4`), per the Figma
 reference — not the 2×2 grid used in an earlier pass.
 
-**Three of the four Teach offerings cards (`/teach`'s `OFFERINGS` array)
-carry a photo background**, per direct request — real photos the user
-supplied, not stock/placeholder images. `Design Training` uses
+**All four Teach offerings cards (`/teach`'s `OFFERINGS` array) carry a
+photo background and no icon badge**, per direct request — real photos
+the user supplied, not stock/placeholder images. `Design Training` uses
 `public/images/teach/design-training.jpg` (a solo shot: hands on a
 laptop showing the Photoshop splash screen), `Workshops` uses
 `public/images/teach/workshops.jpg` (two people collaborating over a
-laptop, editing a graphic), and `Free Resources` uses
+laptop, editing a graphic), `Mentorship` uses
+`public/images/teach/mentorship.jpg` (a small group reviewing printed
+planning documents alongside a laptop), and `Free Resources` uses
 `public/images/teach/free-resources.jpg` (a desk with design-reference
 books, pencils, and a tablet showing color/branding tiles) — matched to
 each card's own copy (solo "technical mastery" vs. "collaborative
-sessions" vs. "practical guides, frameworks and tools"). `Mentorship` is
-the one card still plain/bordered: of the 6 images sent across two
-messages for this, only 3 ever arrived intact — the other 3 (the 2nd
-image in the first batch, then the 2nd image in the follow-up batch)
-came through as solid-black JPEGs (confirmed via `PIL`'s
-`getextrema()` returning `(0, 0)` — a failed upload each time, not
-intentional content). The user chose to ship each working image as it
-arrived rather than block on the rest. Add a background for `Mentorship`
-the same way once a real image exists for it: add an `image` field to
-its entry in `OFFERINGS`.
+sessions" vs. "1-on-1 guidance" vs. "practical guides, frameworks and
+tools"). Getting all four took three rounds: the user sent images in
+batches of 4, then 2, then 1, and several arrived as solid-black JPEGs
+(confirmed via `PIL`'s `getextrema()` returning `(0, 0)` — a failed
+upload each time, not intentional content) — each round shipped
+whichever image(s) came through intact rather than blocking on the
+rest, until all four cards had a real photo.
+
+The `icon`/`IconBadge` treatment every other icon-card grid on the site
+uses (see "Icon-card system" above) was **removed** from this specific
+grid per a direct follow-up request ("remove the icons from the
+cards") — once every card carries a full-bleed photo, the icon badge
+was redundant. `OFFERINGS`' `icon: ReactNode` field was dropped
+entirely (not just unrendered) along with the now-unused
+`CompassIcon`/`WorkshopIcon`/`MentorshipIcon`/`ResourcesIcon`/
+`IconBadge` imports, rather than leaving dead code. This is scoped to
+`/teach`'s offerings grid only — `icons.tsx`/`IconBadge` are still used
+elsewhere (Home's `CapabilityCard`, the About values grid) and are
+untouched; don't remove icons from those without a separate explicit
+request. `ArrowRightIcon` (the small arrow inside each card's CTA link,
+e.g. "See Workshops →") stayed — that's a link affordance, not the icon
+badge the request was about.
 
 Implementation follows the same `grayscale` → `group-hover:grayscale-0`
 treatment as `WorkCard.tsx` (see "Image treatment" above): a `next/image`
@@ -638,15 +652,17 @@ them more squared than rectangular"; the first pass only used a flat
 height to match its own width at that breakpoint; `min-h-[360px]` is the
 mobile-only fallback (single-column there, so no aspect-ratio is
 applied — a flat minimum height gives the photo reasonable room without
-forcing a literal square on a narrow viewport). The grid's default
-`align-items: stretch` means `Mentorship` (no image, no explicit height
-utility) automatically matches its row sibling's height — it shares a
-row with `Free Resources`, so it stretches to the same square height
-that card's `aspect-square` produces, without needing its own height
-class. Cards without an image are otherwise unaffected. The `Link`/`div`
-branching (whether the card has an `href`) was already conditional
-before this change and is untouched — only the inner content (`inner`)
-gained the optional image + scrim layer.
+forcing a literal square on a narrow viewport). Since all four cards now
+carry an `image`, this height treatment applies uniformly, but the
+`offering.image ? ... : ""` conditional was kept (rather than hardcoded)
+so a future icon-only/imageless card added to this array would still
+size correctly via the grid's default `align-items: stretch` row
+behavior — see the git history around this change for that fallback in
+action, from when `Mentorship` was still image-less and stretched to
+match its row sibling. The `Link`/`div` branching (whether the card has
+an `href`) was already conditional before the photo-background change
+and is untouched — only the inner content (`inner`) gained the optional
+image + scrim layer.
 
 `ResourceCTA.tsx` has a third `variant="centered"` (alongside the
 existing `compact`/`inline`) used only by Home's "Free Resource" band —
