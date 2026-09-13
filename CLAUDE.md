@@ -271,7 +271,7 @@ from `public/images/reiziger-ashu-portrait.jpg` (the About page's
 portrait, from the earlier brief video-swap era, referenced above) —
 don't confuse the two or reuse one for the other's slot. Rendered as
 `<Image src="/images/reiziger-ashu-hero-portrait.webp" alt="Reiziger
-Ashu" fill priority sizes="(min-width: 768px) 40vw, 100vw"
+Ashu" fill priority sizes="(min-width: 768px) 50vw, 100vw"
 className="object-cover" />` inside the same `relative aspect-[4/5]
 overflow-hidden` wrapper div used for every other hero/gallery slot —
 `priority` since it's the largest above-the-fold element (LCP
@@ -282,14 +282,33 @@ leaving superseded assets in place rather than deleting them.
 **This specific source image has a transparent background** (a
 cutout portrait, alpha channel confirmed via `PIL` before use) — kept
 as WebP rather than flattened to JPG specifically to preserve that
-transparency, since `object-cover` then lets the wrapper's
-`from-accent/30 via-paper to-paper` gradient show through around the
-subject instead of a hard-edged rectangle, giving a "floating over the
-gradient" look that reads as intentional (confirmed by screenshot, not
-just assumed) rather than a broken/missing-background image. If a
-future replacement photo has a normal opaque background, this gradient
-bleed-through effect won't occur — that's fine, it was a side effect of
-this particular image, not a look this section is designed around.
+transparency.
+
+**Two follow-up requests changed the image wrapper and grid split from
+the initial swap-in, both since reverted/adjusted from what's described
+above:**
+1. The wrapper originally kept its pre-existing `bg-gradient-to-br
+   from-accent/30 via-paper to-paper` placeholder classes (the same
+   fallback-backdrop pattern used on every other empty image slot
+   sitewide), which — combined with this image's transparency — let the
+   gradient show through around the subject. Per direct follow-up
+   ("remove the gradient I see behind the image"), those classes were
+   dropped entirely; the wrapper now has no background class at all, so
+   the page's own dark background shows through the transparent
+   regions instead. Don't re-add the gradient-placeholder classes to
+   this specific wrapper without the user asking again — every *other*
+   empty/optional image slot on the site should still keep that
+   fallback-gradient convention, this is a one-off exception now that
+   this slot has a real (permanent, not-optional) image.
+2. The grid split was originally `md:grid-cols-[1.3fr_1fr]` (text
+   column wider, image column ~43% of the row). Per direct follow-up
+   ("resize the image to take half of the horizontal space"), changed
+   to `md:grid-cols-2` — an even 50/50 split, confirmed via
+   `getBoundingClientRect()` on both grid children (660px/660px at a
+   1440px viewport). `sizes` on the `Image` was updated to match
+   (`50vw` instead of `40vw` at the `md:` breakpoint) so the browser's
+   responsive-image selection reflects the column's real rendered
+   width.
 
 **The hero `Section` fills the viewport height on desktop, accounting
 for `Nav`'s own height** — `md:h-[calc(100dvh-81px)]` on the same

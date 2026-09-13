@@ -69,7 +69,7 @@ export default function Home() {
           aria-hidden
           className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-gradient-to-br from-accent/10 via-muted/10 to-transparent blur-3xl"
         />
-        <div className="grid gap-10 md:grid-cols-[1.3fr_1fr] md:items-center">
+        <div className="grid gap-10 md:grid-cols-2 md:items-center">
           <div>
             <HeroReveal delay={0}>
               <h1 className="font-display text-[2em] font-bold uppercase leading-tight tracking-tight">
@@ -101,13 +101,13 @@ export default function Home() {
             </HeroReveal>
           </div>
           <HeroReveal delay={0.15}>
-            <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-gradient-to-br from-accent/30 via-paper to-paper">
+            <div className="relative aspect-[4/5] overflow-hidden rounded-2xl">
               <Image
                 src="/images/reiziger-ashu-hero-portrait.webp"
                 alt="Reiziger Ashu"
                 fill
                 priority
-                sizes="(min-width: 768px) 40vw, 100vw"
+                sizes="(min-width: 768px) 50vw, 100vw"
                 className="object-cover"
               />
             </div>
