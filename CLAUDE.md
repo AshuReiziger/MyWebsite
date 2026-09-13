@@ -452,6 +452,31 @@ above:**
    to `md:pl-[80px]` per direct follow-up ("adjust the hero copy's left
    padding to 80px") — same one-off inset pattern as item 4, still
    unrelated to `Section`'s own sitewide `px-3 md:px-10` scale.
+9. **The hero `Section`'s own horizontal padding was zeroed out** per
+   direct follow-up ("remove the padding on the left and right side of
+   the image so that the image can be larger respecting the 40/60
+   ratio") — `Section`'s inherited `px-3 md:px-10` was insetting the
+   *entire* grid (both columns) from the viewport edges, most visibly
+   capping the image column short of the right edge. Overriding it
+   needed the bracket-arbitrary form specifically —
+   `px-[0px] md:px-[0px]` — not the bare `px-0 md:px-0` utility: a first
+   attempt with `px-0 md:px-0` measured via `getComputedStyle` as having
+   **no effect** (`paddingLeft`/`paddingRight` still read `40px`), while
+   the bracket form measured `0px`/`0px` immediately. This appears to be
+   a same-value-different-syntax variant of the already-documented
+   Tailwind v4 cascade gotcha (see the "Top padding" note below) — the
+   established working pattern on this Section uses bracket syntax
+   throughout (`pt-[10px]`, `pb-[10px]`, etc.), so bracket syntax was
+   used here too rather than mixing scale-based and arbitrary-value
+   utilities on the same element. Confirmed via Playwright at a 1440px
+   viewport: the grid now sits flush at `0`/`0` from both viewport
+   edges, and the image column grew from 792px to 840px while staying
+   at exactly 60% of the row (the 40/60 ratio itself is untouched — this
+   change only grows the *shared width available* to split 40/60, it
+   doesn't change the split). The copy column keeps its own separate
+   `md:pl-[80px]` (item 8) as its only inset now that `Section`'s own
+   padding is gone, so text still has breathing room from the now-flush
+   left edge.
 
 **The hero `Section` fills the viewport height on desktop, accounting
 for `Nav`'s own height** — `md:h-[calc(100dvh-81px)]` on the same
