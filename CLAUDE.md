@@ -257,22 +257,39 @@ or additional Portfolio component) for visual consistency.
 `src/app/page.tsx`'s hero image slot (previously the `from-accent/30
 via-paper to-paper` gradient placeholder, same as every other empty
 image slot on the site) briefly held a real portrait of Reiziger Ashu
-via `next/image` before being swapped for a looping background video
-per direct request: a plain `<video>` element (not `next/image` — video
-isn't covered by that component) at `public/videos/
-reiziger-ashu-hero.mp4`, `autoPlay muted loop playsInline` (required
-combination for autoplay to actually work on mobile Safari), with
-`poster="/images/reiziger-ashu-hero-poster.jpg"` (first frame,
-extracted with `ffmpeg -update 1 -frames:v 1`) shown while it loads.
-Sized with `absolute inset-0 h-full w-full object-cover` inside the same
-`relative aspect-[4/5] overflow-hidden` wrapper div used for every other
-hero/gallery slot, so the video's native 9:16 crops to fit exactly like
-`next/image`'s `fill` + `object-cover` would. The gradient classes stay
-on the wrapper as a fallback backdrop for the same reason as elsewhere.
-The still portrait photo remains at `public/images/
-reiziger-ashu-portrait.jpg`, unused but not deleted, in case a static
-image is wanted again later (e.g. as the `poster` for a future video, or
-back as the hero itself).
+via `next/image`, was swapped for a looping background video (a plain
+`<video>` element at `public/videos/reiziger-ashu-hero.mp4`,
+`autoPlay muted loop playsInline`, `poster="/images/
+reiziger-ashu-hero-poster.jpg"`), then **swapped back to a static
+`next/image` per a later direct request** ("replace the 'Hello' video
+with this image as background" — the video showed repeating "HELLO"
+text tiles, not footage of Reiziger Ashu himself, so this wasn't a
+video-vs-photo-of-him choice, it was replacing stock-looking motion
+content with an actual portrait). The new portrait lives at
+`public/images/reiziger-ashu-hero-portrait.webp` — a **different file**
+from `public/images/reiziger-ashu-portrait.jpg` (the About page's
+portrait, from the earlier brief video-swap era, referenced above) —
+don't confuse the two or reuse one for the other's slot. Rendered as
+`<Image src="/images/reiziger-ashu-hero-portrait.webp" alt="Reiziger
+Ashu" fill priority sizes="(min-width: 768px) 40vw, 100vw"
+className="object-cover" />` inside the same `relative aspect-[4/5]
+overflow-hidden` wrapper div used for every other hero/gallery slot —
+`priority` since it's the largest above-the-fold element (LCP
+candidate) on the homepage. The video element and its poster/`.mp4`
+file were removed from the page but the files themselves weren't
+deleted from `public/`, matching the site's convention elsewhere of
+leaving superseded assets in place rather than deleting them.
+**This specific source image has a transparent background** (a
+cutout portrait, alpha channel confirmed via `PIL` before use) — kept
+as WebP rather than flattened to JPG specifically to preserve that
+transparency, since `object-cover` then lets the wrapper's
+`from-accent/30 via-paper to-paper` gradient show through around the
+subject instead of a hard-edged rectangle, giving a "floating over the
+gradient" look that reads as intentional (confirmed by screenshot, not
+just assumed) rather than a broken/missing-background image. If a
+future replacement photo has a normal opaque background, this gradient
+bleed-through effect won't occur — that's fine, it was a side effect of
+this particular image, not a look this section is designed around.
 
 **The hero `Section` fills the viewport height on desktop, accounting
 for `Nav`'s own height** — `md:h-[calc(100dvh-81px)]` on the same
