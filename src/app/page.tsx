@@ -69,8 +69,8 @@ export default function Home() {
           aria-hidden
           className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-gradient-to-br from-accent/10 via-muted/10 to-transparent blur-3xl"
         />
-        <div className="grid gap-10 md:w-full md:grid-cols-[2fr_3fr] md:items-center">
-          <div className="md:pl-[50px]">
+        <div className="grid gap-10 md:h-full md:w-full md:grid-cols-[2fr_3fr] md:grid-rows-1 md:items-center">
+          <div className="md:pl-[80px]">
             <HeroReveal delay={0}>
               <h1 className="font-display text-[3em] font-bold leading-tight tracking-tight">
                 Reiziger Ashu
@@ -100,8 +100,8 @@ export default function Home() {
               </div>
             </HeroReveal>
           </div>
-          <HeroReveal delay={0.15}>
-            <div className="relative aspect-[4/5] overflow-hidden rounded-2xl">
+          <HeroReveal delay={0.15} className="md:h-full md:self-stretch">
+            <div className="relative aspect-[4/5] overflow-hidden rounded-2xl md:aspect-auto md:h-full">
               <Image
                 src="/images/reiziger-ashu-hero-portrait.webp"
                 alt="Reiziger Ashu"

@@ -408,6 +408,50 @@ above:**
      custom `object-[50%_22%]` position — a plain `object-top` was
      sufficient here since this crop only needed to protect the very top
      of the frame, not a specific vertical percentage.
+7. **`object-top` alone didn't fully solve the crop** — per direct
+   follow-up ("the image face is covered by the nav bar"), the real
+   cause was upstream of `object-position`: the image wrapper's
+   `aspect-[4/5]` sizing means its *height* is derived from the grid
+   column's *width*, and item 6's 60%-width column made that height
+   (990px at a 1440×900 viewport) exceed the hero `Section`'s own fixed
+   height (819px, from the `md:h-[calc(100dvh-81px)]` override below).
+   Since `Section` is `md:flex md:items-center` (see item 5) and the
+   `.grid` was never given an explicit height, the grid — sized to its
+   tallest child (the now-990px image column) — overflowed the
+   819px-tall `Section` equally on both edges, and `Section`'s
+   `overflow-hidden` clipped it there. Because `object-top` had already
+   shifted the visible face content to the very top of the image crop,
+   that top-edge clipping cut straight into the face — this is what
+   read as the nav bar (which sits just above the section) "covering"
+   it, though the clip was from `overflow-hidden`, not the nav itself.
+   **Fixed by bounding the image column to the section's real height
+   instead of deriving it from width**: `.grid` gained `md:h-full
+   md:grid-rows-1` (an explicit height matching `Section`'s content box,
+   with `grid-rows-1` — Tailwind's `repeat(1, minmax(0, 1fr))` — so the
+   single row actually consumes that full height rather than sizing
+   itself to content, which is CSS Grid's default even when the grid
+   container has an explicit height). The image's `HeroReveal` wrapper
+   picked up `className="md:h-full md:self-stretch"` (`HeroReveal` didn't
+   forward `className` before this — added an optional `className?`
+   prop, passed through to the underlying `motion.div`, purely additive
+   and backward-compatible with its other call sites in
+   `resources/page.tsx`/`ResourceDetailLayout.tsx`/
+   `WorkshopDetailLayout.tsx`/`MentorshipDetailLayout.tsx`) so the grid
+   item itself stretches to the row's now-guaranteed-full height instead
+   of just centering at its own intrinsic size. Inside it, the image
+   wrapper `div` gained `md:aspect-auto md:h-full` (overriding
+   `aspect-[4/5]` on desktop only — mobile, which has no `Section`
+   height cap, keeps the aspect-ratio-driven sizing unchanged). The text
+   column's own `md:items-center` (inherited from `.grid`, item 5) still
+   centers it within this now-height-matched row, so `offsetFromCenter`
+   stays exactly `0` — re-verified via Playwright after this change, at
+   both 1440×900 and 1920×1080, alongside a new check that the image
+   wrapper's bounding rect never exceeds the section's (`overflowsSection:
+   false` at both sizes, where it was `true` before this fix).
+8. The copy column's left padding was bumped from `md:pl-[50px]` (item 4)
+   to `md:pl-[80px]` per direct follow-up ("adjust the hero copy's left
+   padding to 80px") — same one-off inset pattern as item 4, still
+   unrelated to `Section`'s own sitewide `px-3 md:px-10` scale.
 
 **The hero `Section` fills the viewport height on desktop, accounting
 for `Nav`'s own height** — `md:h-[calc(100dvh-81px)]` on the same
