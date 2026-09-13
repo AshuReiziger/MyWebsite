@@ -320,6 +320,18 @@ above:**
    with the top of the image, matching where the image's own subject
    starts, instead of floating in the vertical middle of a much taller
    row. Confirmed via screenshot, not just the class change alone.
+4. The copy column's own wrapping `div` (previously bare, no
+   className) picked up `md:pl-[50px] md:pt-[90px]` per direct request
+   — a fixed inset from the top-left of its grid cell, desktop-only
+   (no mobile equivalent was requested, so the div has zero padding
+   below `md:`). Verified via `getComputedStyle(...)` on that specific
+   div (not the `Section` or the outer grid) reading exactly
+   `paddingTop: "90px"` / `paddingLeft: "50px"` at a 1440px viewport
+   and `0px`/`0px` at mobile widths. This is a one-off inset on the
+   hero copy specifically, unrelated to `Section`'s own
+   `px-3 md:px-10`/`py-20 md:py-40` sitewide padding scale (see
+   "Content width and spacing scale" below) — don't confuse the two or
+   assume this pattern generalizes to other pages' copy blocks.
 
 **The hero `Section` fills the viewport height on desktop, accounting
 for `Nav`'s own height** — `md:h-[calc(100dvh-81px)]` on the same

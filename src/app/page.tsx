@@ -70,7 +70,7 @@ export default function Home() {
           className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-gradient-to-br from-accent/10 via-muted/10 to-transparent blur-3xl"
         />
         <div className="grid gap-10 md:grid-cols-2 md:items-start">
-          <div>
+          <div className="md:pl-[50px] md:pt-[90px]">
             <HeroReveal delay={0}>
               <h1 className="font-display text-[2em] font-bold uppercase leading-tight tracking-tight">
                 Reiziger Ashu
