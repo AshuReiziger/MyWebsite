@@ -64,13 +64,13 @@ export default function Home() {
 
   return (
     <div className="theme-dark-fixed -mb-32 bg-paper pb-32 text-ink">
-      <Section className="relative overflow-hidden pt-[10px] md:h-[calc(100dvh-81px)] md:pt-[10px]">
+      <Section className="relative overflow-hidden pb-[10px] pt-[10px] md:flex md:h-[calc(100dvh-81px)] md:items-center md:pb-[10px] md:pt-[10px]">
         <div
           aria-hidden
           className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-gradient-to-br from-accent/10 via-muted/10 to-transparent blur-3xl"
         />
-        <div className="grid gap-10 md:grid-cols-2 md:items-start">
-          <div className="md:pl-[50px] md:pt-[90px]">
+        <div className="grid gap-10 md:w-full md:grid-cols-2 md:items-center">
+          <div className="md:pl-[50px]">
             <HeroReveal delay={0}>
               <h1 className="font-display text-[2em] font-bold uppercase leading-tight tracking-tight">
                 Reiziger Ashu

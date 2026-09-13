@@ -320,6 +320,10 @@ above:**
    with the top of the image, matching where the image's own subject
    starts, instead of floating in the vertical middle of a much taller
    row. Confirmed via screenshot, not just the class change alone.
+   **Superseded by item 5 below** — `md:items-start` was itself later
+   replaced once the ask became true vertical centering of the whole
+   hero section, not just alignment relative to the (much taller) grid
+   row.
 4. The copy column's own wrapping `div` (previously bare, no
    className) picked up `md:pl-[50px] md:pt-[90px]` per direct request
    — a fixed inset from the top-left of its grid cell, desktop-only
@@ -332,6 +336,43 @@ above:**
    `px-3 md:px-10`/`py-20 md:py-40` sitewide padding scale (see
    "Content width and spacing scale" below) — don't confuse the two or
    assume this pattern generalizes to other pages' copy blocks.
+   **`md:pt-[90px]` was removed in item 5 below** (a fixed top offset is
+   incompatible with true vertical centering — the two requests were in
+   direct tension, so centering won since it was the more recent, more
+   specific instruction); `md:pl-[50px]` was kept since the horizontal
+   inset doesn't conflict with centering the copy vertically.
+5. **The row-level `items-start`/`items-center` approach above was never
+   going to produce true vertical centering of the copy within the
+   *section*, because the grid row's height is dictated by the tall
+   `aspect-[4/5]` image column, not by the section's own box** — centering
+   within that row only centers relative to the image's height, which
+   isn't the same as centering within the full hero `Section` (whose
+   height is fixed via the `md:h-[calc(100dvh-81px)]` override described
+   below). Per a direct follow-up ("I need you to adjust the hero copy to
+   be positioned mid way vertically of the hero section"), the alignment
+   was moved up a level: `Section` itself became `md:flex md:items-center`
+   (wrapping the whole grid-as-block, not just the grid's own columns),
+   and the grid reverted to `md:items-center` (`md:pl-[50px]` kept,
+   `md:pt-[90px]` dropped per item 4 above).
+   **This surfaced a second, non-obvious bug**: flex's `items-center`
+   centers within the *content box* — the area between the element's own
+   padding edges — not the border box. `Section`'s top padding had been
+   overridden to `pt-[10px]` (10px) but its bottom padding was still the
+   inherited `md:py-40` (160px, never overridden on this Section), so the
+   content box itself was badly asymmetric top-vs-bottom, and flex
+   centering inside it skewed the visible copy upward. Measured via
+   Playwright (`getBoundingClientRect()` on `main section` vs. the copy
+   column) at two viewport sizes (1440×900, 1920×1080): a consistent
+   **-75px offset** at both — matching `(160 − 10) / 2 = 75` exactly,
+   confirming the padding-asymmetry diagnosis rather than a flex/grid
+   quirk. Fixed by adding matching bottom padding —
+   `pb-[10px] md:pb-[10px]` — alongside the existing `pt-[10px]
+   md:pt-[10px]`, so top and bottom padding are both 10px and the content
+   box (and therefore the flex-centered copy within it) is symmetric.
+   Re-measured after the fix: `offsetFromCenter` is exactly `0` at both
+   viewport sizes. See the "Top padding" note below for the full
+   className and the established both-unprefixed-and-`md:`-explicit
+   override pattern this fix follows.
 
 **The hero `Section` fills the viewport height on desktop, accounting
 for `Nav`'s own height** — `md:h-[calc(100dvh-81px)]` on the same
@@ -385,21 +426,31 @@ for that — an early attempt applied `max-h-screen` at every breakpoint
 and clipped the video almost entirely on mobile, which was flagged and
 corrected.
 
-**Top padding is a flat `pt-[10px]` at every breakpoint** — per direct
-request, replacing the sitewide-default `pt-16 md:pt-24` this Section
-started with. Written as `pt-[10px] md:h-[calc(100dvh-81px)]
-md:pt-[10px]` — note **both** the unprefixed `pt-[10px]` and an
-explicit `md:pt-[10px]` are needed, not just one: `Section`'s own base
-classes (`Section.tsx`) include `md:py-40`, and Tailwind emits
-responsive (`md:`) rules after unprefixed ones in the compiled
-stylesheet, so without the explicit `md:pt-[10px]` override, `md:py-40`
-silently wins the top-padding value back on desktop (confirmed by
-measuring `getComputedStyle(...).paddingTop` — it read `160px`, not
-`10px`, until the `md:` override was added). This is the general
+**Top and bottom padding are both a flat `10px` at every breakpoint** —
+top padding per direct request, replacing the sitewide-default
+`pt-16 md:pt-24` this Section started with; bottom padding added later
+(see item 5 above) specifically to make the content box symmetric for
+true flex-centering, not requested on its own. The Section's current
+full className is `relative overflow-hidden pb-[10px] pt-[10px]
+md:flex md:h-[calc(100dvh-81px)] md:items-center md:pb-[10px]
+md:pt-[10px]` — note **both** the unprefixed (`pt-[10px]`/`pb-[10px]`)
+and the explicit `md:` versions (`md:pt-[10px]`/`md:pb-[10px]`) are
+needed for each side, not just one: `Section`'s own base classes
+(`Section.tsx`) include `md:py-40`, and Tailwind emits responsive
+(`md:`) rules after unprefixed ones in the compiled stylesheet, so
+without the explicit `md:` override, `md:py-40` silently wins the
+padding value back on desktop (confirmed by measuring
+`getComputedStyle(...).paddingTop`/`paddingBottom` — they read `160px`,
+not `10px`, until the `md:` overrides were added). This is the general
 pattern any time a page's own `className` needs to override *only one
-side* of `Section`'s default `py-*`/`px-*` shorthand at a *specific*
-breakpoint — an unprefixed override alone is not enough if the default
-being overridden is itself breakpoint-scoped.
+side* (or, as here, both sides individually) of `Section`'s default
+`py-*`/`px-*` shorthand at a *specific* breakpoint — an unprefixed
+override alone is not enough if the default being overridden is itself
+breakpoint-scoped. `md:flex md:items-center` on this same Section is
+what actually centers the grid-as-block vertically within the Section's
+now-symmetric content box — see item 5 above for why this had to move
+up from the grid's own `items-center`/`items-start`, and for the
+padding-asymmetry bug this uncovered.
 
 The same `pt-[10px] md:pt-[10px]` treatment was later applied to
 `/teach`'s hero `Section` too, per a direct follow-up request — that
