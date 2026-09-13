@@ -308,7 +308,8 @@ above:**
    1440px viewport). `sizes` on the `Image` was updated to match
    (`50vw` instead of `40vw` at the `md:` breakpoint) so the browser's
    responsive-image selection reflects the column's real rendered
-   width.
+   width. **Superseded by item 6 below** — the 50/50 split was later
+   widened to 40/60 (text/image) per a further direct request.
 3. The grid's vertical alignment was `md:items-center` — since the row
    height is set by the tall `aspect-[4/5]` image column, centering the
    text column left a large block of empty space above the "Reiziger
@@ -373,6 +374,40 @@ above:**
    viewport sizes. See the "Top padding" note below for the full
    className and the established both-unprefixed-and-`md:`-explicit
    override pattern this fix follows.
+6. **Name styling and image/grid proportions changed again per direct
+   follow-up request**, after the vertical-centering fix above shipped:
+   - The `h1` ("Reiziger Ashu") dropped its `uppercase` class — the text
+     content was always mixed-case (`Reiziger Ashu`), but `uppercase`
+     forced it to render as `REIZIGER ASHU` visually; per "Capitalize
+     just the first letter of my name" it now renders as typed, with
+     only each word's leading letter capitalized. Its size changed from
+     the sitewide hero-`h1` convention of `text-[2em]` (see "Design
+     tokens" above) to `text-[3em]` — a one-off, larger-than-sitewide
+     size specific to this instance, not a change to the shared hero-`h1`
+     scale used elsewhere. `font-bold`/`leading-tight`/`tracking-tight`
+     were kept unchanged.
+   - The grid split moved from the even `md:grid-cols-2` (50/50, item 2
+     above) to `md:grid-cols-[2fr_3fr]` — a 40/60 split, text/image —
+     per "adjust my image to 60% of the hero section." Confirmed via
+     `getBoundingClientRect()`: image column renders at exactly 60% of
+     the combined column width (792px/1320px at a 1440px viewport).
+     `sizes` on the `Image` was updated to match (`60vw` instead of
+     `50vw` at the `md:` breakpoint).
+   - The `Image` picked up `object-top` (`className="object-cover
+     object-top"`, was just `object-cover`, i.e. default `object-center`)
+     per "in case you have to crop, crop from below not from my head
+     section." The wrapper stays `aspect-[4/5]` — widening the column
+     (from item above) also grows the wrapper's height proportionally
+     since its aspect ratio is fixed, so `object-cover` still has to crop
+     this particular source photo (which is closer to square) to fit the
+     taller box; `object-top` biases that crop so the subject's head/face
+     stays fully in frame and any cropping comes off the bottom of the
+     photo instead of the top. This is the same "bias the crop away from
+     the subject's face" technique used for the About page portrait (see
+     "About page" below), just via `object-top` instead of that page's
+     custom `object-[50%_22%]` position — a plain `object-top` was
+     sufficient here since this crop only needed to protect the very top
+     of the frame, not a specific vertical percentage.
 
 **The hero `Section` fills the viewport height on desktop, accounting
 for `Nav`'s own height** — `md:h-[calc(100dvh-81px)]` on the same
