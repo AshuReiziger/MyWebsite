@@ -309,6 +309,17 @@ above:**
    (`50vw` instead of `40vw` at the `md:` breakpoint) so the browser's
    responsive-image selection reflects the column's real rendered
    width.
+3. The grid's vertical alignment was `md:items-center` — since the row
+   height is set by the tall `aspect-[4/5]` image column, centering the
+   text column left a large block of empty space above the "Reiziger
+   Ashu" heading on ordinary desktop viewports (the row is taller than
+   the text content). Per direct follow-up, with the user circling that
+   empty area and drawing an arrow from the text block into it in an
+   annotated screenshot, changed to `md:items-start` so the text column
+   aligns to the top of the row instead — the heading now starts flush
+   with the top of the image, matching where the image's own subject
+   starts, instead of floating in the vertical middle of a much taller
+   row. Confirmed via screenshot, not just the class change alone.
 
 **The hero `Section` fills the viewport height on desktop, accounting
 for `Nav`'s own height** — `md:h-[calc(100dvh-81px)]` on the same
