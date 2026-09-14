@@ -255,7 +255,7 @@ export default function Home() {
         </div>
       </Section>
 
-      <Section className="pt-[0px] md:pt-[0px]">
+      <Section className="pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]">
         <div className="rounded-3xl border border-line p-12 text-center md:p-20">
           <h2 className="font-display text-3xl font-bold tracking-tight md:text-4xl">
             Have an idea worth building?

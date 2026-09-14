@@ -805,6 +805,17 @@ the same flat `40px`-every-side treatment in one request:
 Confirmed via `getComputedStyle` on all three at once, at both 375px
 and 1440px: every one reads `40px`/`40px`.
 
+## Home page final CTA section
+
+Last section in the review: `<Section className="pt-[0px]
+md:pt-[0px]">` (the "Have an idea worth building?" closing card) got
+the same treatment: `pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]`.
+Confirmed via `getComputedStyle`: `40px`/`40px` at both 375px and
+1440px. This was the last `Section` in the top-to-bottom home page
+review that started with "Trusted by teams" — every `Section` on
+`page.tsx` now has deliberate, explicitly-confirmed padding at every
+breakpoint rather than a value that silently drifted on desktop.
+
 ## Sitewide dark theme (`theme-dark-fixed`)
 
 Every page on the site is permanently dark — not tied to the visitor's
