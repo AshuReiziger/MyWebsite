@@ -284,6 +284,22 @@ cutout portrait, alpha channel confirmed via `PIL` before use) — kept
 as WebP rather than flattened to JPG specifically to preserve that
 transparency.
 
+**The source photo itself was swapped once already** for a different
+portrait of Reiziger Ashu, per a direct "let's replace the image with
+this instead" request with a new photo attached — same cutout-portrait
+treatment (extracted from the conversation transcript's base64 image
+data the same way as the original, confirmed via `PIL` as 1500×1472
+RGBA with genuine alpha transparency, `(0, 255)` extrema). The new
+photo was written to the same path,
+`public/images/reiziger-ashu-hero-portrait.webp`, so **no code change
+was needed** — `page.tsx`'s `<Image src="...">` reference, `sizes`,
+`object-cover object-top`, and every layout/sizing rule documented
+below are unaffected, since none of them depend on this specific
+photo's pixels. The photo this replaced was kept (not deleted) at
+`public/images/reiziger-ashu-hero-portrait-previous.webp`, matching
+the site's convention elsewhere of retaining superseded image assets
+rather than removing them.
+
 **Two follow-up requests changed the image wrapper and grid split from
 the initial swap-in, both since reverted/adjusted from what's described
 above:**
