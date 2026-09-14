@@ -754,6 +754,21 @@ change** — that boundary belongs to the *next* `Section`
 ("Design is more than aesthetics"), not this one, and is a separate
 follow-up the user had not yet requested a fix for as of this pass.
 
+## Home page "Selected Work" section: brought in line with the 40px pattern
+
+Per direct follow-up ("Let's adjust the selected work section too to the
+40px each top/bottom padding"), the "Selected Work" heading `Section`
+(previously `pb-[10px] md:pb-[10px] md:pt-[10px]` — bottom `10px` at
+every breakpoint, top `10px` desktop-only, mobile top left at the
+sitewide `80px` default, set in the "specific padding values" pass
+documented above) was superseded with the same flat, every-side,
+every-breakpoint `40px` treatment every other `Section` on this page now
+uses: `pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]`. This was the last
+`Section` on the home page still carrying a bespoke value from the
+original section-by-section review rather than the now-uniform 40px
+convention. Confirmed via `getComputedStyle`: `paddingTop`/`paddingBottom`
+both read `40px` at 375px and 1440px viewports.
+
 ## Home page "Design is more than aesthetics." section
 
 Per direct follow-up, the next section in the section-by-section review —
