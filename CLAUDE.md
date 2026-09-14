@@ -771,6 +771,12 @@ between the "Selected Work" image grid and this section's heading text
 effect — this section's own `pt-[10px]` is what actually closes that
 gap, not a change on the "Selected Work" side.
 
+**Then corrected to `40px`** per an immediate direct follow-up ("I made
+a mistake. adjust that section to 40px top and bottom each") — same
+flat-both-sides-both-breakpoints treatment, just a different value:
+`pt-[40px] pb-[40px] text-center md:pt-[40px] md:pb-[40px]`. Confirmed
+via `getComputedStyle`: `40px`/`40px` at both 375px and 1440px.
+
 ## Sitewide dark theme (`theme-dark-fixed`)
 
 Every page on the site is permanently dark — not tied to the visitor's
