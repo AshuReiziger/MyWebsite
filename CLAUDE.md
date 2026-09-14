@@ -644,6 +644,28 @@ exactly one `h1` on the homepage (there was none otherwise, since the
 old tagline `h1` is gone) rather than leaving the hero without a
 heading element.
 
+## Home page "Trusted by teams" band
+
+The client-logos band right below the hero (`<Section className="pt-[80px]
+pb-[80px] md:pt-[80px] md:pb-[80px]">`, "Trusted by teams building
+something worth naming" + `<ClientLogos />`) started as `<Section
+className="pt-0">` — an attempt to remove just the top padding so the
+band sits close under the hero. Per a direct question asking what its
+actual top/bottom padding was, `getComputedStyle` measurement revealed
+the classic cascade gotcha (documented in "Home page hero media" above):
+`pt-0` genuinely zeroed the top padding on mobile (`0px`/`80px` top/
+bottom, the `80px` from the sitewide `py-20` default), but on desktop
+`Section`'s own `md:py-40` — a shorthand that sets padding-top too —
+silently won the top padding back to `160px` (bottom also `160px`),
+since there was no `md:pt-0` explicit override.
+
+Per direct follow-up, this was replaced outright (not just fixed) with
+`pt-[80px] pb-[80px] md:pt-[80px] md:pb-[80px]` — flat `80px` on every
+side at every breakpoint, both the unprefixed and explicit `md:`
+versions of each side (the established both-forms pattern this cascade
+gotcha requires). Confirmed via `getComputedStyle`: `80px`/`80px` at
+both a 375px mobile viewport and a 1440px desktop one.
+
 ## Sitewide dark theme (`theme-dark-fixed`)
 
 Every page on the site is permanently dark — not tied to the visitor's
