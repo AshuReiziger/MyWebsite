@@ -646,8 +646,8 @@ heading element.
 
 ## Home page "Trusted by teams" band
 
-The client-logos band right below the hero (`<Section className="pt-[80px]
-pb-[80px] md:pt-[80px] md:pb-[80px]">`, "Trusted by teams building
+The client-logos band right below the hero (`<Section className="pt-[10px]
+pb-[10px] md:pt-[10px] md:pb-[10px]">`, "Trusted by teams building
 something worth naming" + `<ClientLogos />`) started as `<Section
 className="pt-0">` — an attempt to remove just the top padding so the
 band sits close under the hero. Per a direct question asking what its
@@ -665,6 +665,13 @@ side at every breakpoint, both the unprefixed and explicit `md:`
 versions of each side (the established both-forms pattern this cascade
 gotcha requires). Confirmed via `getComputedStyle`: `80px`/`80px` at
 both a 375px mobile viewport and a 1440px desktop one.
+
+**Then reduced again** per direct follow-up ("adjust it to 10px
+instead") — the `80px` value itself, not the cascade fix, was what
+didn't land right. Changed to `pt-[10px] pb-[10px] md:pt-[10px]
+md:pb-[10px]`, same both-forms pattern, keeping every side flat across
+breakpoints. Re-confirmed via `getComputedStyle`: `10px`/`10px` at both
+375px and 1440px.
 
 ## Sitewide dark theme (`theme-dark-fixed`)
 
