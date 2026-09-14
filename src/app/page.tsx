@@ -115,7 +115,7 @@ export default function Home() {
         </div>
       </Section>
 
-      <Section className="pt-[10px] pb-[10px] md:pt-[10px] md:pb-[10px]">
+      <Section className="pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]">
         <p className="text-center text-sm font-semibold uppercase tracking-widest text-muted">
           Trusted by teams building something worth naming
         </p>

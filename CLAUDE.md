@@ -754,6 +754,22 @@ change** — that boundary belongs to the *next* `Section`
 ("Design is more than aesthetics"), not this one, and is a separate
 follow-up the user had not yet requested a fix for as of this pass.
 
+## Home page "Trusted by teams" band: brought in line with the 40px pattern
+
+Per direct follow-up ("let's review the 'trusted by teams...' section
+again. adjust the padding too to the 40px top/bottom padding each as
+well"), the client-logos band (previously `pt-[10px] pb-[10px]
+md:pt-[10px] md:pb-[10px]`, set in an earlier pass documented above)
+was superseded with the same flat, every-side, every-breakpoint `40px`
+treatment every other `Section` on this page now uses:
+`pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]`. Confirmed via
+`getComputedStyle`: `paddingTop`/`paddingBottom` both read `40px` at
+375px and 1440px viewports. This was the hero's immediate successor
+Section and the only remaining non-hero `Section` on the home page
+still carrying a value from before the uniform-40px convention was
+established — every `Section` on `page.tsx` besides the hero itself now
+uses `pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]`.
+
 ## Home page "Selected Work" section: brought in line with the 40px pattern
 
 Per direct follow-up ("Let's adjust the selected work section too to the
