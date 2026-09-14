@@ -126,7 +126,7 @@ export default function Home() {
 
       {selectedWork.length > 0 && (
         <>
-          <Section className="pb-0">
+          <Section className="pb-[0px] md:pb-[0px]">
             <div className="flex flex-wrap items-end justify-between gap-4">
               <SectionHeading eyebrow="Selected Work" title="Design systems and brand identities, built to last." />
               <Link
@@ -143,7 +143,7 @@ export default function Home() {
         </>
       )}
 
-      <Section className="pt-0 text-center">
+      <Section className="pt-[0px] text-center md:pt-[0px]">
         <SectionHeading
           title="Design is more than aesthetics."
           description="I believe design is a tool for understanding. It helps us discover identity, communicate vision, solve problems, organize complexity, and create experiences that move people."
@@ -154,7 +154,7 @@ export default function Home() {
         </div>
       </Section>
 
-      <Section className="pt-0">
+      <Section className="pt-[0px] md:pt-[0px]">
         <SectionHeading
           eyebrow="Expertise"
           title="What I do"
@@ -177,7 +177,7 @@ export default function Home() {
         />
       )}
 
-      <Section className="pt-0">
+      <Section className="pt-[0px] md:pt-[0px]">
         <p className="text-sm font-semibold uppercase tracking-widest text-accent">Ventures</p>
         <div className="mt-3 max-w-2xl">
           <h2 className="font-display text-3xl font-bold tracking-tight md:text-4xl">
@@ -246,7 +246,7 @@ export default function Home() {
         </Section>
       )}
 
-      <Section className="pt-0">
+      <Section className="pt-[0px] md:pt-[0px]">
         <SectionHeading eyebrow="Kind Words" title="Words from people I've worked with" />
         <div className="mt-12 grid gap-6 md:grid-cols-2">
           {TESTIMONIALS.map((testimonial, i) => (
@@ -255,7 +255,7 @@ export default function Home() {
         </div>
       </Section>
 
-      <Section className="pt-0">
+      <Section className="pt-[0px] md:pt-[0px]">
         <div className="rounded-3xl border border-line p-12 text-center md:p-20">
           <h2 className="font-display text-3xl font-bold tracking-tight md:text-4xl">
             Have an idea worth building?

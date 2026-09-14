@@ -673,6 +673,51 @@ md:pb-[10px]`, same both-forms pattern, keeping every side flat across
 breakpoints. Re-confirmed via `getComputedStyle`: `10px`/`10px` at both
 375px and 1440px.
 
+## Home page: the same cascade gotcha on every remaining section
+
+Per a direct follow-up ("let's fix the 'Selected Work' section padding
+too and the subsequent sections of that page"), the same cascade bug
+documented above for the "Trusted by teams" band was actually present
+on **every** other `Section` in `page.tsx` that tried to zero one side
+of the sitewide `py-20 md:py-40` default with a bare unprefixed
+utility — `Section`'s own `md:py-40` shorthand was silently winning
+that side back to `160px` on desktop the whole time, on six separate
+sections, not just the one that prompted the question:
+
+- The "Selected Work" heading `Section`: `pb-0` → `pb-[0px] md:pb-[0px]`
+  (this one zeroes the *bottom*, not top — the heading sits directly
+  above `SelectedWorkGrid`, a sibling `<div className="mt-10">` outside
+  the `Section`, so it's the bottom side that needs to stay flush).
+- "Design is more than aesthetics." `Section`: `pt-0` →
+  `pt-[0px] md:pt-[0px]`.
+- "What I do" `Section`: `pt-0` → `pt-[0px] md:pt-[0px]`.
+- "Ventures" `Section`: `pt-0` → `pt-[0px] md:pt-[0px]`.
+- "Kind Words" (testimonials) `Section`: `pt-0` → `pt-[0px] md:pt-[0px]`.
+- Final CTA ("Have an idea worth building?") `Section`: `pt-0` →
+  `pt-[0px] md:pt-[0px]`.
+
+Used the bracket-arbitrary form (`pt-[0px]`, not bare `pt-0`) on all
+six, matching the already-established working pattern for this
+gotcha elsewhere on this page (see item 9 above, where `px-0 md:px-0`
+measured as having no effect at all while `px-[0px] md:px-[0px]`
+worked) — bracket syntax throughout avoids relying on whichever form
+happens to interact correctly with `Section`'s own scale-based
+defaults. Only the side each section had already tried to zero was
+touched; the *other* side (the sitewide `80px`/`160px` mobile/desktop
+default) was left alone on all six, since none of them were flagged.
+
+**Confirmed via Playwright across every `<section>` on the page** at
+both a 375px and a 1440px viewport (`getComputedStyle` on each,
+matched by heading text): every section's explicitly-zeroed side now
+reads `0px` at *both* breakpoints, where desktop previously silently
+read `160px`. The one `Section` that was never part of this bug —
+"What I Think" (`pt-20 md:pt-28`, both sides already breakpoint-scoped
+on purpose) — was left untouched and still measures `80px`/`112px` as
+designed. `ResourceCTA`'s `centered` variant (the "Free Resource" band
+between "What I do" and "Ventures") was checked too and found *not*
+affected — it renders its own `py-16 md:py-20` directly, outside any
+`Section`, with no unprefixed/shorthand conflict to begin with.
+
 ## Sitewide dark theme (`theme-dark-fixed`)
 
 Every page on the site is permanently dark — not tied to the visitor's
