@@ -69,7 +69,7 @@ export default function Home() {
           aria-hidden
           className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-gradient-to-br from-accent/10 via-muted/10 to-transparent blur-3xl"
         />
-        <div className="grid gap-10 md:h-full md:w-full md:grid-cols-[2fr_3fr] md:grid-rows-1 md:items-center">
+        <div className="grid gap-10 md:h-full md:w-full md:grid-cols-[2fr_3fr] md:grid-rows-1 md:items-center md:gap-0">
           <div className="md:pl-[80px]">
             <HeroReveal delay={0}>
               <h1 className="font-display text-[3em] font-bold leading-tight tracking-tight">

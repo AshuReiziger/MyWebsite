@@ -522,6 +522,22 @@ above:**
     confirming the text's centering (item 5) was genuinely unaffected by
     this, since only the image wrapper's own box was altered, not
     `Section`'s or the grid's shared padding/height.
+11. **The gap between the copy column and the image was closed** per
+    direct follow-up ("remove the right padding of the hero copy, so
+    that the hero copy can go closer to the image"). There was no
+    literal right-padding utility on the copy column itself to remove —
+    the space between the two columns was the grid's own `gap-10` (40px,
+    applying to every grid gap, inherited from mobile's single-column
+    stack where it's the *vertical* spacing between the stacked text/
+    image). Overridden with `md:gap-0` (desktop-only, so the mobile
+    stack keeps its 40px vertical breathing room) — confirmed via
+    Playwright that `columnGap` reads `0px` and the copy column's right
+    edge exactly touches the image column's left edge (previously a
+    40px gap). This incidentally widens the copy column itself by the
+    same 40px (still `2fr` of the `[2fr_3fr]` split, just with no gap to
+    subtract), which is expected and unrelated to the 40/60 image/text
+    ratio (item 9) — that ratio governs the two columns' width *shares*,
+    not the gap between them.
 
 **The hero `Section` fills the viewport height on desktop, accounting
 for `Nav`'s own height** — `md:h-[calc(100dvh-81px)]` on the same
