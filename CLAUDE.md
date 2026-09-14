@@ -718,6 +718,42 @@ between "What I do" and "Ventures") was checked too and found *not*
 affected — it renders its own `py-16 md:py-20` directly, outside any
 `Section`, with no unprefixed/shorthand conflict to begin with.
 
+## Home page "Selected Work" band: specific padding values
+
+The previous section's fix made the "Selected Work" heading `Section`'s
+`pb-0` correctly read `0px` at every breakpoint (matching what the
+code always literally said), but that also meant the *net* gap between
+the bottom of the full-bleed `SelectedWorkGrid` image grid and the next
+`Section`'s heading text ("Design is more than aesthetics.") became
+`0px` at desktop too — previously that gap only read `0px` on mobile;
+on desktop it happened to measure `160px`, purely as a side effect of
+the cascade bug, not a deliberate value. Once the bug was fixed, that
+160px-by-accident gap disappeared and the layout read as broken (image
+grid touching the next heading with no breathing room).
+
+Diagnosed by breaking the whole "Selected Work" block down into its
+three actual pieces (it is *not* one `Section` — this matters, don't
+assume it is): the heading `Section` itself (`pt`/`pb`), a separate
+sibling `<div className="mt-10">` wrapping `SelectedWorkGrid` (flat
+40px margin, not part of `Section`'s padding system, unaffected by any
+of this), and `SelectedWorkGrid` itself (a bare grid `<div>`, no padding/
+margin on any side). Measuring each layer's `getComputedStyle`
+separately (not just the outer `Section`) was necessary to find exactly
+where the collapsed gap actually was.
+
+Per direct follow-up, the heading `Section`'s own padding was set to
+`pb-[10px] md:pb-[10px] md:pt-[10px]` (from `pb-[0px] md:pb-[0px]`) —
+**bottom is now `10px` at every breakpoint**, and **top is `10px` only
+on desktop** (`md:pt-[10px]` alone, deliberately no unprefixed `pt-[10px]`
+override, since only desktop's top padding was asked to change — mobile
+keeps the sitewide default `py-20` top, `80px`, untouched). Confirmed
+via `getComputedStyle`: `paddingTop` reads `80px` mobile / `10px`
+desktop, `paddingBottom` reads `10px` at both. **The `0px` gap between
+the grid and the next section's heading was *not* addressed by this
+change** — that boundary belongs to the *next* `Section`
+("Design is more than aesthetics"), not this one, and is a separate
+follow-up the user had not yet requested a fix for as of this pass.
+
 ## Sitewide dark theme (`theme-dark-fixed`)
 
 Every page on the site is permanently dark — not tied to the visitor's

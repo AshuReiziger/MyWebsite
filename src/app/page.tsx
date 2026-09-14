@@ -126,7 +126,7 @@ export default function Home() {
 
       {selectedWork.length > 0 && (
         <>
-          <Section className="pb-[0px] md:pb-[0px]">
+          <Section className="pb-[10px] md:pb-[10px] md:pt-[10px]">
             <div className="flex flex-wrap items-end justify-between gap-4">
               <SectionHeading eyebrow="Selected Work" title="Design systems and brand identities, built to last." />
               <Link
