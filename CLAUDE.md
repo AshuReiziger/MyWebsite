@@ -477,6 +477,35 @@ above:**
    `md:pl-[80px]` (item 8) as its only inset now that `Section`'s own
    padding is gone, so text still has breathing room from the now-flush
    left edge.
+10. **The image was made bigger still and pulled flush against the nav
+    bar** per direct follow-up ("make the image bigger? let the image
+    head sit right below the nav bar"). Up to this point the image
+    wrapper's `md:h-full` (item 7) filled `Section`'s *content* box —
+    i.e. the area *inside* its `pt-[10px]`/`pb-[10px]` padding (see item
+    5 and the "Top and bottom padding" note below) — so the image's top
+    edge sat 10px below `Section`'s top edge (which is itself flush
+    against `Nav`, per the `md:h-[calc(100dvh-81px)]` sizing below),
+    leaving a visible 10px gap between the nav bar and the top of the
+    portrait. Since that 10px padding is load-bearing for the *text*
+    column's vertical centering (removing it from `Section` itself would
+    reopen the item-5 padding-asymmetry bug), the fix instead counteracts
+    it locally, on the image wrapper only: `md:-mt-[10px] md:-mb-[10px]
+    md:h-[calc(100%+20px)]` (replacing the plain `md:h-full` from item
+    7) — negative top/bottom margins pull the wrapper 10px past its grid
+    row's own top/bottom on each side, and the `+20px` height keeps it
+    filling that extended span exactly, so the image ends up matching
+    `Section`'s true border-box height (`Nav`-to-viewport-bottom) instead
+    of its padded content-box height. `Section`'s own `overflow-hidden`
+    doesn't clip this, since the extended box lines up exactly with
+    `Section`'s own edges rather than exceeding them. Confirmed via
+    Playwright at both 1440×900 and 1920×1080: `imgWrapperTop` now
+    exactly equals `Nav`'s measured bottom edge (`gapBetweenNavAndImage:
+    0` at both sizes, where it was `10` before this change), the image
+    wrapper's height grew accordingly (819px/999px, up from 799px/979px),
+    and `offsetFromCenter` for the text column stays exactly `0` —
+    confirming the text's centering (item 5) was genuinely unaffected by
+    this, since only the image wrapper's own box was altered, not
+    `Section`'s or the grid's shared padding/height.
 
 **The hero `Section` fills the viewport height on desktop, accounting
 for `Nav`'s own height** — `md:h-[calc(100dvh-81px)]` on the same

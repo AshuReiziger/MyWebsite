@@ -101,7 +101,7 @@ export default function Home() {
             </HeroReveal>
           </div>
           <HeroReveal delay={0.15} className="md:h-full md:self-stretch">
-            <div className="relative aspect-[4/5] overflow-hidden rounded-2xl md:aspect-auto md:h-full">
+            <div className="relative aspect-[4/5] overflow-hidden rounded-2xl md:aspect-auto md:-mt-[10px] md:-mb-[10px] md:h-[calc(100%+20px)]">
               <Image
                 src="/images/reiziger-ashu-hero-portrait.webp"
                 alt="Reiziger Ashu"
