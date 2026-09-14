@@ -754,6 +754,57 @@ change** — that boundary belongs to the *next* `Section`
 ("Design is more than aesthetics"), not this one, and is a separate
 follow-up the user had not yet requested a fix for as of this pass.
 
+## Sitewide footer-spacing convention reduced from 128px to 40px
+
+Per direct follow-up on the home page's final CTA section ("are you sure
+it is 40px as I asked? it looks bigger than the top padding"), the
+visible gap below the "Have an idea worth building?" card was measured
+via Playwright and found to genuinely be bigger than the top (168px vs.
+80px) — but not because the Section's own padding was wrong. Confirmed
+via `getComputedStyle`: the Section's own `paddingTop`/`paddingBottom`
+were exactly `40px`/`40px`, matching what was asked. The extra visible
+space came from `Footer.tsx`'s own hardcoded `mt-32` (128px), a sitewide
+convention applied identically on every page to separate the last
+content section from the dark footer band (see "Sitewide dark theme"
+above) — on top of this section's own 40px bottom padding, that produced
+40 + 128 = 168px total, versus 40 + 40 = 80px above the card (the
+previous section's own bottom padding + this section's top padding).
+
+Per direct follow-up ("Reduce Footer's sitewide top margin"), `Footer.tsx`'s
+`mt-32` was changed to `mt-10` (40px) — chosen to match this session's
+now-established 40px padding convention, producing a symmetric 80px total
+gap above and below the final CTA card (40px section padding + 40px
+footer margin on each side).
+
+**This required a matching sitewide change, not just `Footer.tsx` alone.**
+Every `theme-dark-fixed`-wrapped page's root div uses a `-mb-32 ... pb-32`
+pair (see "Sitewide dark theme" above) specifically to cancel Footer's
+own `mt-32` and repaint that space dark instead of exposing default
+background. That cancellation only works correctly when the wrapper's
+`-mb-X`/`pb-X` value exactly matches Footer's own `mt-Y` value — if they
+diverge, adjoining margins collapse to `Y − X`, which either leaves part
+of the gap unpainted (exposed default background, if `X < Y`) or, worse,
+pulls the footer up to visually overlap the page's own last content (if
+`X > Y`, producing a negative collapsed margin). So all 22 files using
+the literal `-mb-32 bg-paper pb-32 text-ink` string (grep it to find them:
+every top-level page under `src/app/` and every shared detail-page layout
+— `CaseStudyLayout.tsx`, `ResourceDetailLayout.tsx`,
+`WorkshopDetailLayout.tsx`, `MentorshipDetailLayout.tsx`,
+`AssessmentFlow.tsx` — plus `about/page.tsx`) were changed in the same
+pass to `-mb-10 bg-paper pb-10 text-ink`, keeping `X = Y = 40px`
+everywhere. Confirmed via Playwright across the home page plus a spot
+check of `/about`, `/work`, `/contact`, and the 404 page at a 1440px
+viewport: every page's wrapper-to-footer gap is exactly `0px` (fully
+cancelled, no overlap, no exposed-background sliver), and the home
+page's final-CTA-card-to-footer gap is exactly `80px` — matching the
+80px above the card.
+
+**If Footer's `mt-*` value ever changes again, grep both
+`mt-10` in `Footer.tsx` and `-mb-10 bg-paper pb-10 text-ink` sitewide** —
+they must always be updated together, to the same pixel value, or this
+cancellation mechanism breaks (exposed background or visual overlap,
+depending on which direction they diverge).
+
 ## Home page "Trusted by teams" band: brought in line with the 40px pattern
 
 Per direct follow-up ("let's review the 'trusted by teams...' section
@@ -873,8 +924,11 @@ different from the site-wide `prefers-color-scheme` handling in
 token variables to their dark values unconditionally, so every `bg-ink`/
 `text-ink`/`text-muted`/`border-line`/`text-accent`/`bg-accent` utility
 inside it renders dark regardless of OS setting. Wrap a page's root in
-`theme-dark-fixed -mb-32 bg-paper pb-32 text-ink` to opt it into this
-treatment (the `-mb-32 pb-32` cancels Footer's `mt-32` gap — see below)
+`theme-dark-fixed -mb-10 bg-paper pb-10 text-ink` to opt it into this
+treatment (the `-mb-10 pb-10` cancels Footer's `mt-10` gap — see below;
+originally `-mb-32 pb-32`/Footer's `mt-32`, reduced sitewide to `10`/
+`40px` in the "Sitewide footer-spacing convention reduced" pass further
+below — keep both values in sync if either changes again)
 — don't reach for raw hex values.
 
 Extending this to every remaining page turned out to be low-risk: a
@@ -908,13 +962,14 @@ again, or if `theme-dark-fixed` is reused elsewhere:
   foreground token instead, so that exact gradient washes out to
   near-white — use `via-paper to-paper` there instead (`paper` is the
   token that resolves dark in this context).
-- `Footer.tsx` has a hardcoded `mt-32` above the `<footer>` element,
-  invisible on light pages but a visible gap of exposed default (light)
-  background between a dark section and the dark footer band. Both
-  `theme-dark-fixed` wrappers cancel it locally with `-mb-32 pb-32`
-  (negative margin collapses the footer's `mt-32` to zero, `pb-32`
-  keeps the same visual spacing, now colored dark) rather than changing
-  `Footer.tsx` globally.
+- `Footer.tsx` has a hardcoded `mt-10` (40px, originally `mt-32`/128px —
+  see "Sitewide footer-spacing convention reduced" below) above the
+  `<footer>` element, invisible on light pages but a visible gap of
+  exposed default (light) background between a dark section and the
+  dark footer band. Both `theme-dark-fixed` wrappers cancel it locally
+  with `-mb-10 pb-10` (negative margin collapses the footer's `mt-10` to
+  zero, `pb-10` keeps the same visual spacing, now colored dark) rather
+  than changing `Footer.tsx` globally.
 
 `.panel-tint` (also in `globals.css`) is a `color-mix(in srgb, var(--color-accent) 12%, var(--color-paper))`
 background — the accent-tinted alternate to a flush `bg-paper` panel,
@@ -1060,14 +1115,16 @@ of its own:
   uses `pb-8 md:pb-40` rather than the sitewide-default bottom padding
   (`pb-20 md:pb-40`, the same value every other `theme-dark-fixed` page
   leaves untouched on its final section): on mobile, that default 80px
-  stacked with the root wrapper's own `pb-32` (128px, there to recreate
-  Footer's cancelled `mt-32` — see "Sitewide dark theme" above) to leave
-  ~200px of empty space before the footer, visibly excessive on a short
-  mobile viewport. Reduced to 80px total (`pb-8` + the wrapper's 128px)
-  for mobile only; the `md:pb-40` desktop value is untouched since the
-  gap wasn't flagged there. This is a page-specific override, not a
-  sitewide convention change — every other page's final section still
-  uses the default.
+  stacked with the root wrapper's own `pb-32` (128px at the time, there
+  to recreate Footer's cancelled `mt-32` — see "Sitewide dark theme"
+  above; both values were later reduced to `10`/40px sitewide, see
+  "Sitewide footer-spacing convention reduced" below, so this math is
+  historical) to leave ~200px of empty space before the footer, visibly
+  excessive on a short mobile viewport. Reduced to 80px total (`pb-8` +
+  the wrapper's 128px, at the time) for mobile only; the `md:pb-40`
+  desktop value is untouched since the gap wasn't flagged there. This is
+  a page-specific override, not a sitewide convention change — every
+  other page's final section still uses the default.
 - The Journey section sits in an alternating band via
   `outerClassName="bg-ink/5 border-y border-line"` — reusing the same
   "5%-opacity `ink` overlay on a dark background" technique already

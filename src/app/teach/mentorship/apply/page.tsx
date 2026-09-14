@@ -14,7 +14,7 @@ export default async function MentorshipApplyPage({
   const track = typeof params.track === "string" ? params.track : undefined;
 
   return (
-    <div className="theme-dark-fixed -mb-32 bg-paper pb-32 text-ink">
+    <div className="theme-dark-fixed -mb-10 bg-paper pb-10 text-ink">
       <Section className="pt-16 md:pt-24">
         <SectionHeading
           eyebrow="Teach"

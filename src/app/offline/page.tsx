@@ -6,7 +6,7 @@ export const metadata: Metadata = {
 
 export default function OfflinePage() {
   return (
-    <div className="theme-dark-fixed -mb-32 bg-paper pb-32 text-ink">
+    <div className="theme-dark-fixed -mb-10 bg-paper pb-10 text-ink">
       <div className="mx-auto flex min-h-[70vh] max-w-2xl flex-col items-center justify-center px-6 py-24 text-center">
         <p className="text-sm font-semibold uppercase tracking-widest text-accent">Offline</p>
         <h1 className="mt-4 font-display text-[2em] font-bold tracking-tight">

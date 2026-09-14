@@ -91,7 +91,7 @@ export function AssessmentFlow({
   }
 
   return (
-    <div className="theme-dark-fixed -mb-32 bg-paper pb-32 text-ink">
+    <div className="theme-dark-fixed -mb-10 bg-paper pb-10 text-ink">
       <Section className="pt-16 md:pt-24">
       <div className="mx-auto flex max-w-2xl items-center justify-between">
         <Link href={`/resources/${slug}`} className="text-xs font-semibold uppercase tracking-widest text-muted hover:text-ink">

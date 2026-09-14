@@ -16,7 +16,7 @@ export function ResourceDetailLayout({ entry }: { entry: ContentEntry<ResourceFr
   const { slug, frontmatter } = entry;
 
   return (
-    <div className="theme-dark-fixed -mb-32 bg-paper pb-32 text-ink">
+    <div className="theme-dark-fixed -mb-10 bg-paper pb-10 text-ink">
       <AnalyticsPageView event="resource_page_view" properties={{ resource: slug }} />
 
       <Section className="pt-16 md:pt-24">

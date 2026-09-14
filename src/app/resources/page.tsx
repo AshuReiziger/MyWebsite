@@ -14,7 +14,7 @@ export default function ResourcesPage() {
   const resources = getAllResources();
 
   return (
-    <div className="theme-dark-fixed -mb-32 bg-paper pb-32 text-ink">
+    <div className="theme-dark-fixed -mb-10 bg-paper pb-10 text-ink">
       <Section className="pt-16 md:pt-24">
         <div className="mx-auto max-w-2xl text-center">
           <HeroReveal delay={0}>

@@ -27,7 +27,7 @@ export function Footer() {
   const pathname = usePathname();
 
   return (
-    <footer className="mt-32 bg-ink text-paper">
+    <footer className="mt-10 bg-ink text-paper">
       <div className="mx-auto max-w-[1920px] px-3 py-24 md:px-10">
         <div className="grid gap-10 md:grid-cols-2">
           <div className="max-w-sm">

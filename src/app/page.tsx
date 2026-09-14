@@ -63,7 +63,7 @@ export default function Home() {
   const selectedWork = getAllWork();
 
   return (
-    <div className="theme-dark-fixed -mb-32 bg-paper pb-32 text-ink">
+    <div className="theme-dark-fixed -mb-10 bg-paper pb-10 text-ink">
       <Section className="relative overflow-hidden px-[0px] pb-[10px] pt-[10px] md:flex md:h-[calc(100dvh-81px)] md:items-center md:px-[0px] md:pb-[10px] md:pt-[10px]">
         <div
           aria-hidden
