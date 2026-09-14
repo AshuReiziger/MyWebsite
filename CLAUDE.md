@@ -786,6 +786,25 @@ direct request: `pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]`.
 Confirmed via `getComputedStyle`: `40px`/`40px` at both 375px and
 1440px viewports.
 
+## Home page "Ventures", "What I Think", and "Kind Words" sections
+
+Continuing the section-by-section review, three more `Section`s got
+the same flat `40px`-every-side treatment in one request:
+- "Ventures" (Sigma Studio / Sigma Studio Academy cards):
+  `pt-[0px] md:pt-[0px]` → `pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]`.
+- "What I Think" (`FeaturedThinkCard`/`ThinkCard` recent-writing grid):
+  `pt-20 md:pt-28` (the one `Section` on this page that was never part
+  of the cascade bug — a deliberate, already-breakpoint-scoped `80px`/
+  `112px` value) → `pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]`. This
+  is a real, intentional override of that previously-documented value,
+  not a bug fix — don't treat the old `pt-20 md:pt-28` as still correct
+  if this file is grepped later.
+- "Kind Words" (testimonials): `pt-[0px] md:pt-[0px]` →
+  `pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]`.
+
+Confirmed via `getComputedStyle` on all three at once, at both 375px
+and 1440px: every one reads `40px`/`40px`.
+
 ## Sitewide dark theme (`theme-dark-fixed`)
 
 Every page on the site is permanently dark — not tied to the visitor's

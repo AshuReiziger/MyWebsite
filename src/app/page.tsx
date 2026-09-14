@@ -177,7 +177,7 @@ export default function Home() {
         />
       )}
 
-      <Section className="pt-[0px] md:pt-[0px]">
+      <Section className="pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]">
         <p className="text-sm font-semibold uppercase tracking-widest text-accent">Ventures</p>
         <div className="mt-3 max-w-2xl">
           <h2 className="font-display text-3xl font-bold tracking-tight md:text-4xl">
@@ -228,7 +228,7 @@ export default function Home() {
       </Section>
 
       {latestThink.length > 0 && (
-        <Section className="pt-20 md:pt-28">
+        <Section className="pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <SectionHeading eyebrow="What I Think" title="Recent writing" />
             <Link
@@ -246,7 +246,7 @@ export default function Home() {
         </Section>
       )}
 
-      <Section className="pt-[0px] md:pt-[0px]">
+      <Section className="pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]">
         <SectionHeading eyebrow="Kind Words" title="Words from people I've worked with" />
         <div className="mt-12 grid gap-6 md:grid-cols-2">
           {TESTIMONIALS.map((testimonial, i) => (
