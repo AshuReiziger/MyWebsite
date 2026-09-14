@@ -777,6 +777,15 @@ flat-both-sides-both-breakpoints treatment, just a different value:
 `pt-[40px] pb-[40px] text-center md:pt-[40px] md:pb-[40px]`. Confirmed
 via `getComputedStyle`: `40px`/`40px` at both 375px and 1440px.
 
+## Home page "What I do" section
+
+Next in the section-by-section review: `<Section className="pt-[0px]
+md:pt-[0px]">` (the "Expertise" eyebrow, "What I do" title, and
+`CapabilityCard` grid) got the same `40px`-every-side treatment per
+direct request: `pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]`.
+Confirmed via `getComputedStyle`: `40px`/`40px` at both 375px and
+1440px viewports.
+
 ## Sitewide dark theme (`theme-dark-fixed`)
 
 Every page on the site is permanently dark — not tied to the visitor's

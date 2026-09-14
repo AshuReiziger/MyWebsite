@@ -154,7 +154,7 @@ export default function Home() {
         </div>
       </Section>
 
-      <Section className="pt-[0px] md:pt-[0px]">
+      <Section className="pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]">
         <SectionHeading
           eyebrow="Expertise"
           title="What I do"
