@@ -754,6 +754,23 @@ change** — that boundary belongs to the *next* `Section`
 ("Design is more than aesthetics"), not this one, and is a separate
 follow-up the user had not yet requested a fix for as of this pass.
 
+## Home page "Design is more than aesthetics." section
+
+Per direct follow-up, the next section in the section-by-section review —
+`<Section className="pt-[0px] text-center md:pt-[0px]">` (the centered
+"Design is more than aesthetics." heading + `ProcessStepper`) — had both
+its top *and* bottom padding set to a flat `10px` at every breakpoint:
+`pt-[10px] pb-[10px] text-center md:pt-[10px] md:pb-[10px]`. Unlike the
+"Selected Work" heading section (top desktop-only), this one changed
+uniformly on both sides and both breakpoints, per how the request was
+phrased ("adjust the internal top and bottom padding to 10px", no
+breakpoint qualifier). Confirmed via `getComputedStyle`: `10px`/`10px`
+at both 375px and 1440px viewports. This also means the `0px` gap
+between the "Selected Work" image grid and this section's heading text
+(flagged as a follow-up in the previous pass) is now resolved as a side
+effect — this section's own `pt-[10px]` is what actually closes that
+gap, not a change on the "Selected Work" side.
+
 ## Sitewide dark theme (`theme-dark-fixed`)
 
 Every page on the site is permanently dark — not tied to the visitor's

@@ -143,7 +143,7 @@ export default function Home() {
         </>
       )}
 
-      <Section className="pt-[0px] text-center md:pt-[0px]">
+      <Section className="pt-[10px] pb-[10px] text-center md:pt-[10px] md:pb-[10px]">
         <SectionHeading
           title="Design is more than aesthetics."
           description="I believe design is a tool for understanding. It helps us discover identity, communicate vision, solve problems, organize complexity, and create experiences that move people."
