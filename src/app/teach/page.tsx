@@ -147,7 +147,7 @@ export default function TeachPage() {
         </div>
       </Section>
 
-      <Section className="pt-0">
+      <Section className="pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]">
         <div className="rounded-2xl border-l-2 border-accent bg-paper p-10 shadow-sm md:p-14">
           <SectionHeading title="Invite me to speak" />
           <p className="mt-4 max-w-xl text-muted">

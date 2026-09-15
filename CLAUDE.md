@@ -2121,9 +2121,15 @@ follow-ups): `pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]`. Bracket-
 arbitrary syntax throughout, matching the established working pattern
 for this `md:py-40` cascade gotcha elsewhere. Confirmed via
 `getComputedStyle`: `paddingTop`/`paddingBottom` both read `40px` at a
-375px and a 1440px viewport. The section immediately below this one
-("Invite me to speak") is untouched — only the section directly
-following the hero was in scope for this request.
+375px and a 1440px viewport.
+
+**Then the next section down got the same treatment too**, per direct
+follow-up ("do same for the next section please") — the "Invite me to
+speak" `Section` (previously `<Section className="pt-0">`) changed to
+`pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]`, same bracket-arbitrary,
+every-side, every-breakpoint pattern. Confirmed via `getComputedStyle`:
+`paddingTop`/`paddingBottom` both read `40px` at 375px and 1440px. Every
+`Section` on `/teach` now uses this uniform 40px convention.
 
 ## Contact form email (`/api/contact`)
 
