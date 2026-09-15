@@ -754,6 +754,72 @@ change** — that boundary belongs to the *next* `Section`
 ("Design is more than aesthetics"), not this one, and is a separate
 follow-up the user had not yet requested a fix for as of this pass.
 
+## Footer background changed to the Sigma gold accent color
+
+Per direct request ("I need you to apply a site wide change of the
+footer; I need you to change the background to the sigma gold color"),
+`Footer.tsx`'s `<footer>` background moved from `bg-ink` (the site's
+dark/light-inverting text-color token) to `bg-accent` — the site's own
+"warm gold/bronze" brand color (`#b5995d` light-OS / `#e6c279` dark-OS,
+see "Design tokens" above), the same accent used for CTAs, eyebrows, and
+highlights sitewide, and the color Sigma Studio's own brand identity is
+built around. `bg-accent` was chosen over `bg-ink`/`bg-paper` deliberately:
+those two tokens *invert* between literal dark and literal light across
+`prefers-color-scheme: dark` (see `globals.css`), so using either for "the
+gold color" would make the footer flip to a totally different hue
+depending on the visitor's OS setting; `accent`'s light/dark values are
+both gold tones, so the footer now reads as gold consistently either way.
+
+**Every text/border color inside `Footer.tsx` and `NewsletterForm.tsx`
+(which renders only inside Footer) had to change too**, since they were
+all tuned for light text (`text-paper`, `border-paper/*`) on the
+previous dark `bg-ink` band — against the new lighter gold background
+those same classes would be low-contrast to unreadable. Switched to a
+literal `text-black`/`border-black` (at full opacity or `/60`, `/40`,
+`/30`, `/10` for hierarchy) rather than the `ink`/`paper` tokens,
+deliberately **not participating in the ink/paper OS-scheme swap** — the
+same "always render this ink regardless of theme" reasoning already
+established for `AssessmentFlow.tsx`'s modal backdrop (`bg-black/55`,
+see "Sitewide dark theme" above): using `text-ink` here would flip to
+*white* text on gold in OS dark mode (since `ink` becomes `#ffffff`
+there), which is poor contrast on a mid-tone gold either way. A literal
+black guarantees readable dark-on-gold contrast in both OS modes, the
+same convention already used for dark text on this exact accent gold in
+the Sigma Companion widget (`#0a0a0a` text on its gold buttons — see
+"Sigma Companion widget" below).
+
+Two spots needed a design call beyond a straight color swap, since the
+old approach relied on colors that no longer have anywhere to go against
+a gold background:
+- **Active nav-link highlighting** (`Nav`/`Footer`'s `usePathname()`
+  convention of coloring the current route `text-accent`) doesn't work
+  in the footer anymore — accent-colored text on an accent-colored
+  background is invisible. The current route now gets
+  `text-black underline underline-offset-4` (full-opacity black +
+  underline) instead of a color-only cue, while other links stay
+  `text-black/60`; this is scoped to `Footer.tsx`'s own `NAV_LINKS`
+  rendering only — `Nav.tsx`'s own active-state styling (a different,
+  non-gold-background context) is untouched.
+- **`NewsletterForm.tsx`'s error message** used the sitewide `text-accent`
+  convention shared by every other form's `role="alert"` text on this
+  site (`WorkshopBookingForm.tsx`, `MentorshipApplicationForm.tsx`,
+  `ResourceLeadForm.tsx`, `SpeakingForm.tsx` all still use `text-accent`
+  for errors — that sitewide convention is untouched everywhere else).
+  Only inside `NewsletterForm.tsx` specifically — since it renders
+  exclusively inside the now-gold Footer, where `text-accent` would be
+  invisible against its own background — the error text was changed to
+  `text-black` (kept bold via `font-semibold` so it still reads as
+  distinct from the surrounding static copy without relying on color).
+
+Confirmed via Playwright: `getComputedStyle(footer).backgroundColor`
+reads `rgb(181, 153, 93)` (`#b5995d`, the accent token's light-OS value)
+and every checked text/border element (`logo`, active nav link, the
+email input) resolves to `rgb(0, 0, 0)` / `oklab(0 0 0 / 0.3)` — pure
+black at full or reduced opacity, not a flipped token value. A footer
+screenshot confirmed the result reads clearly: dark text and controls on
+a solid gold band, with "Home" (the current route on `/`) visibly
+underlined.
+
 ## Sitewide footer-spacing convention reduced from 128px to 40px
 
 Per direct follow-up on the home page's final CTA section ("are you sure

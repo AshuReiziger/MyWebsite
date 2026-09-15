@@ -30,7 +30,7 @@ export function NewsletterForm() {
   }
 
   if (status === "success") {
-    return <p className="text-sm text-paper/80">You&apos;re subscribed — thanks for joining.</p>;
+    return <p className="text-sm text-black/80">You&apos;re subscribed — thanks for joining.</p>;
   }
 
   return (
@@ -45,17 +45,17 @@ export function NewsletterForm() {
         value={email}
         onChange={(event) => setEmail(event.target.value)}
         placeholder="you@domain.com"
-        className="w-full max-w-xs border-b border-paper/30 bg-transparent px-0 py-2 text-sm text-paper placeholder:text-paper/40 outline-none focus:border-paper sm:w-56"
+        className="w-full max-w-xs border-b border-black/30 bg-transparent px-0 py-2 text-sm text-black placeholder:text-black/40 outline-none focus:border-black sm:w-56"
       />
       <button
         type="submit"
         disabled={status === "submitting"}
-        className="shrink-0 rounded-full border border-paper/30 px-5 py-2 text-xs font-semibold uppercase tracking-wide text-paper transition-colors hover:border-paper disabled:opacity-50"
+        className="shrink-0 rounded-full border border-black/30 px-5 py-2 text-xs font-semibold uppercase tracking-wide text-black transition-colors hover:border-black disabled:opacity-50"
       >
         {status === "submitting" ? "Joining…" : "Subscribe"}
       </button>
       {status === "error" && (
-        <p role="alert" className="text-xs text-accent sm:basis-full">
+        <p role="alert" className="text-xs font-semibold text-black sm:basis-full">
           Something went wrong — please try again.
         </p>
       )}
