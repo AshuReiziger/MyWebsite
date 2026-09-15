@@ -2068,6 +2068,48 @@ classes), confirmed at a 390×844 viewport where the hero still renders at
 its natural content height (488px), scoped the same way Home's own
 height cap is mobile-exempt.
 
+**Then rebuilt entirely to match Home's hero *structure*, not just its
+height** — per direct follow-up with a new photo attached ("let's change
+the image on the 'Teach' hero section to this. use the same style as it
+was applied on the home page hero section"). The full-bleed
+background-photo-with-scrim pattern (borrowed from Contact, see "Teach
+hero: gradient placeholder replaced with a full-bleed background photo"
+above) was replaced outright with Home's own two-column portrait layout
+(see "Home page hero media" above) — `Section` is no longer a hand-rolled
+`relative overflow-hidden` wrapper with an `Image` background child; it's
+now the same `md:grid-cols-[2fr_3fr]` grid Home uses, text on the left
+(`md:pl-[80px]`, each of `h1`/`p` wrapped in `HeroReveal` — newly imported
+into this page, matching Home's mount-triggered entrance animation) and
+the portrait in a `md:aspect-auto md:-mt-[10px] md:-mb-[10px]
+md:h-[calc(100%+20px)]` image column on the right, `object-cover
+object-top`, no scrim, no gradient backdrop. The `bg-black/55` scrim and
+the old `teach-hero-mentorship-session.webp` background photo are both
+gone from this page (the file itself was left in `public/`, per the
+site's convention of not deleting superseded assets).
+
+This wasn't just a style-matching choice — the new photo is a genuine
+transparent-background cutout portrait, the same asset type Home's own
+photo is (confirmed via `PIL`: `RGBA`, 1500×1472, alpha extrema `(0,
+255)`, extracted from the conversation transcript's base64 image data
+the same way as every other inline-attached photo this session). Home's
+hero deliberately has no gradient/backdrop behind its image specifically
+*because* its photo is a transparent cutout (see item 1 under "Home page
+hero media" above) — reusing that exact wrapper structure here means the
+new portrait crops against Teach's own dark `theme-dark-fixed` background
+the same way, rather than showing a placeholder gradient or a flat box
+behind it. The photo lives at `public/images/teach-hero-portrait.webp` —
+a new file, distinct from both `reiziger-ashu-hero-portrait.webp` (Home)
+and `reiziger-ashu-portrait.jpg` (About) — don't confuse the three.
+
+Confirmed via Playwright: the hero's `getBoundingClientRect()` on `/teach`
+still exactly matches `/`'s (`height: 819`, `top: 81`, `bottom: 900` at a
+1440×900 viewport — the `md:h-[calc(100dvh-81px)]` sizing carried over
+unchanged since it's now literally the same `Section` className Home
+uses), and a screenshot at both 1440px and 390px viewports confirms the
+portrait crops correctly (face fully in frame, `object-top` keeping it
+clear of the nav bar) and the mobile stack (text above image, rounded
+corners via `aspect-[4/5] rounded-2xl`) matches Home's mobile layout too.
+
 ## Contact form email (`/api/contact`)
 
 Sends via [Resend](https://resend.com) to `ashu.reiziger45@gmail.com`

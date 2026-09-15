@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Section, SectionHeading } from "@/components/Section";
+import { HeroReveal } from "@/components/HeroReveal";
 import { ArrowRightIcon } from "@/components/icons";
 
 export const metadata: Metadata = {
@@ -62,30 +63,36 @@ const SPEAKING_TOPICS = [
 export default function TeachPage() {
   return (
     <div className="theme-dark-fixed -mb-10 bg-paper pb-10 text-ink">
-      <div className="relative overflow-hidden md:flex md:h-[calc(100dvh-81px)] md:items-center">
-        <Image
-          src="/images/teach-hero-mentorship-session.webp"
-          alt=""
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover"
-        />
-        <div className="absolute inset-0 bg-black/55" />
-
-        <div className="relative mx-auto max-w-[1920px] px-3 py-16 md:w-full md:px-10 md:py-24">
-          <div className="md:pl-10">
-            <h1 className="font-display text-[3em] font-bold leading-tight tracking-tight">
-              I believe knowledge should multiply.
-            </h1>
-            <p className="mt-6 max-w-md text-muted">
-              Everything I learn shouldn&apos;t end with me. Part of my work is helping other
-              creatives develop the thinking, skills, systems, and character required to use
-              their gifts meaningfully.
-            </p>
+      <Section className="relative overflow-hidden px-[0px] pb-[10px] pt-[10px] md:flex md:h-[calc(100dvh-81px)] md:items-center md:px-[0px] md:pb-[10px] md:pt-[10px]">
+        <div className="grid gap-10 md:h-full md:w-full md:grid-cols-[2fr_3fr] md:grid-rows-1 md:items-center md:gap-0">
+          <div className="md:pl-[80px]">
+            <HeroReveal delay={0}>
+              <h1 className="font-display text-[3em] font-bold leading-tight tracking-tight">
+                I believe knowledge should multiply.
+              </h1>
+            </HeroReveal>
+            <HeroReveal delay={0.2}>
+              <p className="mt-6 max-w-md text-muted">
+                Everything I learn shouldn&apos;t end with me. Part of my work is helping other
+                creatives develop the thinking, skills, systems, and character required to use
+                their gifts meaningfully.
+              </p>
+            </HeroReveal>
           </div>
+          <HeroReveal delay={0.15} className="md:h-full md:self-stretch">
+            <div className="relative aspect-[4/5] overflow-hidden rounded-2xl md:aspect-auto md:-mt-[10px] md:-mb-[10px] md:h-[calc(100%+20px)]">
+              <Image
+                src="/images/teach-hero-portrait.webp"
+                alt=""
+                fill
+                priority
+                sizes="(min-width: 768px) 60vw, 100vw"
+                className="object-cover object-top"
+              />
+            </div>
+          </HeroReveal>
         </div>
-      </div>
+      </Section>
 
       <Section className="pt-0">
         <div className="grid gap-6 md:grid-cols-2">
