@@ -94,7 +94,7 @@ export default function TeachPage() {
         </div>
       </Section>
 
-      <Section className="pt-0">
+      <Section className="pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]">
         <div className="grid gap-6 md:grid-cols-2">
           {OFFERINGS.map((offering) => {
             const content = (

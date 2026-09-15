@@ -2110,6 +2110,21 @@ portrait crops correctly (face fully in frame, `object-top` keeping it
 clear of the nav bar) and the mobile stack (text above image, rounded
 corners via `aspect-[4/5] rounded-2xl`) matches Home's mobile layout too.
 
+## Teach offerings grid section: brought in line with the 40px pattern
+
+The `Section` right after Teach's hero (the "Design Training" /
+"Workshops" / "Mentorship" / "Free Resources" `OFFERINGS` grid,
+previously `<Section className="pt-0">`) got the same flat, every-side,
+every-breakpoint `40px` treatment established sitewide (see "Home page:
+the same cascade gotcha on every remaining section" above and its
+follow-ups): `pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]`. Bracket-
+arbitrary syntax throughout, matching the established working pattern
+for this `md:py-40` cascade gotcha elsewhere. Confirmed via
+`getComputedStyle`: `paddingTop`/`paddingBottom` both read `40px` at a
+375px and a 1440px viewport. The section immediately below this one
+("Invite me to speak") is untouched — only the section directly
+following the hero was in scope for this request.
+
 ## Contact form email (`/api/contact`)
 
 Sends via [Resend](https://resend.com) to `ashu.reiziger45@gmail.com`
