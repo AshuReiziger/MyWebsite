@@ -820,6 +820,33 @@ screenshot confirmed the result reads clearly: dark text and controls on
 a solid gold band, with "Home" (the current route on `/`) visibly
 underlined.
 
+## Contact page ("Work With Me") image placeholder replaced with a real photo
+
+`/contact` is the destination of every "Work With Me" CTA sitewide (`Nav`'s
+button, Home's hero CTA — see "Nav & Footer conventions" above; there is
+no separate page literally titled "Work With Me"). Its copy column
+carried the site's standard gradient placeholder
+(`bg-gradient-to-br from-line to-muted/20`, `aspect-[4/3] rounded-2xl`,
+no `next/image` — one of the few image slots on the site that was never
+given a real photo). Per direct request, with a photo attached (a studio
+desk with sketches/branding swatches, a fountain pen, and a blurred team
+working in the background), that gradient div was replaced with a real
+`next/image` filling the same `aspect-[4/3] rounded-2xl` slot — the
+wrapper gained `relative overflow-hidden` (needed for `fill`) and the
+`Image` uses `fill sizes="(min-width: 768px) 50vw, 100vw"
+className="object-cover"`, matching the sizing convention used for every
+other image slot on the site. `alt=""` since the photo is purely
+decorative background texture next to the contact form, not content a
+screen reader needs to announce.
+
+The photo lives at `public/images/contact-page-studio-desk.webp` (WebP,
+matching the site's convention for photographic assets — see "Home page
+hero media" above). It was supplied as an inline chat attachment rather
+than a file path, so it was extracted directly from the conversation
+transcript's base64 image data (same technique documented for the home
+page hero portrait swaps) and confirmed via `PIL` as a clean 1536×1024
+RGB WebP before being written into `public/`.
+
 ## Sitewide footer-spacing convention reduced from 128px to 40px
 
 Per direct follow-up on the home page's final CTA section ("are you sure

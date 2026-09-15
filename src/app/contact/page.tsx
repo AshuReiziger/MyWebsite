@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { ContactForm } from "@/components/ContactForm";
 
 export const metadata: Metadata = {
@@ -20,7 +21,15 @@ export default function ContactPage() {
               creative team, or exploring an idea that needs structure, I&apos;d love to hear
               about it.
             </p>
-            <div className="mt-10 aspect-[4/3] rounded-2xl bg-gradient-to-br from-line to-muted/20" />
+            <div className="relative mt-10 aspect-[4/3] overflow-hidden rounded-2xl">
+              <Image
+                src="/images/contact-page-studio-desk.webp"
+                alt=""
+                fill
+                sizes="(min-width: 768px) 50vw, 100vw"
+                className="object-cover"
+              />
+            </div>
           </div>
 
           <div className="rounded-2xl border border-line bg-paper p-8 shadow-sm md:p-10">
