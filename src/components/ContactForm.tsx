@@ -70,11 +70,11 @@ export function ContactForm() {
       <label className="flex flex-col gap-2">
         <span className={labelClass}>Area of Interest</span>
         <select name="projectType" required defaultValue="" className={inputClass}>
-          <option value="" disabled>
+          <option value="" disabled className="bg-white text-black">
             Select an area
           </option>
           {AREAS_OF_INTEREST.map((type) => (
-            <option key={type} value={type}>
+            <option key={type} value={type} className="bg-white text-black">
               {type}
             </option>
           ))}

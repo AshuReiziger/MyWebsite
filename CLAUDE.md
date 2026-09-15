@@ -859,6 +859,61 @@ Home's own hero already does):
   hero-subtext convention), the `md:items-center` grid centering, and
   the placeholder box on the right are all untouched.
 
+## Contact page: vertical centering, closing the black gap before Footer, and dropdown contrast
+
+Three follow-up fixes on `/contact`, requested together:
+
+1. **Vertical centering of the hero copy.** The grid (`grid gap-12
+   md:grid-cols-2`) gained `md:items-center`, matching the same pattern
+   already used on `/teach`'s hero and elsewhere — the copy column now
+   centers against the taller form-panel column instead of aligning to
+   the row's top. Confirmed via `getBoundingClientRect()`: the copy
+   block's top and bottom gaps within the row are both exactly `140px`
+   at a 1440×1000 viewport (i.e. genuinely centered, not just visually
+   close).
+2. **The solid black strip between the hero photo and the gold footer
+   was removed.** This wasn't a separate element — it was the root
+   `theme-dark-fixed` wrapper's own `pb-10` (see "Sitewide footer-spacing
+   convention reduced" above), rendering as 40px of plain `bg-paper`
+   (near-black) below the hero `div`, since the hero's background image
+   only covered its own content height and stopped there. Moved that
+   `pb-10` off the root wrapper and onto the hero `div` itself instead
+   (`relative overflow-hidden pb-10` — the root wrapper is now just
+   `theme-dark-fixed -mb-10 bg-paper text-ink`, no `pb-10`). Since
+   `next/image`'s `fill` (`position: absolute; inset: 0`) sizes against
+   its positioned ancestor's *padding box* (padding included, border
+   excluded), adding the padding directly to the hero wrapper — the same
+   element the `Image` and scrim are already positioned against —
+   extends the image and `bg-black/55` scrim to cover that space too,
+   instead of leaving it exposed. The root's own `-mb-10` (still needed
+   to collapse against Footer's `mt-10`, per the sitewide mechanism) is
+   unaffected by this move, since margin collapsing works off the root's
+   own box regardless of which of its descendants supplies the bottom
+   padding. Confirmed via `getBoundingClientRect()`: the gap between the
+   hero wrapper's bottom edge and the footer's top edge is exactly `0px`
+   (previously a visible 40px black band). **This pattern — padding on
+   the same element the background `Image` is positioned against, not on
+   an ancestor — is the fix to reach for if a similar exposed-background
+   gap ever shows up below another full-bleed background-image section.**
+3. **The "Area of Interest" `<select>` dropdown's option list was
+   illegible** — light text (inherited `text-ink`, white in this
+   `theme-dark-fixed` page) rendered against the browser/OS's own
+   default white dropdown-popup background, which Tailwind's
+   `bg-transparent`/token classes on the `<select>` itself don't reach
+   (native select popups are styled by the browser, largely immune to
+   the parent's CSS). Fixed in `ContactForm.tsx` by adding an explicit
+   `className="bg-white text-black"` directly to every `<option>`
+   (including the disabled placeholder) — a literal, theme-independent
+   light background with dark text, not the `ink`/`paper` tokens, since
+   those would still resolve to light text in this context. Confirmed
+   via `getComputedStyle` on an opened dropdown: `color: rgb(0, 0, 0)`,
+   `backgroundColor: rgb(255, 255, 255)`. This is scoped to this one
+   `<select>`/its `<option>`s — no other form on the site uses a native
+   `<select>` for a similarly-themed field (the category-specific Teach
+   forms use `PillToggle`/`PillMultiToggle` instead — see "Category-
+   specific Teach forms" below — which don't have this native-popup
+   styling limitation), so this fix wasn't needed anywhere else.
+
 ## Contact page ("Work With Me") hero copy matched to the home page hero
 
 Per direct follow-up ("please do same for the 'work with me' page" —

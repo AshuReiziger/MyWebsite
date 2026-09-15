@@ -9,8 +9,8 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <div className="theme-dark-fixed -mb-10 bg-paper pb-10 text-ink">
-      <div className="relative overflow-hidden">
+    <div className="theme-dark-fixed -mb-10 bg-paper text-ink">
+      <div className="relative overflow-hidden pb-10">
         <Image
           src="/images/contact-page-studio-desk.webp"
           alt=""
@@ -22,7 +22,7 @@ export default function ContactPage() {
         <div className="absolute inset-0 bg-black/55" />
 
         <div className="relative mx-auto max-w-[1920px] px-3 py-16 md:px-10 md:py-24">
-          <div className="grid gap-12 md:grid-cols-2">
+          <div className="grid gap-12 md:grid-cols-2 md:items-center">
             <div className="md:pl-10">
               <h1 className="border-l-2 border-accent pl-6 font-display text-[3em] font-bold leading-tight tracking-tight">
                 Have an idea worth building?
