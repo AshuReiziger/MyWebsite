@@ -36,24 +36,28 @@ const CAPABILITIES: Capability[] = [
     description:
       "I create visual identities, communication systems, digital experiences, and strategic design solutions that help ideas become clear, compelling, and memorable.",
     icon: <DesignIcon />,
+    image: "/images/capabilities/design.jpg",
   },
   {
     title: "Strategy",
     description:
       "I help individuals and organizations move from scattered ideas to clearer direction, stronger positioning, and practical systems.",
     icon: <StrategyIcon />,
+    image: "/images/capabilities/strategy.jpg",
   },
   {
     title: "Education",
     description:
       "I teach creatives how to move beyond software proficiency and develop the thinking, discipline, systems, and professional skills required to thrive.",
     icon: <EducationIcon />,
+    image: "/images/capabilities/education.jpg",
   },
   {
     title: "Leadership",
     description:
       "I develop creative teams, media units, and communities by building cultures that encourage excellence, growth, initiative, collaboration, and purpose.",
     icon: <LeadershipIcon />,
+    image: "/images/capabilities/leadership.jpg",
   },
 ];
 

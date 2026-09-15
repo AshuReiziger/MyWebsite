@@ -1478,6 +1478,40 @@ Home's "What I Do" grid renders these four cards in a single row on
 larger screens (`sm:grid-cols-2 lg:grid-cols-4`), per the Figma
 reference — not the 2×2 grid used in an earlier pass.
 
+**`CapabilityCard` (Home's "What I Do" grid) now carries an optional
+photo background behind its icon badge**, per direct request with four
+photos attached ("add the attached pictures as background to the cards
+on the what I do section"). Unlike the Teach offerings grid (see below),
+the icon badge and numbered index were kept, not dropped — the request
+was only to add a background image, not to replicate Teach's icon-removal
+choice, so `CapabilityCard.tsx`'s `Capability` interface gained an
+optional `image?: string` field rather than removing `icon`.
+Implementation reuses the same `grayscale` → `group-hover:grayscale-0`
+`next/image` + gradient-scrim pattern as `WorkCard.tsx`/the Teach
+offerings grid (see "Image treatment" above): the `Image` (`fill`,
+`-z-10`) and a `from-paper/90 via-paper/75 to-paper/90` scrim (also
+`-z-10`) render only when `image` is set, so a future icon-only card
+added to `CAPABILITIES` still works unchanged. The card's own wrapper
+picked up `group relative isolate overflow-hidden` to support this
+layering, matching the same wrapper classes used on `WorkCard`/Teach's
+offering cards.
+
+**Each photo had to be matched to the right capability by what's
+visible in the photo itself**, since the four images arrived as plain
+attachments with no filenames — extracted from the conversation
+transcript's base64 image data the same way as every other inline
+attachment this session, confirmed via `PIL` as four clean 2000px-wide
+JPEGs before use: a desk with a "#DESIGN" lightbox sign and a "Graphic
+Design Rules" book → `Design`; word-strip cutouts reading "strategy"
+next to "TRENDS"/"MARKETING STRATEGY" cards → `Strategy`; hands
+cutting/annotating a persona mood-board (Polish-language prompts like
+"Co go cieszy?") → `Education`; five people crowded around a laptop
+reviewing printed planning documents → `Leadership`. Files live at
+`public/images/capabilities/{design,strategy,education,leadership}.jpg`
+— a new directory, parallel to `public/images/teach/`'s per-card photo
+convention. Confirmed via Playwright at both 1440px and 390px viewports
+that each card shows the correct photo behind legible text.
+
 **All four Teach offerings cards (`/teach`'s `OFFERINGS` array) carry a
 photo background and no icon badge**, per direct request — real photos
 the user supplied, not stock/placeholder images. `Design Training` uses
