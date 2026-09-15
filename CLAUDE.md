@@ -1979,6 +1979,65 @@ viewport the desktop pill is unaffected (`width:"217.938px"`, label
 `node --check public/sigma-companion-widget.js` still passes, since this
 file has no build step to catch a syntax error otherwise.
 
+## Teach hero: gradient placeholder replaced with a full-bleed background photo
+
+Per direct request ("Just [like] you did for the hero section of the
+'work with me' page. use this image instead for the hero section of the
+teach page"), with a photo attached (a creative director in a rust
+double-breasted suit reviewing brand/logo concepts on a whiteboard-and-
+mood-board-covered wall with three team members, one at a laptop), the
+`/teach` hero was rebuilt to match `/contact`'s hero treatment exactly
+(see "Contact page ('Work With Me') hero background photo" above):
+`Section` was dropped in favor of a hand-rolled `relative overflow-hidden`
+wrapper with the `Image` (`fill priority sizes="100vw"
+className="object-cover"`, `alt=""`) as its first child, a `bg-black/55`
+scrim on top of it, and the actual heading/subtext in their own `relative`
+inner `mx-auto max-w-[1920px] px-3 py-16 md:px-10 md:py-24` content div
+so they stack above both — the same structure, same scrim, same inner
+padding values as Contact's hero, for consistency between the two now
+that they share the same pattern.
+
+**This replaces Teach's hero `Section`'s previous two-column grid
+entirely, not just its right-column placeholder.** The old hero was
+`<Section className="pt-[10px] md:pt-[10px]"><div className="grid
+md:grid-cols-2 md:items-center">` — text on the left, a gradient
+placeholder box (`aspect-[4/3] rounded-2xl bg-gradient-to-br from-line
+to-muted/20`) on the right, matching the sitewide "every empty image
+slot gets a gradient placeholder" convention documented under "Content
+model" above. Once the photo became the section's own full-bleed
+background, that second column had nothing left to hold — it was
+dropped along with the grid, leaving a single-column text block (still
+`md:pl-10` inset, matching the sitewide hero-copy-offset convention).
+The hero's old one-off `pt-[10px] md:pt-[10px]` top padding (documented
+under "Top padding" above as a deliberate, previously-requested
+exception) is also gone now that the hero uses Contact's own `py-16
+md:py-24` inner padding instead of `Section`'s default scale — this was
+a deliberate side effect of matching Contact's treatment exactly, not
+an oversight; if the gap to the "Design Training..." offerings grid
+below ever needs retuning, that boundary is that next `Section`'s own
+`pt-0`, unrelated to this change.
+
+**Root wrapper's `pb-10` was left in place** (`theme-dark-fixed -mb-10
+bg-paper pb-10 text-ink`, unlike Contact's, which moved its `pb-10` onto
+the hero `div` itself) — that relocation trick was specifically needed
+on Contact because the hero was the *entire* page (nothing followed it
+before Footer, so the hero needed to absorb the root's trailing padding
+to avoid an exposed-background gap). Teach's hero is followed by the
+offerings grid, speaking section, etc., so the root's `pb-10` still
+correctly applies to whatever `Section` actually ends up last on the
+page — moving it onto the hero here would have been wrong, not an
+equivalent fix.
+
+The photo lives at `public/images/teach-hero-mentorship-session.webp`
+(WebP, matching the site's photographic-asset convention). Extracted the
+same way as Contact's studio-desk photo — pulled directly from the
+conversation transcript's base64 image data (an inline chat attachment,
+not a file path) and confirmed via `PIL` as a clean 1536×1024 RGB WebP
+before being written into `public/`. Verified via Playwright screenshot
+at both 1440px and 390px viewports: the heading/subtext render clearly
+over the photo at both sizes, with no layout regression to the offerings
+grid immediately below.
+
 ## Contact form email (`/api/contact`)
 
 Sends via [Resend](https://resend.com) to `ashu.reiziger45@gmail.com`

@@ -62,8 +62,18 @@ const SPEAKING_TOPICS = [
 export default function TeachPage() {
   return (
     <div className="theme-dark-fixed -mb-10 bg-paper pb-10 text-ink">
-      <Section className="pt-[10px] md:pt-[10px]">
-        <div className="grid gap-10 md:grid-cols-2 md:items-center">
+      <div className="relative overflow-hidden">
+        <Image
+          src="/images/teach-hero-mentorship-session.webp"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-black/55" />
+
+        <div className="relative mx-auto max-w-[1920px] px-3 py-16 md:px-10 md:py-24">
           <div className="md:pl-10">
             <h1 className="font-display text-[3em] font-bold leading-tight tracking-tight">
               I believe knowledge should multiply.
@@ -74,9 +84,8 @@ export default function TeachPage() {
               their gifts meaningfully.
             </p>
           </div>
-          <div className="aspect-[4/3] rounded-2xl bg-gradient-to-br from-line to-muted/20" />
         </div>
-      </Section>
+      </div>
 
       <Section className="pt-0">
         <div className="grid gap-6 md:grid-cols-2">
