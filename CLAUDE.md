@@ -859,6 +859,28 @@ Home's own hero already does):
   hero-subtext convention), the `md:items-center` grid centering, and
   the placeholder box on the right are all untouched.
 
+## Contact page ("Work With Me") hero copy matched to the home page hero
+
+Per direct follow-up ("please do same for the 'work with me' page" —
+immediately after the same treatment was applied to `/teach`, documented
+above), `/contact`'s `h1`/subtext got the identical font and positioning
+match: `h1` className changed from `border-l-2 border-accent pl-6
+font-display text-[2em] uppercase leading-tight tracking-tight` to
+`border-l-2 border-accent pl-6 font-display text-[3em] font-bold
+leading-tight tracking-tight` (dropped `uppercase`, bumped to `3em`,
+added `font-bold` — same as Home/Teach), and the copy's wrapping `div`
+picked up `md:pl-10` to land at the same effective 80px offset from the
+section's left edge that Home's and Teach's hero copy both use.
+**The `border-l-2 border-accent pl-6` accent-bar treatment on the `h1`
+itself was kept unchanged** — that's a separate, already-documented
+Contact/Build-specific design element (see "Design tokens" above, the
+hero-sizing-standardization pass that explicitly left it untouched) not
+related to this font/position match, so it wasn't removed just because
+Home's hero doesn't have one. Confirmed via `getComputedStyle`/
+`getBoundingClientRect` at a 1440px viewport: `/contact`'s `h1` now
+matches `/`'s exactly (`fontSize: "48px"`, `fontWeight: "700"`,
+`textTransform: "none"`, `80px` offset from its container's left edge).
+
 ## Contact page ("Work With Me") hero background photo
 
 `/contact` is the destination of every "Work With Me" CTA sitewide (`Nav`'s

@@ -23,8 +23,8 @@ export default function ContactPage() {
 
         <div className="relative mx-auto max-w-[1920px] px-3 py-16 md:px-10 md:py-24">
           <div className="grid gap-12 md:grid-cols-2">
-            <div>
-              <h1 className="border-l-2 border-accent pl-6 font-display text-[2em] uppercase leading-tight tracking-tight">
+            <div className="md:pl-10">
+              <h1 className="border-l-2 border-accent pl-6 font-display text-[3em] font-bold leading-tight tracking-tight">
                 Have an idea worth building?
               </h1>
               <p className="mt-6 max-w-md text-muted">
