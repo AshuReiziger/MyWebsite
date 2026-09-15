@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Section, SectionHeading } from "@/components/Section";
+import { HeroReveal } from "@/components/HeroReveal";
 import { ArrowRightIcon } from "@/components/icons";
 
 export const metadata: Metadata = {
@@ -62,23 +63,38 @@ const SPEAKING_TOPICS = [
 export default function TeachPage() {
   return (
     <div className="theme-dark-fixed -mb-10 bg-paper pb-10 text-ink">
-      <Section className="pt-[10px] md:pt-[10px]">
-        <div className="grid gap-10 md:grid-cols-2 md:items-center">
-          <div className="md:pl-10">
-            <h1 className="font-display text-[3em] font-bold leading-tight tracking-tight">
-              I believe knowledge should multiply.
-            </h1>
-            <p className="mt-6 max-w-md text-muted">
-              Everything I learn shouldn&apos;t end with me. Part of my work is helping other
-              creatives develop the thinking, skills, systems, and character required to use
-              their gifts meaningfully.
-            </p>
+      <Section className="relative overflow-hidden px-[0px] pb-[10px] pt-[10px] md:flex md:h-[calc(100dvh-81px)] md:items-center md:px-[0px] md:pb-[10px] md:pt-[10px]">
+        <div className="grid gap-10 md:h-full md:w-full md:grid-cols-[2fr_3fr] md:grid-rows-1 md:items-center md:gap-0">
+          <div className="md:pl-[80px]">
+            <HeroReveal delay={0}>
+              <h1 className="font-display text-[3em] font-bold leading-tight tracking-tight">
+                I believe knowledge should multiply.
+              </h1>
+            </HeroReveal>
+            <HeroReveal delay={0.2}>
+              <p className="mt-6 max-w-md text-muted">
+                Everything I learn shouldn&apos;t end with me. Part of my work is helping other
+                creatives develop the thinking, skills, systems, and character required to use
+                their gifts meaningfully.
+              </p>
+            </HeroReveal>
           </div>
-          <div className="aspect-[4/3] rounded-2xl bg-gradient-to-br from-line to-muted/20" />
+          <HeroReveal delay={0.15} className="md:h-full md:self-stretch">
+            <div className="relative aspect-[4/5] overflow-hidden rounded-2xl md:aspect-auto md:-mt-[10px] md:-mb-[10px] md:h-[calc(100%+20px)]">
+              <Image
+                src="/images/teach-hero-portrait.webp"
+                alt=""
+                fill
+                priority
+                sizes="(min-width: 768px) 60vw, 100vw"
+                className="object-cover object-top"
+              />
+            </div>
+          </HeroReveal>
         </div>
       </Section>
 
-      <Section className="pt-0">
+      <Section className="pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]">
         <div className="grid gap-6 md:grid-cols-2">
           {OFFERINGS.map((offering) => {
             const content = (
@@ -131,7 +147,7 @@ export default function TeachPage() {
         </div>
       </Section>
 
-      <Section className="pt-0">
+      <Section className="pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]">
         <div className="rounded-2xl border-l-2 border-accent bg-paper p-10 shadow-sm md:p-14">
           <SectionHeading title="Invite me to speak" />
           <p className="mt-4 max-w-xl text-muted">
