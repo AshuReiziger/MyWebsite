@@ -64,8 +64,8 @@ export default function TeachPage() {
     <div className="theme-dark-fixed -mb-10 bg-paper pb-10 text-ink">
       <Section className="pt-[10px] md:pt-[10px]">
         <div className="grid gap-10 md:grid-cols-2 md:items-center">
-          <div>
-            <h1 className="font-display text-[2em] uppercase leading-tight tracking-tight">
+          <div className="md:pl-10">
+            <h1 className="font-display text-[3em] font-bold leading-tight tracking-tight">
               I believe knowledge should multiply.
             </h1>
             <p className="mt-6 max-w-md text-muted">

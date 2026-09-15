@@ -820,6 +820,45 @@ screenshot confirmed the result reads clearly: dark text and controls on
 a solid gold band, with "Home" (the current route on `/`) visibly
 underlined.
 
+## Teach page hero copy matched to the home page hero's positioning and font
+
+Per direct request ("Adjust the hero copy of the teach page to be
+positioned as that on the hero section of the landing page. Also Adjust
+the font too to look like that on the landing page hero section"), the
+`/teach` hero's `h1`/subtext wrapper and heading were changed to match
+`page.tsx` (Home)'s hero copy treatment, rather than the sitewide
+hero-`h1` default (`text-[2em]`, no `font-bold`, uppercase — see "Design
+tokens" above, the convention this deliberately departs from, same as
+Home's own hero already does):
+- `h1` className changed from `font-display text-[2em] uppercase
+  leading-tight tracking-tight` to `font-display text-[3em] font-bold
+  leading-tight tracking-tight` — dropping `uppercase` (Home's hero `h1`
+  is mixed-case, not transformed) and matching Home's one-off `3em`/
+  `font-bold` treatment (see "Home page hero media" item 6 above) instead
+  of the sitewide `2em`/`font-normal` default. Confirmed via
+  `getComputedStyle`: both pages' `h1` now read `fontSize: "48px"`,
+  `fontWeight: "700"`, `textTransform: "none"`.
+- The wrapping `div` around the `h1`/subtext picked up `md:pl-10` (40px)
+  to match Home's copy-column inset. **Not `md:pl-[80px]`** — Home's own
+  copy wrapper does use that exact bracket value, but Home's hero
+  `Section` also has its horizontal padding zeroed out entirely
+  (`px-[0px] md:px-[0px]`, a documented one-off for that section's
+  full-bleed image treatment — see item 9 in "Home page hero media"
+  above), so Home's *effective* total inset from the viewport edge is
+  80px (0 + 80), not 160px. `/teach`'s hero `Section` was left on the
+  sitewide default `px-3 md:px-10` (Teach's placeholder box to the right
+  has no reason to lose its normal edge inset the way Home's full-bleed
+  photo did), so matching the same *effective* 80px total required only
+  `md:pl-10` (40px) added on top of that section's own existing 40px —
+  using the literal `md:pl-[80px]` value here would have produced 120px,
+  visibly further right than Home's heading. Confirmed via
+  `getBoundingClientRect()` at a 1440px viewport: both pages' `h1` now
+  sit at exactly `80px` from their `<section>`'s left edge.
+- Nothing else on this hero changed — the subtext `p`'s own classes
+  (`mt-6 max-w-md text-muted`, no size utility, following the sitewide
+  hero-subtext convention), the `md:items-center` grid centering, and
+  the placeholder box on the right are all untouched.
+
 ## Contact page ("Work With Me") hero background photo
 
 `/contact` is the destination of every "Work With Me" CTA sitewide (`Nav`'s
