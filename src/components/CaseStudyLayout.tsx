@@ -32,7 +32,7 @@ export function CaseStudyLayout({
   );
 
   return (
-    <div className="theme-dark-fixed -mb-32 bg-paper pb-32 text-ink">
+    <div className="theme-dark-fixed -mb-10 bg-paper pb-10 text-ink">
       <div className="mx-auto max-w-[1920px] px-3 pt-16 md:px-10 md:pt-24">
         <div className="grid items-center gap-8 lg:grid-cols-12">
           <div className="order-2 flex flex-col gap-8 lg:order-1 lg:col-span-5">

@@ -257,22 +257,287 @@ or additional Portfolio component) for visual consistency.
 `src/app/page.tsx`'s hero image slot (previously the `from-accent/30
 via-paper to-paper` gradient placeholder, same as every other empty
 image slot on the site) briefly held a real portrait of Reiziger Ashu
-via `next/image` before being swapped for a looping background video
-per direct request: a plain `<video>` element (not `next/image` — video
-isn't covered by that component) at `public/videos/
-reiziger-ashu-hero.mp4`, `autoPlay muted loop playsInline` (required
-combination for autoplay to actually work on mobile Safari), with
-`poster="/images/reiziger-ashu-hero-poster.jpg"` (first frame,
-extracted with `ffmpeg -update 1 -frames:v 1`) shown while it loads.
-Sized with `absolute inset-0 h-full w-full object-cover` inside the same
-`relative aspect-[4/5] overflow-hidden` wrapper div used for every other
-hero/gallery slot, so the video's native 9:16 crops to fit exactly like
-`next/image`'s `fill` + `object-cover` would. The gradient classes stay
-on the wrapper as a fallback backdrop for the same reason as elsewhere.
-The still portrait photo remains at `public/images/
-reiziger-ashu-portrait.jpg`, unused but not deleted, in case a static
-image is wanted again later (e.g. as the `poster` for a future video, or
-back as the hero itself).
+via `next/image`, was swapped for a looping background video (a plain
+`<video>` element at `public/videos/reiziger-ashu-hero.mp4`,
+`autoPlay muted loop playsInline`, `poster="/images/
+reiziger-ashu-hero-poster.jpg"`), then **swapped back to a static
+`next/image` per a later direct request** ("replace the 'Hello' video
+with this image as background" — the video showed repeating "HELLO"
+text tiles, not footage of Reiziger Ashu himself, so this wasn't a
+video-vs-photo-of-him choice, it was replacing stock-looking motion
+content with an actual portrait). The new portrait lives at
+`public/images/reiziger-ashu-hero-portrait.webp` — a **different file**
+from `public/images/reiziger-ashu-portrait.jpg` (the About page's
+portrait, from the earlier brief video-swap era, referenced above) —
+don't confuse the two or reuse one for the other's slot. Rendered as
+`<Image src="/images/reiziger-ashu-hero-portrait.webp" alt="Reiziger
+Ashu" fill priority sizes="(min-width: 768px) 50vw, 100vw"
+className="object-cover" />` inside the same `relative aspect-[4/5]
+overflow-hidden` wrapper div used for every other hero/gallery slot —
+`priority` since it's the largest above-the-fold element (LCP
+candidate) on the homepage. The video element and its poster/`.mp4`
+file were removed from the page but the files themselves weren't
+deleted from `public/`, matching the site's convention elsewhere of
+leaving superseded assets in place rather than deleting them.
+**This specific source image has a transparent background** (a
+cutout portrait, alpha channel confirmed via `PIL` before use) — kept
+as WebP rather than flattened to JPG specifically to preserve that
+transparency.
+
+**The source photo itself was swapped once already** for a different
+portrait of Reiziger Ashu, per a direct "let's replace the image with
+this instead" request with a new photo attached — same cutout-portrait
+treatment (extracted from the conversation transcript's base64 image
+data the same way as the original, confirmed via `PIL` as 1500×1472
+RGBA with genuine alpha transparency, `(0, 255)` extrema). The new
+photo was written to the same path,
+`public/images/reiziger-ashu-hero-portrait.webp`, so **no code change
+was needed** — `page.tsx`'s `<Image src="...">` reference, `sizes`,
+`object-cover object-top`, and every layout/sizing rule documented
+below are unaffected, since none of them depend on this specific
+photo's pixels. The photo this replaced was kept (not deleted) at
+`public/images/reiziger-ashu-hero-portrait-previous.webp`, matching
+the site's convention elsewhere of retaining superseded image assets
+rather than removing them.
+
+**Two follow-up requests changed the image wrapper and grid split from
+the initial swap-in, both since reverted/adjusted from what's described
+above:**
+1. The wrapper originally kept its pre-existing `bg-gradient-to-br
+   from-accent/30 via-paper to-paper` placeholder classes (the same
+   fallback-backdrop pattern used on every other empty image slot
+   sitewide), which — combined with this image's transparency — let the
+   gradient show through around the subject. Per direct follow-up
+   ("remove the gradient I see behind the image"), those classes were
+   dropped entirely; the wrapper now has no background class at all, so
+   the page's own dark background shows through the transparent
+   regions instead. Don't re-add the gradient-placeholder classes to
+   this specific wrapper without the user asking again — every *other*
+   empty/optional image slot on the site should still keep that
+   fallback-gradient convention, this is a one-off exception now that
+   this slot has a real (permanent, not-optional) image.
+2. The grid split was originally `md:grid-cols-[1.3fr_1fr]` (text
+   column wider, image column ~43% of the row). Per direct follow-up
+   ("resize the image to take half of the horizontal space"), changed
+   to `md:grid-cols-2` — an even 50/50 split, confirmed via
+   `getBoundingClientRect()` on both grid children (660px/660px at a
+   1440px viewport). `sizes` on the `Image` was updated to match
+   (`50vw` instead of `40vw` at the `md:` breakpoint) so the browser's
+   responsive-image selection reflects the column's real rendered
+   width. **Superseded by item 6 below** — the 50/50 split was later
+   widened to 40/60 (text/image) per a further direct request.
+3. The grid's vertical alignment was `md:items-center` — since the row
+   height is set by the tall `aspect-[4/5]` image column, centering the
+   text column left a large block of empty space above the "Reiziger
+   Ashu" heading on ordinary desktop viewports (the row is taller than
+   the text content). Per direct follow-up, with the user circling that
+   empty area and drawing an arrow from the text block into it in an
+   annotated screenshot, changed to `md:items-start` so the text column
+   aligns to the top of the row instead — the heading now starts flush
+   with the top of the image, matching where the image's own subject
+   starts, instead of floating in the vertical middle of a much taller
+   row. Confirmed via screenshot, not just the class change alone.
+   **Superseded by item 5 below** — `md:items-start` was itself later
+   replaced once the ask became true vertical centering of the whole
+   hero section, not just alignment relative to the (much taller) grid
+   row.
+4. The copy column's own wrapping `div` (previously bare, no
+   className) picked up `md:pl-[50px] md:pt-[90px]` per direct request
+   — a fixed inset from the top-left of its grid cell, desktop-only
+   (no mobile equivalent was requested, so the div has zero padding
+   below `md:`). Verified via `getComputedStyle(...)` on that specific
+   div (not the `Section` or the outer grid) reading exactly
+   `paddingTop: "90px"` / `paddingLeft: "50px"` at a 1440px viewport
+   and `0px`/`0px` at mobile widths. This is a one-off inset on the
+   hero copy specifically, unrelated to `Section`'s own
+   `px-3 md:px-10`/`py-20 md:py-40` sitewide padding scale (see
+   "Content width and spacing scale" below) — don't confuse the two or
+   assume this pattern generalizes to other pages' copy blocks.
+   **`md:pt-[90px]` was removed in item 5 below** (a fixed top offset is
+   incompatible with true vertical centering — the two requests were in
+   direct tension, so centering won since it was the more recent, more
+   specific instruction); `md:pl-[50px]` was kept since the horizontal
+   inset doesn't conflict with centering the copy vertically.
+5. **The row-level `items-start`/`items-center` approach above was never
+   going to produce true vertical centering of the copy within the
+   *section*, because the grid row's height is dictated by the tall
+   `aspect-[4/5]` image column, not by the section's own box** — centering
+   within that row only centers relative to the image's height, which
+   isn't the same as centering within the full hero `Section` (whose
+   height is fixed via the `md:h-[calc(100dvh-81px)]` override described
+   below). Per a direct follow-up ("I need you to adjust the hero copy to
+   be positioned mid way vertically of the hero section"), the alignment
+   was moved up a level: `Section` itself became `md:flex md:items-center`
+   (wrapping the whole grid-as-block, not just the grid's own columns),
+   and the grid reverted to `md:items-center` (`md:pl-[50px]` kept,
+   `md:pt-[90px]` dropped per item 4 above).
+   **This surfaced a second, non-obvious bug**: flex's `items-center`
+   centers within the *content box* — the area between the element's own
+   padding edges — not the border box. `Section`'s top padding had been
+   overridden to `pt-[10px]` (10px) but its bottom padding was still the
+   inherited `md:py-40` (160px, never overridden on this Section), so the
+   content box itself was badly asymmetric top-vs-bottom, and flex
+   centering inside it skewed the visible copy upward. Measured via
+   Playwright (`getBoundingClientRect()` on `main section` vs. the copy
+   column) at two viewport sizes (1440×900, 1920×1080): a consistent
+   **-75px offset** at both — matching `(160 − 10) / 2 = 75` exactly,
+   confirming the padding-asymmetry diagnosis rather than a flex/grid
+   quirk. Fixed by adding matching bottom padding —
+   `pb-[10px] md:pb-[10px]` — alongside the existing `pt-[10px]
+   md:pt-[10px]`, so top and bottom padding are both 10px and the content
+   box (and therefore the flex-centered copy within it) is symmetric.
+   Re-measured after the fix: `offsetFromCenter` is exactly `0` at both
+   viewport sizes. See the "Top padding" note below for the full
+   className and the established both-unprefixed-and-`md:`-explicit
+   override pattern this fix follows.
+6. **Name styling and image/grid proportions changed again per direct
+   follow-up request**, after the vertical-centering fix above shipped:
+   - The `h1` ("Reiziger Ashu") dropped its `uppercase` class — the text
+     content was always mixed-case (`Reiziger Ashu`), but `uppercase`
+     forced it to render as `REIZIGER ASHU` visually; per "Capitalize
+     just the first letter of my name" it now renders as typed, with
+     only each word's leading letter capitalized. Its size changed from
+     the sitewide hero-`h1` convention of `text-[2em]` (see "Design
+     tokens" above) to `text-[3em]` — a one-off, larger-than-sitewide
+     size specific to this instance, not a change to the shared hero-`h1`
+     scale used elsewhere. `font-bold`/`leading-tight`/`tracking-tight`
+     were kept unchanged.
+   - The grid split moved from the even `md:grid-cols-2` (50/50, item 2
+     above) to `md:grid-cols-[2fr_3fr]` — a 40/60 split, text/image —
+     per "adjust my image to 60% of the hero section." Confirmed via
+     `getBoundingClientRect()`: image column renders at exactly 60% of
+     the combined column width (792px/1320px at a 1440px viewport).
+     `sizes` on the `Image` was updated to match (`60vw` instead of
+     `50vw` at the `md:` breakpoint).
+   - The `Image` picked up `object-top` (`className="object-cover
+     object-top"`, was just `object-cover`, i.e. default `object-center`)
+     per "in case you have to crop, crop from below not from my head
+     section." The wrapper stays `aspect-[4/5]` — widening the column
+     (from item above) also grows the wrapper's height proportionally
+     since its aspect ratio is fixed, so `object-cover` still has to crop
+     this particular source photo (which is closer to square) to fit the
+     taller box; `object-top` biases that crop so the subject's head/face
+     stays fully in frame and any cropping comes off the bottom of the
+     photo instead of the top. This is the same "bias the crop away from
+     the subject's face" technique used for the About page portrait (see
+     "About page" below), just via `object-top` instead of that page's
+     custom `object-[50%_22%]` position — a plain `object-top` was
+     sufficient here since this crop only needed to protect the very top
+     of the frame, not a specific vertical percentage.
+7. **`object-top` alone didn't fully solve the crop** — per direct
+   follow-up ("the image face is covered by the nav bar"), the real
+   cause was upstream of `object-position`: the image wrapper's
+   `aspect-[4/5]` sizing means its *height* is derived from the grid
+   column's *width*, and item 6's 60%-width column made that height
+   (990px at a 1440×900 viewport) exceed the hero `Section`'s own fixed
+   height (819px, from the `md:h-[calc(100dvh-81px)]` override below).
+   Since `Section` is `md:flex md:items-center` (see item 5) and the
+   `.grid` was never given an explicit height, the grid — sized to its
+   tallest child (the now-990px image column) — overflowed the
+   819px-tall `Section` equally on both edges, and `Section`'s
+   `overflow-hidden` clipped it there. Because `object-top` had already
+   shifted the visible face content to the very top of the image crop,
+   that top-edge clipping cut straight into the face — this is what
+   read as the nav bar (which sits just above the section) "covering"
+   it, though the clip was from `overflow-hidden`, not the nav itself.
+   **Fixed by bounding the image column to the section's real height
+   instead of deriving it from width**: `.grid` gained `md:h-full
+   md:grid-rows-1` (an explicit height matching `Section`'s content box,
+   with `grid-rows-1` — Tailwind's `repeat(1, minmax(0, 1fr))` — so the
+   single row actually consumes that full height rather than sizing
+   itself to content, which is CSS Grid's default even when the grid
+   container has an explicit height). The image's `HeroReveal` wrapper
+   picked up `className="md:h-full md:self-stretch"` (`HeroReveal` didn't
+   forward `className` before this — added an optional `className?`
+   prop, passed through to the underlying `motion.div`, purely additive
+   and backward-compatible with its other call sites in
+   `resources/page.tsx`/`ResourceDetailLayout.tsx`/
+   `WorkshopDetailLayout.tsx`/`MentorshipDetailLayout.tsx`) so the grid
+   item itself stretches to the row's now-guaranteed-full height instead
+   of just centering at its own intrinsic size. Inside it, the image
+   wrapper `div` gained `md:aspect-auto md:h-full` (overriding
+   `aspect-[4/5]` on desktop only — mobile, which has no `Section`
+   height cap, keeps the aspect-ratio-driven sizing unchanged). The text
+   column's own `md:items-center` (inherited from `.grid`, item 5) still
+   centers it within this now-height-matched row, so `offsetFromCenter`
+   stays exactly `0` — re-verified via Playwright after this change, at
+   both 1440×900 and 1920×1080, alongside a new check that the image
+   wrapper's bounding rect never exceeds the section's (`overflowsSection:
+   false` at both sizes, where it was `true` before this fix).
+8. The copy column's left padding was bumped from `md:pl-[50px]` (item 4)
+   to `md:pl-[80px]` per direct follow-up ("adjust the hero copy's left
+   padding to 80px") — same one-off inset pattern as item 4, still
+   unrelated to `Section`'s own sitewide `px-3 md:px-10` scale.
+9. **The hero `Section`'s own horizontal padding was zeroed out** per
+   direct follow-up ("remove the padding on the left and right side of
+   the image so that the image can be larger respecting the 40/60
+   ratio") — `Section`'s inherited `px-3 md:px-10` was insetting the
+   *entire* grid (both columns) from the viewport edges, most visibly
+   capping the image column short of the right edge. Overriding it
+   needed the bracket-arbitrary form specifically —
+   `px-[0px] md:px-[0px]` — not the bare `px-0 md:px-0` utility: a first
+   attempt with `px-0 md:px-0` measured via `getComputedStyle` as having
+   **no effect** (`paddingLeft`/`paddingRight` still read `40px`), while
+   the bracket form measured `0px`/`0px` immediately. This appears to be
+   a same-value-different-syntax variant of the already-documented
+   Tailwind v4 cascade gotcha (see the "Top padding" note below) — the
+   established working pattern on this Section uses bracket syntax
+   throughout (`pt-[10px]`, `pb-[10px]`, etc.), so bracket syntax was
+   used here too rather than mixing scale-based and arbitrary-value
+   utilities on the same element. Confirmed via Playwright at a 1440px
+   viewport: the grid now sits flush at `0`/`0` from both viewport
+   edges, and the image column grew from 792px to 840px while staying
+   at exactly 60% of the row (the 40/60 ratio itself is untouched — this
+   change only grows the *shared width available* to split 40/60, it
+   doesn't change the split). The copy column keeps its own separate
+   `md:pl-[80px]` (item 8) as its only inset now that `Section`'s own
+   padding is gone, so text still has breathing room from the now-flush
+   left edge.
+10. **The image was made bigger still and pulled flush against the nav
+    bar** per direct follow-up ("make the image bigger? let the image
+    head sit right below the nav bar"). Up to this point the image
+    wrapper's `md:h-full` (item 7) filled `Section`'s *content* box —
+    i.e. the area *inside* its `pt-[10px]`/`pb-[10px]` padding (see item
+    5 and the "Top and bottom padding" note below) — so the image's top
+    edge sat 10px below `Section`'s top edge (which is itself flush
+    against `Nav`, per the `md:h-[calc(100dvh-81px)]` sizing below),
+    leaving a visible 10px gap between the nav bar and the top of the
+    portrait. Since that 10px padding is load-bearing for the *text*
+    column's vertical centering (removing it from `Section` itself would
+    reopen the item-5 padding-asymmetry bug), the fix instead counteracts
+    it locally, on the image wrapper only: `md:-mt-[10px] md:-mb-[10px]
+    md:h-[calc(100%+20px)]` (replacing the plain `md:h-full` from item
+    7) — negative top/bottom margins pull the wrapper 10px past its grid
+    row's own top/bottom on each side, and the `+20px` height keeps it
+    filling that extended span exactly, so the image ends up matching
+    `Section`'s true border-box height (`Nav`-to-viewport-bottom) instead
+    of its padded content-box height. `Section`'s own `overflow-hidden`
+    doesn't clip this, since the extended box lines up exactly with
+    `Section`'s own edges rather than exceeding them. Confirmed via
+    Playwright at both 1440×900 and 1920×1080: `imgWrapperTop` now
+    exactly equals `Nav`'s measured bottom edge (`gapBetweenNavAndImage:
+    0` at both sizes, where it was `10` before this change), the image
+    wrapper's height grew accordingly (819px/999px, up from 799px/979px),
+    and `offsetFromCenter` for the text column stays exactly `0` —
+    confirming the text's centering (item 5) was genuinely unaffected by
+    this, since only the image wrapper's own box was altered, not
+    `Section`'s or the grid's shared padding/height.
+11. **The gap between the copy column and the image was closed** per
+    direct follow-up ("remove the right padding of the hero copy, so
+    that the hero copy can go closer to the image"). There was no
+    literal right-padding utility on the copy column itself to remove —
+    the space between the two columns was the grid's own `gap-10` (40px,
+    applying to every grid gap, inherited from mobile's single-column
+    stack where it's the *vertical* spacing between the stacked text/
+    image). Overridden with `md:gap-0` (desktop-only, so the mobile
+    stack keeps its 40px vertical breathing room) — confirmed via
+    Playwright that `columnGap` reads `0px` and the copy column's right
+    edge exactly touches the image column's left edge (previously a
+    40px gap). This incidentally widens the copy column itself by the
+    same 40px (still `2fr` of the `[2fr_3fr]` split, just with no gap to
+    subtract), which is expected and unrelated to the 40/60 image/text
+    ratio (item 9) — that ratio governs the two columns' width *shares*,
+    not the gap between them.
 
 **The hero `Section` fills the viewport height on desktop, accounting
 for `Nav`'s own height** — `md:h-[calc(100dvh-81px)]` on the same
@@ -326,21 +591,40 @@ for that — an early attempt applied `max-h-screen` at every breakpoint
 and clipped the video almost entirely on mobile, which was flagged and
 corrected.
 
-**Top padding is a flat `pt-[10px]` at every breakpoint** — per direct
-request, replacing the sitewide-default `pt-16 md:pt-24` this Section
-started with. Written as `pt-[10px] md:h-[calc(100dvh-81px)]
-md:pt-[10px]` — note **both** the unprefixed `pt-[10px]` and an
-explicit `md:pt-[10px]` are needed, not just one: `Section`'s own base
-classes (`Section.tsx`) include `md:py-40`, and Tailwind emits
-responsive (`md:`) rules after unprefixed ones in the compiled
-stylesheet, so without the explicit `md:pt-[10px]` override, `md:py-40`
-silently wins the top-padding value back on desktop (confirmed by
-measuring `getComputedStyle(...).paddingTop` — it read `160px`, not
-`10px`, until the `md:` override was added). This is the general
+**Top and bottom padding are both a flat `10px` at every breakpoint** —
+top padding per direct request, replacing the sitewide-default
+`pt-16 md:pt-24` this Section started with; bottom padding added later
+(see item 5 above) specifically to make the content box symmetric for
+true flex-centering, not requested on its own. The Section's current
+full className is `relative overflow-hidden pb-[10px] pt-[10px]
+md:flex md:h-[calc(100dvh-81px)] md:items-center md:pb-[10px]
+md:pt-[10px]` — note **both** the unprefixed (`pt-[10px]`/`pb-[10px]`)
+and the explicit `md:` versions (`md:pt-[10px]`/`md:pb-[10px]`) are
+needed for each side, not just one: `Section`'s own base classes
+(`Section.tsx`) include `md:py-40`, and Tailwind emits responsive
+(`md:`) rules after unprefixed ones in the compiled stylesheet, so
+without the explicit `md:` override, `md:py-40` silently wins the
+padding value back on desktop (confirmed by measuring
+`getComputedStyle(...).paddingTop`/`paddingBottom` — they read `160px`,
+not `10px`, until the `md:` overrides were added). This is the general
 pattern any time a page's own `className` needs to override *only one
-side* of `Section`'s default `py-*`/`px-*` shorthand at a *specific*
-breakpoint — an unprefixed override alone is not enough if the default
-being overridden is itself breakpoint-scoped.
+side* (or, as here, both sides individually) of `Section`'s default
+`py-*`/`px-*` shorthand at a *specific* breakpoint — an unprefixed
+override alone is not enough if the default being overridden is itself
+breakpoint-scoped. `md:flex md:items-center` on this same Section is
+what actually centers the grid-as-block vertically within the Section's
+now-symmetric content box — see item 5 above for why this had to move
+up from the grid's own `items-center`/`items-start`, and for the
+padding-asymmetry bug this uncovered.
+
+The same `pt-[10px] md:pt-[10px]` treatment was later applied to
+`/teach`'s hero `Section` too, per a direct follow-up request — that
+hero has no `h-[calc(...)]` height override (unlike Home's), so its
+className is just `pt-[10px] md:pt-[10px]`. Verified the same way (
+`getComputedStyle(...).paddingTop` reads `10px` at both mobile and
+desktop) rather than assumed, since the `md:py-40` cascade gotcha above
+applies to any `Section` the same way regardless of what else is in its
+className.
 
 **Hero copy was simplified from three text elements to two**, per direct
 request: the small uppercase `text-accent` eyebrow ("Reiziger Ashu") and
@@ -359,6 +643,594 @@ title from the brand voice rules above, not new copy. This keeps
 exactly one `h1` on the homepage (there was none otherwise, since the
 old tagline `h1` is gone) rather than leaving the hero without a
 heading element.
+
+## Home page "Trusted by teams" band
+
+The client-logos band right below the hero (`<Section className="pt-[10px]
+pb-[10px] md:pt-[10px] md:pb-[10px]">`, "Trusted by teams building
+something worth naming" + `<ClientLogos />`) started as `<Section
+className="pt-0">` — an attempt to remove just the top padding so the
+band sits close under the hero. Per a direct question asking what its
+actual top/bottom padding was, `getComputedStyle` measurement revealed
+the classic cascade gotcha (documented in "Home page hero media" above):
+`pt-0` genuinely zeroed the top padding on mobile (`0px`/`80px` top/
+bottom, the `80px` from the sitewide `py-20` default), but on desktop
+`Section`'s own `md:py-40` — a shorthand that sets padding-top too —
+silently won the top padding back to `160px` (bottom also `160px`),
+since there was no `md:pt-0` explicit override.
+
+Per direct follow-up, this was replaced outright (not just fixed) with
+`pt-[80px] pb-[80px] md:pt-[80px] md:pb-[80px]` — flat `80px` on every
+side at every breakpoint, both the unprefixed and explicit `md:`
+versions of each side (the established both-forms pattern this cascade
+gotcha requires). Confirmed via `getComputedStyle`: `80px`/`80px` at
+both a 375px mobile viewport and a 1440px desktop one.
+
+**Then reduced again** per direct follow-up ("adjust it to 10px
+instead") — the `80px` value itself, not the cascade fix, was what
+didn't land right. Changed to `pt-[10px] pb-[10px] md:pt-[10px]
+md:pb-[10px]`, same both-forms pattern, keeping every side flat across
+breakpoints. Re-confirmed via `getComputedStyle`: `10px`/`10px` at both
+375px and 1440px.
+
+## Home page: the same cascade gotcha on every remaining section
+
+Per a direct follow-up ("let's fix the 'Selected Work' section padding
+too and the subsequent sections of that page"), the same cascade bug
+documented above for the "Trusted by teams" band was actually present
+on **every** other `Section` in `page.tsx` that tried to zero one side
+of the sitewide `py-20 md:py-40` default with a bare unprefixed
+utility — `Section`'s own `md:py-40` shorthand was silently winning
+that side back to `160px` on desktop the whole time, on six separate
+sections, not just the one that prompted the question:
+
+- The "Selected Work" heading `Section`: `pb-0` → `pb-[0px] md:pb-[0px]`
+  (this one zeroes the *bottom*, not top — the heading sits directly
+  above `SelectedWorkGrid`, a sibling `<div className="mt-10">` outside
+  the `Section`, so it's the bottom side that needs to stay flush).
+- "Design is more than aesthetics." `Section`: `pt-0` →
+  `pt-[0px] md:pt-[0px]`.
+- "What I do" `Section`: `pt-0` → `pt-[0px] md:pt-[0px]`.
+- "Ventures" `Section`: `pt-0` → `pt-[0px] md:pt-[0px]`.
+- "Kind Words" (testimonials) `Section`: `pt-0` → `pt-[0px] md:pt-[0px]`.
+- Final CTA ("Have an idea worth building?") `Section`: `pt-0` →
+  `pt-[0px] md:pt-[0px]`.
+
+Used the bracket-arbitrary form (`pt-[0px]`, not bare `pt-0`) on all
+six, matching the already-established working pattern for this
+gotcha elsewhere on this page (see item 9 above, where `px-0 md:px-0`
+measured as having no effect at all while `px-[0px] md:px-[0px]`
+worked) — bracket syntax throughout avoids relying on whichever form
+happens to interact correctly with `Section`'s own scale-based
+defaults. Only the side each section had already tried to zero was
+touched; the *other* side (the sitewide `80px`/`160px` mobile/desktop
+default) was left alone on all six, since none of them were flagged.
+
+**Confirmed via Playwright across every `<section>` on the page** at
+both a 375px and a 1440px viewport (`getComputedStyle` on each,
+matched by heading text): every section's explicitly-zeroed side now
+reads `0px` at *both* breakpoints, where desktop previously silently
+read `160px`. The one `Section` that was never part of this bug —
+"What I Think" (`pt-20 md:pt-28`, both sides already breakpoint-scoped
+on purpose) — was left untouched and still measures `80px`/`112px` as
+designed. `ResourceCTA`'s `centered` variant (the "Free Resource" band
+between "What I do" and "Ventures") was checked too and found *not*
+affected — it renders its own `py-16 md:py-20` directly, outside any
+`Section`, with no unprefixed/shorthand conflict to begin with.
+
+## Home page "Selected Work" band: specific padding values
+
+The previous section's fix made the "Selected Work" heading `Section`'s
+`pb-0` correctly read `0px` at every breakpoint (matching what the
+code always literally said), but that also meant the *net* gap between
+the bottom of the full-bleed `SelectedWorkGrid` image grid and the next
+`Section`'s heading text ("Design is more than aesthetics.") became
+`0px` at desktop too — previously that gap only read `0px` on mobile;
+on desktop it happened to measure `160px`, purely as a side effect of
+the cascade bug, not a deliberate value. Once the bug was fixed, that
+160px-by-accident gap disappeared and the layout read as broken (image
+grid touching the next heading with no breathing room).
+
+Diagnosed by breaking the whole "Selected Work" block down into its
+three actual pieces (it is *not* one `Section` — this matters, don't
+assume it is): the heading `Section` itself (`pt`/`pb`), a separate
+sibling `<div className="mt-10">` wrapping `SelectedWorkGrid` (flat
+40px margin, not part of `Section`'s padding system, unaffected by any
+of this), and `SelectedWorkGrid` itself (a bare grid `<div>`, no padding/
+margin on any side). Measuring each layer's `getComputedStyle`
+separately (not just the outer `Section`) was necessary to find exactly
+where the collapsed gap actually was.
+
+Per direct follow-up, the heading `Section`'s own padding was set to
+`pb-[10px] md:pb-[10px] md:pt-[10px]` (from `pb-[0px] md:pb-[0px]`) —
+**bottom is now `10px` at every breakpoint**, and **top is `10px` only
+on desktop** (`md:pt-[10px]` alone, deliberately no unprefixed `pt-[10px]`
+override, since only desktop's top padding was asked to change — mobile
+keeps the sitewide default `py-20` top, `80px`, untouched). Confirmed
+via `getComputedStyle`: `paddingTop` reads `80px` mobile / `10px`
+desktop, `paddingBottom` reads `10px` at both. **The `0px` gap between
+the grid and the next section's heading was *not* addressed by this
+change** — that boundary belongs to the *next* `Section`
+("Design is more than aesthetics"), not this one, and is a separate
+follow-up the user had not yet requested a fix for as of this pass.
+
+## Footer background changed to the Sigma gold accent color
+
+Per direct request ("I need you to apply a site wide change of the
+footer; I need you to change the background to the sigma gold color"),
+`Footer.tsx`'s `<footer>` background moved from `bg-ink` (the site's
+dark/light-inverting text-color token) to `bg-accent` — the site's own
+"warm gold/bronze" brand color (`#b5995d` light-OS / `#e6c279` dark-OS,
+see "Design tokens" above), the same accent used for CTAs, eyebrows, and
+highlights sitewide, and the color Sigma Studio's own brand identity is
+built around. `bg-accent` was chosen over `bg-ink`/`bg-paper` deliberately:
+those two tokens *invert* between literal dark and literal light across
+`prefers-color-scheme: dark` (see `globals.css`), so using either for "the
+gold color" would make the footer flip to a totally different hue
+depending on the visitor's OS setting; `accent`'s light/dark values are
+both gold tones, so the footer now reads as gold consistently either way.
+
+**Every text/border color inside `Footer.tsx` and `NewsletterForm.tsx`
+(which renders only inside Footer) had to change too**, since they were
+all tuned for light text (`text-paper`, `border-paper/*`) on the
+previous dark `bg-ink` band — against the new lighter gold background
+those same classes would be low-contrast to unreadable. Switched to a
+literal `text-black`/`border-black` (at full opacity or `/60`, `/40`,
+`/30`, `/10` for hierarchy) rather than the `ink`/`paper` tokens,
+deliberately **not participating in the ink/paper OS-scheme swap** — the
+same "always render this ink regardless of theme" reasoning already
+established for `AssessmentFlow.tsx`'s modal backdrop (`bg-black/55`,
+see "Sitewide dark theme" above): using `text-ink` here would flip to
+*white* text on gold in OS dark mode (since `ink` becomes `#ffffff`
+there), which is poor contrast on a mid-tone gold either way. A literal
+black guarantees readable dark-on-gold contrast in both OS modes, the
+same convention already used for dark text on this exact accent gold in
+the Sigma Companion widget (`#0a0a0a` text on its gold buttons — see
+"Sigma Companion widget" below).
+
+Two spots needed a design call beyond a straight color swap, since the
+old approach relied on colors that no longer have anywhere to go against
+a gold background:
+- **Active nav-link highlighting** (`Nav`/`Footer`'s `usePathname()`
+  convention of coloring the current route `text-accent`) doesn't work
+  in the footer anymore — accent-colored text on an accent-colored
+  background is invisible. The current route now gets
+  `text-black underline underline-offset-4` (full-opacity black +
+  underline) instead of a color-only cue, while other links stay
+  `text-black/60`; this is scoped to `Footer.tsx`'s own `NAV_LINKS`
+  rendering only — `Nav.tsx`'s own active-state styling (a different,
+  non-gold-background context) is untouched.
+- **`NewsletterForm.tsx`'s error message** used the sitewide `text-accent`
+  convention shared by every other form's `role="alert"` text on this
+  site (`WorkshopBookingForm.tsx`, `MentorshipApplicationForm.tsx`,
+  `ResourceLeadForm.tsx`, `SpeakingForm.tsx` all still use `text-accent`
+  for errors — that sitewide convention is untouched everywhere else).
+  Only inside `NewsletterForm.tsx` specifically — since it renders
+  exclusively inside the now-gold Footer, where `text-accent` would be
+  invisible against its own background — the error text was changed to
+  `text-black` (kept bold via `font-semibold` so it still reads as
+  distinct from the surrounding static copy without relying on color).
+
+Confirmed via Playwright: `getComputedStyle(footer).backgroundColor`
+reads `rgb(181, 153, 93)` (`#b5995d`, the accent token's light-OS value)
+and every checked text/border element (`logo`, active nav link, the
+email input) resolves to `rgb(0, 0, 0)` / `oklab(0 0 0 / 0.3)` — pure
+black at full or reduced opacity, not a flipped token value. A footer
+screenshot confirmed the result reads clearly: dark text and controls on
+a solid gold band, with "Home" (the current route on `/`) visibly
+underlined.
+
+## Teach page hero copy matched to the home page hero's positioning and font
+
+Per direct request ("Adjust the hero copy of the teach page to be
+positioned as that on the hero section of the landing page. Also Adjust
+the font too to look like that on the landing page hero section"), the
+`/teach` hero's `h1`/subtext wrapper and heading were changed to match
+`page.tsx` (Home)'s hero copy treatment, rather than the sitewide
+hero-`h1` default (`text-[2em]`, no `font-bold`, uppercase — see "Design
+tokens" above, the convention this deliberately departs from, same as
+Home's own hero already does):
+- `h1` className changed from `font-display text-[2em] uppercase
+  leading-tight tracking-tight` to `font-display text-[3em] font-bold
+  leading-tight tracking-tight` — dropping `uppercase` (Home's hero `h1`
+  is mixed-case, not transformed) and matching Home's one-off `3em`/
+  `font-bold` treatment (see "Home page hero media" item 6 above) instead
+  of the sitewide `2em`/`font-normal` default. Confirmed via
+  `getComputedStyle`: both pages' `h1` now read `fontSize: "48px"`,
+  `fontWeight: "700"`, `textTransform: "none"`.
+- The wrapping `div` around the `h1`/subtext picked up `md:pl-10` (40px)
+  to match Home's copy-column inset. **Not `md:pl-[80px]`** — Home's own
+  copy wrapper does use that exact bracket value, but Home's hero
+  `Section` also has its horizontal padding zeroed out entirely
+  (`px-[0px] md:px-[0px]`, a documented one-off for that section's
+  full-bleed image treatment — see item 9 in "Home page hero media"
+  above), so Home's *effective* total inset from the viewport edge is
+  80px (0 + 80), not 160px. `/teach`'s hero `Section` was left on the
+  sitewide default `px-3 md:px-10` (Teach's placeholder box to the right
+  has no reason to lose its normal edge inset the way Home's full-bleed
+  photo did), so matching the same *effective* 80px total required only
+  `md:pl-10` (40px) added on top of that section's own existing 40px —
+  using the literal `md:pl-[80px]` value here would have produced 120px,
+  visibly further right than Home's heading. Confirmed via
+  `getBoundingClientRect()` at a 1440px viewport: both pages' `h1` now
+  sit at exactly `80px` from their `<section>`'s left edge.
+- Nothing else on this hero changed — the subtext `p`'s own classes
+  (`mt-6 max-w-md text-muted`, no size utility, following the sitewide
+  hero-subtext convention), the `md:items-center` grid centering, and
+  the placeholder box on the right are all untouched.
+
+## Contact form: "Area of Interest" replaced with a custom dropdown
+
+Per direct follow-up ("change the background of the dropdown to dark
+with an opacity of 80%" + "Adjust the bottom right and left corner
+radius of the dropdown to be as rounded as that of the contact form"),
+the native `<select>`/`<option>` fix documented above (`bg-white
+text-black` on `<option>`) turned out insufficient for this ask.
+Empirically confirmed via Playwright/Chromium: a native select's open
+popup **does** paint a custom `background-color` set on `<option>`
+elements (that's why the earlier white-background fix worked), but it
+**completely ignores `border-radius`** — the popup renders as browser/
+OS chrome with square corners regardless of any CSS applied to
+`<select>`/`<option>`. Genuine alpha transparency (revealing the photo
+through the popup, not just a flat dark color) is similarly unreliable
+across browsers for native popups. Since both asks require real control
+over the popup's paint, matching them reliably meant not using a native
+`<select>` at all.
+
+**`src/components/CustomSelect.tsx`** (new) replaces it — a from-scratch
+dropdown, not a native-select CSS override:
+- The visible **closed-state box** is a plain `aria-hidden` `<div>`
+  styled identically to the old `<select>` (same border/padding
+  classes as the other inputs' shared `inputClass`, via a
+  `selectTriggerClass` in `ContactForm.tsx` — kept separate from
+  `inputClass` only because it drops `outline-none focus:border-ink`,
+  which are meaningless on a non-focusable `<div>`, and uses
+  `peer-focus:border-ink` instead — see below), plus a small chevron
+  SVG that flips on open (no new icon added to `icons.tsx`, this is a
+  one-off inline SVG since nothing else on the site needs a chevron).
+- The **actual interactive element** is a `type="text"` `readOnly`
+  `<input>` (`role="combobox"`), absolutely positioned `inset-0` and
+  fully transparent (`opacity-0`) directly over that decorative box —
+  clicks/focus/keyboard all land on this real input (a positioned
+  element always paints above its non-positioned decorative sibling
+  regardless of DOM order, so no `z-index` juggling was needed there).
+  It carries the form field's real `name`/`value`, so `ContactForm`'s
+  existing `new FormData(form)` submission flow needed no changes.
+  Since the invisible input's own default focus outline would be
+  invisible too (`opacity:0` hides outline along with everything else),
+  visual focus is instead shown on the *decorative* box via Tailwind's
+  `peer`/`peer-focus:` (input has `peer`, decorative div has
+  `peer-focus:border-ink` — swapped in from the removed `focus:border-ink`).
+- The **popup itself** (`role="listbox"`, `<button role="option">` per
+  choice) is a normal positioned `<div>` the app fully controls:
+  `bg-paper/80` (same 80%-opacity mechanism as the form panel's own
+  background — see "Contact page: form panel at 80% opacity" above) and
+  `rounded-b-2xl` (16px, matching the form panel's own `rounded-2xl`
+  exactly — confirmed via `getComputedStyle`: both read `16px`, and the
+  listbox's own top corners are correctly `0px`, flush against the
+  trigger above it) — both values were impossible to achieve reliably
+  via the native `<select>`, which is the entire reason this exists.
+- **Real bug found and fixed during this pass, not just cosmetic**:
+  `readOnly` on an `<input>` exempts it from HTML5 `required` constraint
+  validation entirely (confirmed empirically via `input.checkValidity()`
+  — returned `true` on an empty, `required`, `readOnly` field). Since
+  `readOnly` is necessary here (it prevents the user from typing into
+  what's meant to be a selection-only field while keeping it focusable),
+  the form could previously have been submitted with no Area of Interest
+  selected, since the browser's native pre-submit validation check
+  (which normally blocks the `submit` event from firing at all for an
+  invalid required field, before `ContactForm`'s own JS ever runs) simply
+  didn't see this field as required. Fixed with an explicit manual check
+  at the top of `handleSubmit`: if `data.projectType` is empty, set a new
+  `projectTypeError` state and return before hitting `setStatus`/`fetch`
+  — confirmed via Playwright that the `/api/contact` request is *not*
+  fired when the field is empty, an inline "Please select an area of
+  interest." message appears (`text-accent`, matching the sitewide
+  form-error color convention — see "Contact page: vertical centering..."
+  above for why a literal-black override was needed on this exact page's
+  gold-adjacent contexts, which doesn't apply here since this message
+  sits on the dark form panel, not the gold footer), and the error
+  clears (`CustomSelect`'s new `onChange` prop) as soon as a value is
+  picked, after which the same submit flow proceeds and does call the
+  API. `CustomSelect` also accepts an `error` prop that swaps the
+  decorative box's border from `border-line` to `border-accent` when
+  set — note `selectTriggerClass` deliberately omits its own
+  `border-line` (unlike `inputClass`) so there is only ever one
+  `border-*` color utility present at a time; stacking both
+  `border-line` and a conditional `border-accent` in the same class
+  string would leave the winner dependent on Tailwind's internal
+  stylesheet ordering, not simple class-string order — the established
+  "swap, don't stack, conflicting color utilities" lesson from elsewhere
+  in this file applies here too.
+- This component is intentionally generic (`name`/`options`/
+  `placeholder`/`required`/`error`/`onChange`/`className` props, no
+  Contact-specific logic inside it) in case another single-select field
+  elsewhere ever needs the same translucent/rounded-popup treatment —
+  though as of this pass it's only used here; every other single-select
+  need on the site still uses `PillToggle`/`PillMultiToggle` (see
+  "Category-specific Teach forms" below), which don't have this native-
+  popup limitation to begin with since they never render a real
+  `<select>`.
+
+## Contact page: form panel at 80% opacity
+
+Per direct follow-up ("Adjust the opacity of the contact form to 80%"),
+the form panel's background changed from solid `bg-paper` to `bg-paper/80`
+— only the panel's background color gets the opacity, not the panel or
+its contents wholesale (a plain `opacity-80` on the div would also fade
+the labels/input text/button, undoing the legibility work from the fixes
+above). The hero photo now shows through the panel subtly instead of
+being fully obscured. Confirmed via `getComputedStyle`:
+`backgroundColor` resolves to an alpha of exactly `0.8`.
+
+## Contact page: vertical centering, closing the black gap before Footer, and dropdown contrast
+
+Three follow-up fixes on `/contact`, requested together:
+
+1. **Vertical centering of the hero copy.** The grid (`grid gap-12
+   md:grid-cols-2`) gained `md:items-center`, matching the same pattern
+   already used on `/teach`'s hero and elsewhere — the copy column now
+   centers against the taller form-panel column instead of aligning to
+   the row's top. Confirmed via `getBoundingClientRect()`: the copy
+   block's top and bottom gaps within the row are both exactly `140px`
+   at a 1440×1000 viewport (i.e. genuinely centered, not just visually
+   close).
+2. **The solid black strip between the hero photo and the gold footer
+   was removed.** This wasn't a separate element — it was the root
+   `theme-dark-fixed` wrapper's own `pb-10` (see "Sitewide footer-spacing
+   convention reduced" above), rendering as 40px of plain `bg-paper`
+   (near-black) below the hero `div`, since the hero's background image
+   only covered its own content height and stopped there. Moved that
+   `pb-10` off the root wrapper and onto the hero `div` itself instead
+   (`relative overflow-hidden pb-10` — the root wrapper is now just
+   `theme-dark-fixed -mb-10 bg-paper text-ink`, no `pb-10`). Since
+   `next/image`'s `fill` (`position: absolute; inset: 0`) sizes against
+   its positioned ancestor's *padding box* (padding included, border
+   excluded), adding the padding directly to the hero wrapper — the same
+   element the `Image` and scrim are already positioned against —
+   extends the image and `bg-black/55` scrim to cover that space too,
+   instead of leaving it exposed. The root's own `-mb-10` (still needed
+   to collapse against Footer's `mt-10`, per the sitewide mechanism) is
+   unaffected by this move, since margin collapsing works off the root's
+   own box regardless of which of its descendants supplies the bottom
+   padding. Confirmed via `getBoundingClientRect()`: the gap between the
+   hero wrapper's bottom edge and the footer's top edge is exactly `0px`
+   (previously a visible 40px black band). **This pattern — padding on
+   the same element the background `Image` is positioned against, not on
+   an ancestor — is the fix to reach for if a similar exposed-background
+   gap ever shows up below another full-bleed background-image section.**
+3. **The "Area of Interest" `<select>` dropdown's option list was
+   illegible** — light text (inherited `text-ink`, white in this
+   `theme-dark-fixed` page) rendered against the browser/OS's own
+   default white dropdown-popup background, which Tailwind's
+   `bg-transparent`/token classes on the `<select>` itself don't reach
+   (native select popups are styled by the browser, largely immune to
+   the parent's CSS). Fixed at the time by adding an explicit
+   `className="bg-white text-black"` directly to every `<option>`.
+   **Superseded shortly after** — see "Contact form: 'Area of Interest'
+   replaced with a custom dropdown" below — once further requests
+   (a translucent dark popup background, corners matching the form
+   panel's own radius) turned out to need real control over the popup's
+   rendering that a native `<select>` cannot reliably provide. The
+   native `<select>`/`<option>` markup described here no longer exists
+   in `ContactForm.tsx`.
+
+## Contact page ("Work With Me") hero copy matched to the home page hero
+
+Per direct follow-up ("please do same for the 'work with me' page" —
+immediately after the same treatment was applied to `/teach`, documented
+above), `/contact`'s `h1`/subtext got the identical font and positioning
+match: `h1` className changed from `border-l-2 border-accent pl-6
+font-display text-[2em] uppercase leading-tight tracking-tight` to
+`border-l-2 border-accent pl-6 font-display text-[3em] font-bold
+leading-tight tracking-tight` (dropped `uppercase`, bumped to `3em`,
+added `font-bold` — same as Home/Teach), and the copy's wrapping `div`
+picked up `md:pl-10` to land at the same effective 80px offset from the
+section's left edge that Home's and Teach's hero copy both use.
+**The `border-l-2 border-accent pl-6` accent-bar treatment on the `h1`
+itself was kept unchanged** — that's a separate, already-documented
+Contact/Build-specific design element (see "Design tokens" above, the
+hero-sizing-standardization pass that explicitly left it untouched) not
+related to this font/position match, so it wasn't removed just because
+Home's hero doesn't have one. Confirmed via `getComputedStyle`/
+`getBoundingClientRect` at a 1440px viewport: `/contact`'s `h1` now
+matches `/`'s exactly (`fontSize: "48px"`, `fontWeight: "700"`,
+`textTransform: "none"`, `80px` offset from its container's left edge).
+
+## Contact page ("Work With Me") hero background photo
+
+`/contact` is the destination of every "Work With Me" CTA sitewide (`Nav`'s
+button, Home's hero CTA — see "Nav & Footer conventions" above; there is
+no separate page literally titled "Work With Me"). Its copy column used
+to carry the site's standard gradient placeholder
+(`bg-gradient-to-br from-line to-muted/20`, `aspect-[4/3] rounded-2xl`,
+no `next/image` — one of the few image slots on the site that was never
+given a real photo). Per direct request, with a photo attached (a studio
+desk with sketches/branding swatches, a fountain pen, and a blurred team
+working in the background), that placeholder was replaced with the
+photo — **first as a boxed `next/image` filling that same small slot
+below the copy**, which the user flagged as not what was asked
+("You haven't done what I asked. I requested that you use the image
+rather as background image?"). Clarified via `AskUserQuestion` — three
+options were offered (background of just the left column, background of
+the whole hero section, or the same boxed slot but implemented as a CSS
+`background-image` instead of an `<Image>` element) — and **"whole hero
+section" was chosen**: the photo is now the background of the entire
+hero band (both the copy column and the form column), not scoped to one
+column or one small box.
+
+Implementation: the hero's outer wrapper gained `relative overflow-hidden`,
+with the `Image` (`fill priority sizes="100vw" className="object-cover"`,
+`alt=""` since it's decorative) as its first child, positioned behind
+everything via normal DOM stacking order (no explicit `z-index` needed —
+every other child is a later sibling and therefore already stacks above
+an unpositioned/default-stacked absolutely-positioned image at the same
+stacking context, but see the scrim note below for why an explicit
+overlay `div` was still needed). A `bg-black/55` scrim div sits directly
+on top of the image (same literal, theme-independent-black convention
+already established for `AssessmentFlow.tsx`'s modal backdrop — see
+"Sitewide dark theme" above) so the existing `text-ink`/`text-muted`
+copy (already light-colored inside `theme-dark-fixed`) stays legible
+against the busy photo. The actual page content (`max-w-[1920px]`
+grid) is wrapped in its own `relative` div so it stacks above both the
+image and the scrim. The form column's existing card treatment
+(`rounded-2xl border border-line bg-paper p-8 md:p-10` — `paper` is
+already a solid near-black in this theme) needed no color changes to
+read as an opaque floating panel over the photo; only its shadow was
+bumped from `shadow-sm` to `shadow-xl` for more visible elevation now
+that it's floating over an image rather than a flat background.
+
+The photo lives at `public/images/contact-page-studio-desk.webp` (WebP,
+matching the site's convention for photographic assets — see "Home page
+hero media" above). It was supplied as an inline chat attachment rather
+than a file path, so it was extracted directly from the conversation
+transcript's base64 image data (same technique documented for the home
+page hero portrait swaps) and confirmed via `PIL` as a clean 1536×1024
+RGB WebP before being written into `public/`.
+
+## Sitewide footer-spacing convention reduced from 128px to 40px
+
+Per direct follow-up on the home page's final CTA section ("are you sure
+it is 40px as I asked? it looks bigger than the top padding"), the
+visible gap below the "Have an idea worth building?" card was measured
+via Playwright and found to genuinely be bigger than the top (168px vs.
+80px) — but not because the Section's own padding was wrong. Confirmed
+via `getComputedStyle`: the Section's own `paddingTop`/`paddingBottom`
+were exactly `40px`/`40px`, matching what was asked. The extra visible
+space came from `Footer.tsx`'s own hardcoded `mt-32` (128px), a sitewide
+convention applied identically on every page to separate the last
+content section from the dark footer band (see "Sitewide dark theme"
+above) — on top of this section's own 40px bottom padding, that produced
+40 + 128 = 168px total, versus 40 + 40 = 80px above the card (the
+previous section's own bottom padding + this section's top padding).
+
+Per direct follow-up ("Reduce Footer's sitewide top margin"), `Footer.tsx`'s
+`mt-32` was changed to `mt-10` (40px) — chosen to match this session's
+now-established 40px padding convention, producing a symmetric 80px total
+gap above and below the final CTA card (40px section padding + 40px
+footer margin on each side).
+
+**This required a matching sitewide change, not just `Footer.tsx` alone.**
+Every `theme-dark-fixed`-wrapped page's root div uses a `-mb-32 ... pb-32`
+pair (see "Sitewide dark theme" above) specifically to cancel Footer's
+own `mt-32` and repaint that space dark instead of exposing default
+background. That cancellation only works correctly when the wrapper's
+`-mb-X`/`pb-X` value exactly matches Footer's own `mt-Y` value — if they
+diverge, adjoining margins collapse to `Y − X`, which either leaves part
+of the gap unpainted (exposed default background, if `X < Y`) or, worse,
+pulls the footer up to visually overlap the page's own last content (if
+`X > Y`, producing a negative collapsed margin). So all 22 files using
+the literal `-mb-32 bg-paper pb-32 text-ink` string (grep it to find them:
+every top-level page under `src/app/` and every shared detail-page layout
+— `CaseStudyLayout.tsx`, `ResourceDetailLayout.tsx`,
+`WorkshopDetailLayout.tsx`, `MentorshipDetailLayout.tsx`,
+`AssessmentFlow.tsx` — plus `about/page.tsx`) were changed in the same
+pass to `-mb-10 bg-paper pb-10 text-ink`, keeping `X = Y = 40px`
+everywhere. Confirmed via Playwright across the home page plus a spot
+check of `/about`, `/work`, `/contact`, and the 404 page at a 1440px
+viewport: every page's wrapper-to-footer gap is exactly `0px` (fully
+cancelled, no overlap, no exposed-background sliver), and the home
+page's final-CTA-card-to-footer gap is exactly `80px` — matching the
+80px above the card.
+
+**If Footer's `mt-*` value ever changes again, grep both
+`mt-10` in `Footer.tsx` and `-mb-10 bg-paper pb-10 text-ink` sitewide** —
+they must always be updated together, to the same pixel value, or this
+cancellation mechanism breaks (exposed background or visual overlap,
+depending on which direction they diverge).
+
+## Home page "Trusted by teams" band: brought in line with the 40px pattern
+
+Per direct follow-up ("let's review the 'trusted by teams...' section
+again. adjust the padding too to the 40px top/bottom padding each as
+well"), the client-logos band (previously `pt-[10px] pb-[10px]
+md:pt-[10px] md:pb-[10px]`, set in an earlier pass documented above)
+was superseded with the same flat, every-side, every-breakpoint `40px`
+treatment every other `Section` on this page now uses:
+`pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]`. Confirmed via
+`getComputedStyle`: `paddingTop`/`paddingBottom` both read `40px` at
+375px and 1440px viewports. This was the hero's immediate successor
+Section and the only remaining non-hero `Section` on the home page
+still carrying a value from before the uniform-40px convention was
+established — every `Section` on `page.tsx` besides the hero itself now
+uses `pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]`.
+
+## Home page "Selected Work" section: brought in line with the 40px pattern
+
+Per direct follow-up ("Let's adjust the selected work section too to the
+40px each top/bottom padding"), the "Selected Work" heading `Section`
+(previously `pb-[10px] md:pb-[10px] md:pt-[10px]` — bottom `10px` at
+every breakpoint, top `10px` desktop-only, mobile top left at the
+sitewide `80px` default, set in the "specific padding values" pass
+documented above) was superseded with the same flat, every-side,
+every-breakpoint `40px` treatment every other `Section` on this page now
+uses: `pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]`. This was the last
+`Section` on the home page still carrying a bespoke value from the
+original section-by-section review rather than the now-uniform 40px
+convention. Confirmed via `getComputedStyle`: `paddingTop`/`paddingBottom`
+both read `40px` at 375px and 1440px viewports.
+
+## Home page "Design is more than aesthetics." section
+
+Per direct follow-up, the next section in the section-by-section review —
+`<Section className="pt-[0px] text-center md:pt-[0px]">` (the centered
+"Design is more than aesthetics." heading + `ProcessStepper`) — had both
+its top *and* bottom padding set to a flat `10px` at every breakpoint:
+`pt-[10px] pb-[10px] text-center md:pt-[10px] md:pb-[10px]`. Unlike the
+"Selected Work" heading section (top desktop-only), this one changed
+uniformly on both sides and both breakpoints, per how the request was
+phrased ("adjust the internal top and bottom padding to 10px", no
+breakpoint qualifier). Confirmed via `getComputedStyle`: `10px`/`10px`
+at both 375px and 1440px viewports. This also means the `0px` gap
+between the "Selected Work" image grid and this section's heading text
+(flagged as a follow-up in the previous pass) is now resolved as a side
+effect — this section's own `pt-[10px]` is what actually closes that
+gap, not a change on the "Selected Work" side.
+
+**Then corrected to `40px`** per an immediate direct follow-up ("I made
+a mistake. adjust that section to 40px top and bottom each") — same
+flat-both-sides-both-breakpoints treatment, just a different value:
+`pt-[40px] pb-[40px] text-center md:pt-[40px] md:pb-[40px]`. Confirmed
+via `getComputedStyle`: `40px`/`40px` at both 375px and 1440px.
+
+## Home page "What I do" section
+
+Next in the section-by-section review: `<Section className="pt-[0px]
+md:pt-[0px]">` (the "Expertise" eyebrow, "What I do" title, and
+`CapabilityCard` grid) got the same `40px`-every-side treatment per
+direct request: `pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]`.
+Confirmed via `getComputedStyle`: `40px`/`40px` at both 375px and
+1440px viewports.
+
+## Home page "Ventures", "What I Think", and "Kind Words" sections
+
+Continuing the section-by-section review, three more `Section`s got
+the same flat `40px`-every-side treatment in one request:
+- "Ventures" (Sigma Studio / Sigma Studio Academy cards):
+  `pt-[0px] md:pt-[0px]` → `pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]`.
+- "What I Think" (`FeaturedThinkCard`/`ThinkCard` recent-writing grid):
+  `pt-20 md:pt-28` (the one `Section` on this page that was never part
+  of the cascade bug — a deliberate, already-breakpoint-scoped `80px`/
+  `112px` value) → `pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]`. This
+  is a real, intentional override of that previously-documented value,
+  not a bug fix — don't treat the old `pt-20 md:pt-28` as still correct
+  if this file is grepped later.
+- "Kind Words" (testimonials): `pt-[0px] md:pt-[0px]` →
+  `pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]`.
+
+Confirmed via `getComputedStyle` on all three at once, at both 375px
+and 1440px: every one reads `40px`/`40px`.
+
+## Home page final CTA section
+
+Last section in the review: `<Section className="pt-[0px]
+md:pt-[0px]">` (the "Have an idea worth building?" closing card) got
+the same treatment: `pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]`.
+Confirmed via `getComputedStyle`: `40px`/`40px` at both 375px and
+1440px. This was the last `Section` in the top-to-bottom home page
+review that started with "Trusted by teams" — every `Section` on
+`page.tsx` now has deliberate, explicitly-confirmed padding at every
+breakpoint rather than a value that silently drifted on desktop.
 
 ## Sitewide dark theme (`theme-dark-fixed`)
 
@@ -386,8 +1258,11 @@ different from the site-wide `prefers-color-scheme` handling in
 token variables to their dark values unconditionally, so every `bg-ink`/
 `text-ink`/`text-muted`/`border-line`/`text-accent`/`bg-accent` utility
 inside it renders dark regardless of OS setting. Wrap a page's root in
-`theme-dark-fixed -mb-32 bg-paper pb-32 text-ink` to opt it into this
-treatment (the `-mb-32 pb-32` cancels Footer's `mt-32` gap — see below)
+`theme-dark-fixed -mb-10 bg-paper pb-10 text-ink` to opt it into this
+treatment (the `-mb-10 pb-10` cancels Footer's `mt-10` gap — see below;
+originally `-mb-32 pb-32`/Footer's `mt-32`, reduced sitewide to `10`/
+`40px` in the "Sitewide footer-spacing convention reduced" pass further
+below — keep both values in sync if either changes again)
 — don't reach for raw hex values.
 
 Extending this to every remaining page turned out to be low-risk: a
@@ -421,13 +1296,14 @@ again, or if `theme-dark-fixed` is reused elsewhere:
   foreground token instead, so that exact gradient washes out to
   near-white — use `via-paper to-paper` there instead (`paper` is the
   token that resolves dark in this context).
-- `Footer.tsx` has a hardcoded `mt-32` above the `<footer>` element,
-  invisible on light pages but a visible gap of exposed default (light)
-  background between a dark section and the dark footer band. Both
-  `theme-dark-fixed` wrappers cancel it locally with `-mb-32 pb-32`
-  (negative margin collapses the footer's `mt-32` to zero, `pb-32`
-  keeps the same visual spacing, now colored dark) rather than changing
-  `Footer.tsx` globally.
+- `Footer.tsx` has a hardcoded `mt-10` (40px, originally `mt-32`/128px —
+  see "Sitewide footer-spacing convention reduced" below) above the
+  `<footer>` element, invisible on light pages but a visible gap of
+  exposed default (light) background between a dark section and the
+  dark footer band. Both `theme-dark-fixed` wrappers cancel it locally
+  with `-mb-10 pb-10` (negative margin collapses the footer's `mt-10` to
+  zero, `pb-10` keeps the same visual spacing, now colored dark) rather
+  than changing `Footer.tsx` globally.
 
 `.panel-tint` (also in `globals.css`) is a `color-mix(in srgb, var(--color-accent) 12%, var(--color-paper))`
 background — the accent-tinted alternate to a flush `bg-paper` panel,
@@ -573,14 +1449,16 @@ of its own:
   uses `pb-8 md:pb-40` rather than the sitewide-default bottom padding
   (`pb-20 md:pb-40`, the same value every other `theme-dark-fixed` page
   leaves untouched on its final section): on mobile, that default 80px
-  stacked with the root wrapper's own `pb-32` (128px, there to recreate
-  Footer's cancelled `mt-32` — see "Sitewide dark theme" above) to leave
-  ~200px of empty space before the footer, visibly excessive on a short
-  mobile viewport. Reduced to 80px total (`pb-8` + the wrapper's 128px)
-  for mobile only; the `md:pb-40` desktop value is untouched since the
-  gap wasn't flagged there. This is a page-specific override, not a
-  sitewide convention change — every other page's final section still
-  uses the default.
+  stacked with the root wrapper's own `pb-32` (128px at the time, there
+  to recreate Footer's cancelled `mt-32` — see "Sitewide dark theme"
+  above; both values were later reduced to `10`/40px sitewide, see
+  "Sitewide footer-spacing convention reduced" below, so this math is
+  historical) to leave ~200px of empty space before the footer, visibly
+  excessive on a short mobile viewport. Reduced to 80px total (`pb-8` +
+  the wrapper's 128px, at the time) for mobile only; the `md:pb-40`
+  desktop value is untouched since the gap wasn't flagged there. This is
+  a page-specific override, not a sitewide convention change — every
+  other page's final section still uses the default.
 - The Journey section sits in an alternating band via
   `outerClassName="bg-ink/5 border-y border-line"` — reusing the same
   "5%-opacity `ink` overlay on a dark background" technique already
@@ -985,6 +1863,88 @@ doc instead of only a typed description of one.
   function, which has no thumbnails to show — the bracket note is what a
   visitor sees for a past attachment after a refresh, which is expected,
   not a bug.
+
+**Voice** — added per direct request ("someone can not currently chat
+with the Sigma Companion with the help of voice"). Deliberately built
+on the browser's built-in **Web Speech API** first (no new backend, no
+third-party STT/TTS service/API key) rather than a paid service like
+ElevenLabs/Deepgram, since it ships free and needs zero new
+infrastructure — the tradeoff (accepted for this first pass) is that
+`SpeechRecognition` is Chrome/Edge-only (no Safari/Firefox support); a
+higher-quality/universal paid alternative can be layered in later if
+that gap matters.
+
+- **Mic input** (`#sc-mic-btn`, 🎤, in the input row next to the attach
+  button): click to start listening. `SpeechRecognition` runs with
+  `interimResults: true` so the visitor sees words fill `#sc-input`
+  live as they speak, and `continuous: false` so it naturally stops
+  after a pause — no separate "stop" step needed, though clicking the
+  mic again while listening also stops it early via `recognition.stop()`.
+  On the final result, the transcript **auto-sends** through the
+  existing `send()` flow (same code path as pressing Enter/Send) — this
+  matches how a voice assistant behaves, rather than just parking the
+  text in the input for a manual send. The button gets a `.listening`
+  class (solid accent fill + a `sc-pulse` opacity animation) while
+  active, and is included in `setBusy()` so it disables during a
+  request like the other input-row controls.
+- **Spoken replies** (`#sc-voice-toggle`, 🔇/🔊, in the header next to
+  Close): an independent on/off toggle — turning it on doesn't require
+  using the mic, and using the mic doesn't require it on. When on,
+  every new assistant reply is passed to `SpeechSynthesisUtterance` +
+  `speechSynthesis.speak()` right where it's added to the chat. This
+  hooks into `addMessage()`'s existing `persist !== false` branch (role
+  `"assistant"` only) rather than a separate call site, so it fires
+  exactly once per genuinely new reply and — for free — never fires for
+  the hardcoded initial greeting or a `sessionStorage` history restore
+  on reload (both call `addMessage(..., false)`, which already skips
+  that branch for the unrelated reason of not re-persisting). The
+  on/off preference is remembered via `sessionStorage`
+  (`sigmaCompanionVoiceReplies`), matching the file's existing pattern
+  for the conversation history itself. `speechSynthesis.cancel()` is
+  called when turning the toggle off mid-speech and when the panel is
+  closed, so a reply doesn't keep talking after the visitor has moved
+  on.
+- **Feature detection, no fallback UI**: `SpeechRecognitionCtor` (`window.
+  SpeechRecognition || window.webkitSpeechRecognition`) and `"speechSynthesis"
+  in window` are checked once at load; whichever button lacks support is
+  simply `display:none` rather than shown disabled with an explanatory
+  tooltip — keeps the input row uncluttered on unsupported browsers
+  instead of showing a control that can never work. The two features are
+  independent: a browser could in principle support one API without the
+  other, so each button's visibility is gated on its own capability
+  check, not both together.
+
+**Input row redesign — a single pill, not separate bordered controls**:
+per direct request with a reference screenshot (Claude's own web input
+bar — a rounded capsule containing a "+" button, the text field, a mic
+icon, and a filled circular send button, all inside one continuous
+border), the attach/mic/text/send controls were pulled out of their
+individual bordered boxes into one `#sc-input-pill` container
+(`border-radius:22px`, single `border`/`background`) nested inside
+`#sc-inputrow` (which keeps the top divider and outer padding). Inside
+the pill, `#sc-attach-btn`/`#sc-mic-btn` lost their own border/background
+and became flat 32px circular icon buttons (`background:none`, a subtle
+`rgba(255,255,255,.08)` hover fill — no visible box until hovered/
+active), `#sc-input` lost its own border/background/`:focus` outline
+(transparent, blends into the pill), and `#sc-send` changed from a
+text-label rectangular button ("Send") to a 32px filled accent circle
+with an arrow glyph (`➤`, `aria-label="Send message"` carries the
+accessible name now that the visible label is gone) — matching the
+reference's blue circular send button. `#sc-input-pill:focus-within`
+carries the focus ring now (border color switches to `ACCENT`) instead
+of `#sc-input:focus`, so the whole pill highlights when the text field
+is focused rather than just the input's own edge.
+
+**Button order changed to match the reference**: attach → text → mic →
+send (left to right), not attach → mic → text → send as in the original
+attachments-then-voice implementation — the mic sits immediately before
+the send button now, both inside the pill's trailing edge, matching
+where the reference screenshot places its mic and submit controls.
+`inputEl.style.height` resets (auto-resize on input, after `send()`,
+after a voice dictation) changed from `"40px"` to `"34px"` to match the
+input's smaller base height inside the tighter pill padding — grep
+`inputEl.style.height` if that base height changes again, there are
+three call sites that must stay in sync.
 
 ## Contact form email (`/api/contact`)
 

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Section, SectionHeading } from "@/components/Section";
 import { CapabilityCard, type Capability } from "@/components/CapabilityCard";
@@ -62,16 +63,16 @@ export default function Home() {
   const selectedWork = getAllWork();
 
   return (
-    <div className="theme-dark-fixed -mb-32 bg-paper pb-32 text-ink">
-      <Section className="relative overflow-hidden pt-[10px] md:h-[calc(100dvh-81px)] md:pt-[10px]">
+    <div className="theme-dark-fixed -mb-10 bg-paper pb-10 text-ink">
+      <Section className="relative overflow-hidden px-[0px] pb-[10px] pt-[10px] md:flex md:h-[calc(100dvh-81px)] md:items-center md:px-[0px] md:pb-[10px] md:pt-[10px]">
         <div
           aria-hidden
           className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-gradient-to-br from-accent/10 via-muted/10 to-transparent blur-3xl"
         />
-        <div className="grid gap-10 md:grid-cols-[1.3fr_1fr] md:items-center">
-          <div>
+        <div className="grid gap-10 md:h-full md:w-full md:grid-cols-[2fr_3fr] md:grid-rows-1 md:items-center md:gap-0">
+          <div className="md:pl-[80px]">
             <HeroReveal delay={0}>
-              <h1 className="font-display text-[2em] font-bold uppercase leading-tight tracking-tight">
+              <h1 className="font-display text-[3em] font-bold leading-tight tracking-tight">
                 Reiziger Ashu
               </h1>
             </HeroReveal>
@@ -99,23 +100,22 @@ export default function Home() {
               </div>
             </HeroReveal>
           </div>
-          <HeroReveal delay={0.15}>
-            <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-gradient-to-br from-accent/30 via-paper to-paper">
-              <video
-                src="/videos/reiziger-ashu-hero.mp4"
-                poster="/images/reiziger-ashu-hero-poster.jpg"
-                autoPlay
-                muted
-                loop
-                playsInline
-                className="absolute inset-0 h-full w-full object-cover"
+          <HeroReveal delay={0.15} className="md:h-full md:self-stretch">
+            <div className="relative aspect-[4/5] overflow-hidden rounded-2xl md:aspect-auto md:-mt-[10px] md:-mb-[10px] md:h-[calc(100%+20px)]">
+              <Image
+                src="/images/reiziger-ashu-hero-portrait.webp"
+                alt="Reiziger Ashu"
+                fill
+                priority
+                sizes="(min-width: 768px) 60vw, 100vw"
+                className="object-cover object-top"
               />
             </div>
           </HeroReveal>
         </div>
       </Section>
 
-      <Section className="pt-0">
+      <Section className="pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]">
         <p className="text-center text-sm font-semibold uppercase tracking-widest text-muted">
           Trusted by teams building something worth naming
         </p>
@@ -126,7 +126,7 @@ export default function Home() {
 
       {selectedWork.length > 0 && (
         <>
-          <Section className="pb-0">
+          <Section className="pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]">
             <div className="flex flex-wrap items-end justify-between gap-4">
               <SectionHeading eyebrow="Selected Work" title="Design systems and brand identities, built to last." />
               <Link
@@ -143,7 +143,7 @@ export default function Home() {
         </>
       )}
 
-      <Section className="pt-0 text-center">
+      <Section className="pt-[40px] pb-[40px] text-center md:pt-[40px] md:pb-[40px]">
         <SectionHeading
           title="Design is more than aesthetics."
           description="I believe design is a tool for understanding. It helps us discover identity, communicate vision, solve problems, organize complexity, and create experiences that move people."
@@ -154,7 +154,7 @@ export default function Home() {
         </div>
       </Section>
 
-      <Section className="pt-0">
+      <Section className="pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]">
         <SectionHeading
           eyebrow="Expertise"
           title="What I do"
@@ -177,7 +177,7 @@ export default function Home() {
         />
       )}
 
-      <Section className="pt-0">
+      <Section className="pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]">
         <p className="text-sm font-semibold uppercase tracking-widest text-accent">Ventures</p>
         <div className="mt-3 max-w-2xl">
           <h2 className="font-display text-3xl font-bold tracking-tight md:text-4xl">
@@ -228,7 +228,7 @@ export default function Home() {
       </Section>
 
       {latestThink.length > 0 && (
-        <Section className="pt-20 md:pt-28">
+        <Section className="pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <SectionHeading eyebrow="What I Think" title="Recent writing" />
             <Link
@@ -246,7 +246,7 @@ export default function Home() {
         </Section>
       )}
 
-      <Section className="pt-0">
+      <Section className="pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]">
         <SectionHeading eyebrow="Kind Words" title="Words from people I've worked with" />
         <div className="mt-12 grid gap-6 md:grid-cols-2">
           {TESTIMONIALS.map((testimonial, i) => (
@@ -255,7 +255,7 @@ export default function Home() {
         </div>
       </Section>
 
-      <Section className="pt-0">
+      <Section className="pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]">
         <div className="rounded-3xl border border-line p-12 text-center md:p-20">
           <h2 className="font-display text-3xl font-bold tracking-tight md:text-4xl">
             Have an idea worth building?

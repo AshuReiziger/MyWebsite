@@ -30,7 +30,7 @@ export default async function ThinkArticlePage({ params }: PageProps<"/think/[sl
     : null;
 
   return (
-    <div className="theme-dark-fixed -mb-32 bg-paper pb-32 text-ink">
+    <div className="theme-dark-fixed -mb-10 bg-paper pb-10 text-ink">
       <Section className="pt-16 md:pt-24">
         <article>
           <header className="mb-12 max-w-2xl">

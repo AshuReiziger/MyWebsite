@@ -27,18 +27,18 @@ export function Footer() {
   const pathname = usePathname();
 
   return (
-    <footer className="mt-32 bg-ink text-paper">
+    <footer className="mt-10 bg-accent text-black">
       <div className="mx-auto max-w-[1920px] px-3 py-24 md:px-10">
         <div className="grid gap-10 md:grid-cols-2">
           <div className="max-w-sm">
             <p className="font-display text-lg tracking-tight">Reiziger Ashu</p>
-            <p className="mt-3 text-sm text-paper/60">Architecting intentional growth.</p>
+            <p className="mt-3 text-sm text-black/60">Architecting intentional growth.</p>
 
             <div className="mt-8">
-              <p className="text-xs font-semibold uppercase tracking-widest text-paper/60">
+              <p className="text-xs font-semibold uppercase tracking-widest text-black/60">
                 Newsletter
               </p>
-              <p className="mt-2 text-sm text-paper/60">
+              <p className="mt-2 text-sm text-black/60">
                 Occasional notes on design, strategy, and creative leadership — no spam.
               </p>
               <div className="mt-4">
@@ -54,8 +54,10 @@ export function Footer() {
                   key={link.href}
                   href={link.href}
                   className={clsx(
-                    "text-sm transition-colors hover:text-paper",
-                    pathname === link.href ? "text-accent" : "text-paper/60"
+                    "text-sm transition-colors hover:text-black",
+                    pathname === link.href
+                      ? "text-black underline underline-offset-4"
+                      : "text-black/60"
                   )}
                 >
                   {link.label}
@@ -70,7 +72,7 @@ export function Footer() {
                   href={link.href}
                   target="_blank"
                   rel="noreferrer"
-                  className="text-sm text-paper/60 transition-colors hover:text-paper"
+                  className="text-sm text-black/60 transition-colors hover:text-black"
                 >
                   {link.label}
                 </a>
@@ -79,8 +81,8 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-24 border-t border-paper/10 pt-8">
-          <p className="text-sm text-paper/60">
+        <div className="mt-24 border-t border-black/10 pt-8">
+          <p className="text-sm text-black/60">
             © {new Date().getFullYear()} Reiziger Ashu. All rights reserved.
           </p>
         </div>

@@ -91,7 +91,7 @@ export default function AboutPage() {
   const [purpose, excellence, curiosity, integrity, impact, stewardship] = VALUES;
 
   return (
-    <div className="theme-dark-fixed -mb-32 bg-paper pb-32 text-ink">
+    <div className="theme-dark-fixed -mb-10 bg-paper pb-10 text-ink">
       <Section className="pb-0 pt-16 text-center md:pb-0 md:pt-24">
         <SectionHeading centered divider title="The Designer Behind the Work" />
         <blockquote className="mx-auto mt-10 max-w-2xl border-l-2 border-accent pl-6 text-left font-display text-xl italic">
