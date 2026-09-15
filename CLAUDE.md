@@ -1946,6 +1946,39 @@ input's smaller base height inside the tighter pill padding — grep
 `inputEl.style.height` if that base height changes again, there are
 three call sites that must stay in sync.
 
+**Launcher collapses to a plain circle on mobile** — per a mobile-audit
+follow-up ("let's fix the floating button overlap"), the full pill
+(`"✨ Ask Sigma Companion"`, ~218px wide on desktop) was found to sit
+directly on top of page content on narrow viewports at certain scroll
+positions — e.g. covering the "Area of Interest" label on `/contact` and
+a case-study title on `/work` — since a `position:fixed` element doesn't
+make room for whatever happens to scroll beneath it. The pill itself
+isn't the problem on desktop (plenty of margin around the fixed
+bottom-right corner there), only its width on a narrow screen. Added a
+`@media (max-width:767px)` rule (767px matching the site's Tailwind `md:`
+breakpoint, for consistency, even though this widget is plain CSS, not
+Tailwind classes) that shrinks `#sigma-companion-launcher` to `width:56px;
+height:56px;padding:0` (the `border-radius:999px` it already had renders
+this as a circle once the box is square) and hides a new `.sc-launcher-label`
+span — the launcher's `innerHTML` was split into an `aria-hidden` icon span
+plus that label span specifically so the label could be hidden via CSS
+without touching the button's own `aria-label="Open Sigma Companion"`
+(unaffected either way, but this keeps the visible/accessible-name
+concerns cleanly separate). This gives the launcher the exact same 56px
+circular footprint as `WhatsAppButton.tsx` on mobile — the two already
+coexist fine with scrolling content at that size, and stacking two same-
+size circles keeps the existing 16px-gap math (`LAUNCHER_BOTTOM = 96px`)
+correct without any changes there. Confirmed via Playwright at a 390px
+viewport: `getComputedStyle` on the launcher reads `width:"56px"
+height:"56px"`, `.sc-launcher-label`'s `display` reads `"none"`, and a
+screenshot of both `/contact`'s Area of Interest field and `/work`'s
+first case-study title shows the text fully legible with only the small
+circle overlapping the row's empty trailing space — and at a 1440px
+viewport the desktop pill is unaffected (`width:"217.938px"`, label
+`display:"block"`, full `"✨Ask Sigma Companion"` text). Verified
+`node --check public/sigma-companion-widget.js` still passes, since this
+file has no build step to catch a syntax error otherwise.
+
 ## Contact form email (`/api/contact`)
 
 Sends via [Resend](https://resend.com) to `ashu.reiziger45@gmail.com`

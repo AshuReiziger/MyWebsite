@@ -93,6 +93,14 @@
     "font:600 14px/1.2 -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif;",
     "box-shadow:0 6px 20px rgba(0,0,0,.4);cursor:pointer;display:flex;align-items:center;gap:8px;}",
     "#sigma-companion-launcher:hover{filter:brightness(1.08);}",
+    // The full pill (icon + label) is fine on desktop, where there's plenty of
+    // margin around the fixed bottom-right corner. On narrow/mobile viewports
+    // its ~200px width was wide enough to sit directly over page content
+    // scrolled beneath it (e.g. Contact's Area of Interest field, Work's case
+    // study titles) — collapsed to a plain 56px circle there instead, matching
+    // WhatsAppButton.tsx's own compact treatment and footprint.
+    "@media (max-width:767px){#sigma-companion-launcher{width:56px;height:56px;padding:0;justify-content:center;}",
+    ".sc-launcher-label{display:none;}}",
     "#sigma-companion-panel{position:fixed;bottom:" + LAUNCHER_BOTTOM + ";right:" + LAUNCHER_RIGHT + ";width:360px;max-width:92vw;",
     "height:540px;max-height:80vh;background:" + BG + ";border:1px solid " + LINE + ";border-radius:16px;",
     "box-shadow:0 12px 40px rgba(0,0,0,.5);display:none;flex-direction:column;overflow:hidden;",
@@ -143,7 +151,8 @@
   launcher.id = "sigma-companion-launcher";
   launcher.type = "button";
   launcher.setAttribute("aria-label", "Open Sigma Companion");
-  launcher.innerHTML = "✨ Ask Sigma Companion";
+  launcher.innerHTML =
+    '<span aria-hidden="true">✨</span><span class="sc-launcher-label">Ask Sigma Companion</span>';
   document.body.appendChild(launcher);
 
   // ---------- panel ----------
