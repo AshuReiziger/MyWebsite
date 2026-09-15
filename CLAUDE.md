@@ -820,24 +820,48 @@ screenshot confirmed the result reads clearly: dark text and controls on
 a solid gold band, with "Home" (the current route on `/`) visibly
 underlined.
 
-## Contact page ("Work With Me") image placeholder replaced with a real photo
+## Contact page ("Work With Me") hero background photo
 
 `/contact` is the destination of every "Work With Me" CTA sitewide (`Nav`'s
 button, Home's hero CTA — see "Nav & Footer conventions" above; there is
-no separate page literally titled "Work With Me"). Its copy column
-carried the site's standard gradient placeholder
+no separate page literally titled "Work With Me"). Its copy column used
+to carry the site's standard gradient placeholder
 (`bg-gradient-to-br from-line to-muted/20`, `aspect-[4/3] rounded-2xl`,
 no `next/image` — one of the few image slots on the site that was never
 given a real photo). Per direct request, with a photo attached (a studio
 desk with sketches/branding swatches, a fountain pen, and a blurred team
-working in the background), that gradient div was replaced with a real
-`next/image` filling the same `aspect-[4/3] rounded-2xl` slot — the
-wrapper gained `relative overflow-hidden` (needed for `fill`) and the
-`Image` uses `fill sizes="(min-width: 768px) 50vw, 100vw"
-className="object-cover"`, matching the sizing convention used for every
-other image slot on the site. `alt=""` since the photo is purely
-decorative background texture next to the contact form, not content a
-screen reader needs to announce.
+working in the background), that placeholder was replaced with the
+photo — **first as a boxed `next/image` filling that same small slot
+below the copy**, which the user flagged as not what was asked
+("You haven't done what I asked. I requested that you use the image
+rather as background image?"). Clarified via `AskUserQuestion` — three
+options were offered (background of just the left column, background of
+the whole hero section, or the same boxed slot but implemented as a CSS
+`background-image` instead of an `<Image>` element) — and **"whole hero
+section" was chosen**: the photo is now the background of the entire
+hero band (both the copy column and the form column), not scoped to one
+column or one small box.
+
+Implementation: the hero's outer wrapper gained `relative overflow-hidden`,
+with the `Image` (`fill priority sizes="100vw" className="object-cover"`,
+`alt=""` since it's decorative) as its first child, positioned behind
+everything via normal DOM stacking order (no explicit `z-index` needed —
+every other child is a later sibling and therefore already stacks above
+an unpositioned/default-stacked absolutely-positioned image at the same
+stacking context, but see the scrim note below for why an explicit
+overlay `div` was still needed). A `bg-black/55` scrim div sits directly
+on top of the image (same literal, theme-independent-black convention
+already established for `AssessmentFlow.tsx`'s modal backdrop — see
+"Sitewide dark theme" above) so the existing `text-ink`/`text-muted`
+copy (already light-colored inside `theme-dark-fixed`) stays legible
+against the busy photo. The actual page content (`max-w-[1920px]`
+grid) is wrapped in its own `relative` div so it stacks above both the
+image and the scrim. The form column's existing card treatment
+(`rounded-2xl border border-line bg-paper p-8 md:p-10` — `paper` is
+already a solid near-black in this theme) needed no color changes to
+read as an opaque floating panel over the photo; only its shadow was
+bumped from `shadow-sm` to `shadow-xl` for more visible elevation now
+that it's floating over an image rather than a flat background.
 
 The photo lives at `public/images/contact-page-studio-desk.webp` (WebP,
 matching the site's convention for photographic assets — see "Home page
