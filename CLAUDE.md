@@ -859,6 +859,17 @@ Home's own hero already does):
   hero-subtext convention), the `md:items-center` grid centering, and
   the placeholder box on the right are all untouched.
 
+## Contact page: form panel at 80% opacity
+
+Per direct follow-up ("Adjust the opacity of the contact form to 80%"),
+the form panel's background changed from solid `bg-paper` to `bg-paper/80`
+— only the panel's background color gets the opacity, not the panel or
+its contents wholesale (a plain `opacity-80` on the div would also fade
+the labels/input text/button, undoing the legibility work from the fixes
+above). The hero photo now shows through the panel subtly instead of
+being fully obscured. Confirmed via `getComputedStyle`:
+`backgroundColor` resolves to an alpha of exactly `0.8`.
+
 ## Contact page: vertical centering, closing the black gap before Footer, and dropdown contrast
 
 Three follow-up fixes on `/contact`, requested together:
