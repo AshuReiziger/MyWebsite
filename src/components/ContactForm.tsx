@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { CustomSelect } from "@/components/CustomSelect";
 
 const AREAS_OF_INTEREST = [
   "Design Project",
@@ -15,17 +16,28 @@ type Status = "idle" | "submitting" | "success" | "error";
 
 const inputClass =
   "border-b border-line bg-transparent px-0 py-2 outline-none focus:border-ink";
+const selectTriggerClass = "border-b bg-transparent px-0 py-2 peer-focus:border-ink";
 const labelClass = "text-xs font-semibold uppercase tracking-widest text-ink";
 
 export function ContactForm() {
   const [status, setStatus] = useState<Status>("idle");
+  const [projectTypeError, setProjectTypeError] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setStatus("submitting");
 
     const form = event.currentTarget;
     const data = Object.fromEntries(new FormData(form).entries());
+
+    // readOnly (required for the custom dropdown's click-to-open behavior)
+    // exempts the field from native HTML5 required validation, so this is
+    // checked by hand instead of relying on the browser to block submission.
+    if (!data.projectType) {
+      setProjectTypeError(true);
+      return;
+    }
+
+    setStatus("submitting");
 
     try {
       const response = await fetch("/api/contact", {
@@ -69,16 +81,18 @@ export function ContactForm() {
 
       <label className="flex flex-col gap-2">
         <span className={labelClass}>Area of Interest</span>
-        <select name="projectType" required defaultValue="" className={inputClass}>
-          <option value="" disabled className="bg-white text-black">
-            Select an area
-          </option>
-          {AREAS_OF_INTEREST.map((type) => (
-            <option key={type} value={type} className="bg-white text-black">
-              {type}
-            </option>
-          ))}
-        </select>
+        <CustomSelect
+          name="projectType"
+          options={AREAS_OF_INTEREST}
+          placeholder="Select an area"
+          required
+          error={projectTypeError}
+          onChange={() => setProjectTypeError(false)}
+          className={selectTriggerClass}
+        />
+        {projectTypeError && (
+          <p className="text-xs text-accent">Please select an area of interest.</p>
+        )}
       </label>
 
       <label className="flex flex-col gap-2">

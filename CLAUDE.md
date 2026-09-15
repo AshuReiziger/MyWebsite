@@ -859,6 +859,99 @@ Home's own hero already does):
   hero-subtext convention), the `md:items-center` grid centering, and
   the placeholder box on the right are all untouched.
 
+## Contact form: "Area of Interest" replaced with a custom dropdown
+
+Per direct follow-up ("change the background of the dropdown to dark
+with an opacity of 80%" + "Adjust the bottom right and left corner
+radius of the dropdown to be as rounded as that of the contact form"),
+the native `<select>`/`<option>` fix documented above (`bg-white
+text-black` on `<option>`) turned out insufficient for this ask.
+Empirically confirmed via Playwright/Chromium: a native select's open
+popup **does** paint a custom `background-color` set on `<option>`
+elements (that's why the earlier white-background fix worked), but it
+**completely ignores `border-radius`** — the popup renders as browser/
+OS chrome with square corners regardless of any CSS applied to
+`<select>`/`<option>`. Genuine alpha transparency (revealing the photo
+through the popup, not just a flat dark color) is similarly unreliable
+across browsers for native popups. Since both asks require real control
+over the popup's paint, matching them reliably meant not using a native
+`<select>` at all.
+
+**`src/components/CustomSelect.tsx`** (new) replaces it — a from-scratch
+dropdown, not a native-select CSS override:
+- The visible **closed-state box** is a plain `aria-hidden` `<div>`
+  styled identically to the old `<select>` (same border/padding
+  classes as the other inputs' shared `inputClass`, via a
+  `selectTriggerClass` in `ContactForm.tsx` — kept separate from
+  `inputClass` only because it drops `outline-none focus:border-ink`,
+  which are meaningless on a non-focusable `<div>`, and uses
+  `peer-focus:border-ink` instead — see below), plus a small chevron
+  SVG that flips on open (no new icon added to `icons.tsx`, this is a
+  one-off inline SVG since nothing else on the site needs a chevron).
+- The **actual interactive element** is a `type="text"` `readOnly`
+  `<input>` (`role="combobox"`), absolutely positioned `inset-0` and
+  fully transparent (`opacity-0`) directly over that decorative box —
+  clicks/focus/keyboard all land on this real input (a positioned
+  element always paints above its non-positioned decorative sibling
+  regardless of DOM order, so no `z-index` juggling was needed there).
+  It carries the form field's real `name`/`value`, so `ContactForm`'s
+  existing `new FormData(form)` submission flow needed no changes.
+  Since the invisible input's own default focus outline would be
+  invisible too (`opacity:0` hides outline along with everything else),
+  visual focus is instead shown on the *decorative* box via Tailwind's
+  `peer`/`peer-focus:` (input has `peer`, decorative div has
+  `peer-focus:border-ink` — swapped in from the removed `focus:border-ink`).
+- The **popup itself** (`role="listbox"`, `<button role="option">` per
+  choice) is a normal positioned `<div>` the app fully controls:
+  `bg-paper/80` (same 80%-opacity mechanism as the form panel's own
+  background — see "Contact page: form panel at 80% opacity" above) and
+  `rounded-b-2xl` (16px, matching the form panel's own `rounded-2xl`
+  exactly — confirmed via `getComputedStyle`: both read `16px`, and the
+  listbox's own top corners are correctly `0px`, flush against the
+  trigger above it) — both values were impossible to achieve reliably
+  via the native `<select>`, which is the entire reason this exists.
+- **Real bug found and fixed during this pass, not just cosmetic**:
+  `readOnly` on an `<input>` exempts it from HTML5 `required` constraint
+  validation entirely (confirmed empirically via `input.checkValidity()`
+  — returned `true` on an empty, `required`, `readOnly` field). Since
+  `readOnly` is necessary here (it prevents the user from typing into
+  what's meant to be a selection-only field while keeping it focusable),
+  the form could previously have been submitted with no Area of Interest
+  selected, since the browser's native pre-submit validation check
+  (which normally blocks the `submit` event from firing at all for an
+  invalid required field, before `ContactForm`'s own JS ever runs) simply
+  didn't see this field as required. Fixed with an explicit manual check
+  at the top of `handleSubmit`: if `data.projectType` is empty, set a new
+  `projectTypeError` state and return before hitting `setStatus`/`fetch`
+  — confirmed via Playwright that the `/api/contact` request is *not*
+  fired when the field is empty, an inline "Please select an area of
+  interest." message appears (`text-accent`, matching the sitewide
+  form-error color convention — see "Contact page: vertical centering..."
+  above for why a literal-black override was needed on this exact page's
+  gold-adjacent contexts, which doesn't apply here since this message
+  sits on the dark form panel, not the gold footer), and the error
+  clears (`CustomSelect`'s new `onChange` prop) as soon as a value is
+  picked, after which the same submit flow proceeds and does call the
+  API. `CustomSelect` also accepts an `error` prop that swaps the
+  decorative box's border from `border-line` to `border-accent` when
+  set — note `selectTriggerClass` deliberately omits its own
+  `border-line` (unlike `inputClass`) so there is only ever one
+  `border-*` color utility present at a time; stacking both
+  `border-line` and a conditional `border-accent` in the same class
+  string would leave the winner dependent on Tailwind's internal
+  stylesheet ordering, not simple class-string order — the established
+  "swap, don't stack, conflicting color utilities" lesson from elsewhere
+  in this file applies here too.
+- This component is intentionally generic (`name`/`options`/
+  `placeholder`/`required`/`error`/`onChange`/`className` props, no
+  Contact-specific logic inside it) in case another single-select field
+  elsewhere ever needs the same translucent/rounded-popup treatment —
+  though as of this pass it's only used here; every other single-select
+  need on the site still uses `PillToggle`/`PillMultiToggle` (see
+  "Category-specific Teach forms" below), which don't have this native-
+  popup limitation to begin with since they never render a real
+  `<select>`.
+
 ## Contact page: form panel at 80% opacity
 
 Per direct follow-up ("Adjust the opacity of the contact form to 80%"),
@@ -912,18 +1005,15 @@ Three follow-up fixes on `/contact`, requested together:
    default white dropdown-popup background, which Tailwind's
    `bg-transparent`/token classes on the `<select>` itself don't reach
    (native select popups are styled by the browser, largely immune to
-   the parent's CSS). Fixed in `ContactForm.tsx` by adding an explicit
-   `className="bg-white text-black"` directly to every `<option>`
-   (including the disabled placeholder) — a literal, theme-independent
-   light background with dark text, not the `ink`/`paper` tokens, since
-   those would still resolve to light text in this context. Confirmed
-   via `getComputedStyle` on an opened dropdown: `color: rgb(0, 0, 0)`,
-   `backgroundColor: rgb(255, 255, 255)`. This is scoped to this one
-   `<select>`/its `<option>`s — no other form on the site uses a native
-   `<select>` for a similarly-themed field (the category-specific Teach
-   forms use `PillToggle`/`PillMultiToggle` instead — see "Category-
-   specific Teach forms" below — which don't have this native-popup
-   styling limitation), so this fix wasn't needed anywhere else.
+   the parent's CSS). Fixed at the time by adding an explicit
+   `className="bg-white text-black"` directly to every `<option>`.
+   **Superseded shortly after** — see "Contact form: 'Area of Interest'
+   replaced with a custom dropdown" below — once further requests
+   (a translucent dark popup background, corners matching the form
+   panel's own radius) turned out to need real control over the popup's
+   rendering that a native `<select>` cannot reliably provide. The
+   native `<select>`/`<option>` markup described here no longer exists
+   in `ContactForm.tsx`.
 
 ## Contact page ("Work With Me") hero copy matched to the home page hero
 
