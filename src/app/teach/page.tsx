@@ -62,7 +62,7 @@ const SPEAKING_TOPICS = [
 export default function TeachPage() {
   return (
     <div className="theme-dark-fixed -mb-10 bg-paper pb-10 text-ink">
-      <div className="relative overflow-hidden">
+      <div className="relative overflow-hidden md:flex md:h-[calc(100dvh-81px)] md:items-center">
         <Image
           src="/images/teach-hero-mentorship-session.webp"
           alt=""
@@ -73,7 +73,7 @@ export default function TeachPage() {
         />
         <div className="absolute inset-0 bg-black/55" />
 
-        <div className="relative mx-auto max-w-[1920px] px-3 py-16 md:px-10 md:py-24">
+        <div className="relative mx-auto max-w-[1920px] px-3 py-16 md:w-full md:px-10 md:py-24">
           <div className="md:pl-10">
             <h1 className="font-display text-[3em] font-bold leading-tight tracking-tight">
               I believe knowledge should multiply.

@@ -2038,6 +2038,36 @@ at both 1440px and 390px viewports: the heading/subtext render clearly
 over the photo at both sizes, with no layout regression to the offerings
 grid immediately below.
 
+**Then sized to match Home's hero height** per direct follow-up ("The
+Teach hero section on desktop does not look good. Make it as big as that
+of the home page hero section") — on desktop the hero was only as tall as
+its own text content plus the `py-16 md:py-24` inner padding, noticeably
+shorter than Home's hero, which fills the viewport below `Nav` (see "Home
+page hero media" above, `md:h-[calc(100dvh-81px)]`). The outer `relative
+overflow-hidden` wrapper picked up `md:flex md:h-[calc(100dvh-81px)]
+md:items-center` — the same fixed-height/vertical-centering mechanism as
+Home's hero `Section`, reused directly since `81px` is the same measured
+`Nav` height sitewide (grep `calc(100dvh-81px)` if `Nav.tsx`'s height ever
+changes — both instances need updating together). The `Image` with `fill`
+needed no changes: it already sizes against its positioned ancestor's
+padding box, so fixing that ancestor's height to the viewport
+automatically stretches the photo to match. The inner content div picked
+up `md:w-full` alongside its existing padding, since a flex child doesn't
+stretch along the main (row) axis by default the way it does cross-axis —
+without it, the `mx-auto max-w-[1920px]` centering would have nothing to
+center within. Unlike Home's hero, no `pt-[10px]`/`pb-[10px]`-style
+symmetric-padding override was needed here: that fix on Home was only
+required because `Section`'s own default `py-*` shorthand was competing
+with a partial override (see "Top and bottom padding" above) — Teach's
+hero isn't built on `Section` at all, so its own `py-16 md:py-24` has no
+competing default to lose to. Confirmed via Playwright at a 1440×900
+viewport: both `/` and `/teach`'s hero now measure identically
+(`height: 819`, `top: 81`, `bottom: 900`) — genuinely matched, not just
+visually close. Mobile is unaffected (no `md:` prefix on the height/flex
+classes), confirmed at a 390×844 viewport where the hero still renders at
+its natural content height (488px), scoped the same way Home's own
+height cap is mobile-exempt.
+
 ## Contact form email (`/api/contact`)
 
 Sends via [Resend](https://resend.com) to `ashu.reiziger45@gmail.com`
