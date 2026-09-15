@@ -1479,13 +1479,29 @@ larger screens (`sm:grid-cols-2 lg:grid-cols-4`), per the Figma
 reference — not the 2×2 grid used in an earlier pass.
 
 **`CapabilityCard` (Home's "What I Do" grid) now carries an optional
-photo background behind its icon badge**, per direct request with four
-photos attached ("add the attached pictures as background to the cards
-on the what I do section"). Unlike the Teach offerings grid (see below),
-the icon badge and numbered index were kept, not dropped — the request
-was only to add a background image, not to replicate Teach's icon-removal
-choice, so `CapabilityCard.tsx`'s `Capability` interface gained an
-optional `image?: string` field rather than removing `icon`.
+photo background**, per direct request with four photos attached ("add
+the attached pictures as background to the cards on the what I do
+section"). First pass kept the icon badge and numbered index alongside
+the new photo (`CapabilityCard.tsx`'s `Capability` interface gained an
+optional `image?: string` field, `icon` left in place) — the request was
+only to add a background image, not (yet) to replicate Teach's
+icon-removal choice below. **Then the icon badge was dropped too**, per
+an immediate direct follow-up ("please remove the icons on the cards"),
+bringing this grid in line with the Teach offerings pattern after all:
+`icon: ReactNode` was removed entirely from the `Capability` interface
+(not just unrendered), the `IconBadge` import/usage removed from
+`CapabilityCard.tsx`, and `page.tsx`'s now-unused
+`DesignIcon`/`StrategyIcon`/`EducationIcon`/`LeadershipIcon` imports and
+per-entry `icon: <...Icon />` fields dropped from `CAPABILITIES` — those
+four icon components themselves were **not** deleted from `icons.tsx`,
+since they're still imported elsewhere (`AssessmentFlow.tsx`,
+`BuildSidebar.tsx`, `build/page.tsx`). The numbered index (`01`–`04`)
+was kept, just right-aligned on its own (`block text-right`, no more
+`flex justify-between` now that there's nothing to its left) rather than
+removed alongside the icon — only the icon was in scope for "remove the
+icons," not the numbering. `IconBadge` itself stays defined in
+`icons.tsx` and is still used by `build/page.tsx` and the About values
+grid — only `CapabilityCard.tsx`'s own usage of it was removed.
 Implementation reuses the same `grayscale` → `group-hover:grayscale-0`
 `next/image` + gradient-scrim pattern as `WorkCard.tsx`/the Teach
 offerings grid (see "Image treatment" above): the `Image` (`fill`,

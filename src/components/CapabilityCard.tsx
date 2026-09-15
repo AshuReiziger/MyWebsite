@@ -1,18 +1,14 @@
-import type { ReactNode } from "react";
 import Image from "next/image";
-import { IconBadge } from "@/components/icons";
 
 export interface Capability {
   title: string;
   description: string;
-  icon: ReactNode;
   image?: string;
 }
 
 export function CapabilityCard({
   title,
   description,
-  icon,
   image,
   index,
 }: Capability & { index: number }) {
@@ -29,12 +25,9 @@ export function CapabilityCard({
           <div className="absolute inset-0 -z-10 bg-gradient-to-br from-paper/90 via-paper/75 to-paper/90" />
         </>
       )}
-      <div className="flex items-start justify-between">
-        <IconBadge>{icon}</IconBadge>
-        <span className="text-xs font-semibold text-line">
-          {String(index).padStart(2, "0")}
-        </span>
-      </div>
+      <span className="block text-right text-xs font-semibold text-line">
+        {String(index).padStart(2, "0")}
+      </span>
       <h3 className="mt-6 font-display text-xl font-bold tracking-tight">{title}</h3>
       <p className="mt-3 text-muted">{description}</p>
     </div>
