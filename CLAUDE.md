@@ -96,6 +96,15 @@ export default async function Page({ params }: PageProps<"/work/[slug]">) {
   `title, date, category, excerpt, coverImage?, accent?`. `accent: true`
   renders that card with the dark `bg-ink` treatment on the Think index
   for visual rhythm — used sparingly (one card), not a per-category rule.
+  `the-physics-of-organizational-change.mdx` carried `accent: true` from
+  this convention's introduction, which the user later flagged as
+  looking inconsistent with the rest of the grid ("adjust the 'Physics
+  of organizational change' to look like the other cards on the think
+  page") — the `accent: true` line was removed so it now renders as a
+  standard bordered card (image slot, category pill, title, excerpt,
+  "Read More →") like every other non-accent entry. No card on the site
+  currently uses `accent: true`; the flag itself is unchanged/still
+  supported if a future entry wants that dark treatment again.
   **`coverImage` was dead until a direct request activated it**: every
   entry's frontmatter always carried a `coverImage: "/think/placeholder-
   N.svg"` value, but neither `ThinkCard.tsx` nor `FeaturedThinkCard.tsx`
