@@ -112,10 +112,25 @@ export default async function Page({ params }: PageProps<"/work/[slug]">) {
   so the gradient still shows through when it's unset. `coverImage`
   became optional (`coverImage?: string`) on `ThinkFrontmatter` in
   `src/lib/content.ts` to make that valid. `FeaturedThinkCard.tsx` (used
-  on `/think`'s own index, not the home page) was **not** touched —
-  out of scope for a "home page" request; it still always renders the
-  flat gradient, a known follow-up if a photo for the currently-featured
-  article is ever wanted there.
+  on `/think`'s own index, not the home page) was initially **not**
+  touched — out of scope for a "home page" request.
+
+  **Then wired up too**, per direct follow-up ("Let those same images be
+  used on the correspondent articles on the think page"): `FeaturedThinkCard.tsx`
+  now wraps its placeholder div in the same `WorkImage` component, passing
+  `frontmatter.coverImage` as `src`, identical to the `ThinkCard.tsx`
+  pattern above. `ThinkIndex.tsx` renders `FeaturedThinkCard` for only the
+  single most-recent entry (`entries[0]` in the unfiltered "All" view —
+  "Architecting Scalable Design Systems in Ambiguous Environments") and
+  `ThinkCard` for the rest of the grid, so this was the one remaining spot
+  on `/think` not already reading the field — the other two photographed
+  articles ("Beyond the Logo: Branding as Behavior", "Design Is a Tool for
+  Understanding") needed no code change, since they render via the
+  already-wired `ThinkCard` in the grid beneath the featured slot.
+  Confirmed via Playwright at a 1440px viewport: the featured card shows
+  the dot-grid photo, the grid's two other photographed articles show
+  their respective photos, and "Systems That Outlast You" (no photo
+  supplied) correctly still falls back to the gradient placeholder.
 
   Only the three articles Home's "What I Think" section actually shows
   (`getAllThink().slice(0, 3)` — see the ordering note below; confirmed
