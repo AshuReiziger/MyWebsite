@@ -28,7 +28,7 @@ export interface ThinkFrontmatter {
   date: string;
   category: string;
   excerpt: string;
-  coverImage: string;
+  coverImage?: string;
   /** Renders this entry's card with the dark accent treatment, for visual rhythm in the grid. */
   accent?: boolean;
   /** Slug of a resource (src/content/resources) to recommend via ResourceCTA at the end of this article. Opt-in per article — omit for none. */

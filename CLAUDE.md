@@ -73,12 +73,152 @@ export default async function Page({ params }: PageProps<"/work/[slug]">) {
   `/work/...`) or an absolute URL — Cloudinary
   (`res.cloudinary.com`) is pre-allowed in `next.config.ts`'s
   `images.remotePatterns` as the secondary option for images too large
-  or numerous to commit to the repo; add another host there if a
-  different image CDN is ever needed.
+  or numerous to commit to the repo, alongside Google Drive
+  (`drive.google.com` and `lh3.googleusercontent.com`, the host Drive
+  redirects large/embedded files to — both pre-allowed per direct
+  request, "can we use google drive to collect images"). Drive links
+  only work in `next/image` as **direct file links**, not folder/sharing
+  links: from a file's Drive share dialog, "General access" must be set
+  to "Anyone with the link", then use
+  `https://drive.google.com/uc?export=view&id=<FILE_ID>` (the `id` is the
+  long token from the share link's `/d/<FILE_ID>/view` segment) — a
+  plain `drive.google.com/file/d/.../view` share URL is an HTML viewer
+  page, not an image, and won't render. This is a weaker option than
+  Cloudinary (see the recommendation given alongside this addition): Drive
+  isn't built as an image CDN, so links can get rate-limited under real
+  traffic or serve an interstitial page instead of the image for larger
+  files, and there's no automatic resizing/format optimization the way
+  Cloudinary provides — prefer Cloudinary or committing to `public/` when
+  reliability matters, reach for Drive only for a quick/low-traffic case.
+  Add another host to `remotePatterns` if a different image CDN is ever
+  needed.
 - `src/content/think/*.mdx` — articles. Frontmatter:
-  `title, date, category, excerpt, coverImage, accent?`. `accent: true`
+  `title, date, category, excerpt, coverImage?, accent?`. `accent: true`
   renders that card with the dark `bg-ink` treatment on the Think index
   for visual rhythm — used sparingly (one card), not a per-category rule.
+  `the-physics-of-organizational-change.mdx` carried `accent: true` from
+  this convention's introduction, which the user later flagged as
+  looking inconsistent with the rest of the grid ("adjust the 'Physics
+  of organizational change' to look like the other cards on the think
+  page") — the `accent: true` line was removed so it now renders as a
+  standard bordered card (image slot, category pill, title, excerpt,
+  "Read More →") like every other non-accent entry. No card on the site
+  currently uses `accent: true`; the flag itself is unchanged/still
+  supported if a future entry wants that dark treatment again.
+  **`coverImage` was dead until a direct request activated it**: every
+  entry's frontmatter always carried a `coverImage: "/think/placeholder-
+  N.svg"` value, but neither `ThinkCard.tsx` nor `FeaturedThinkCard.tsx`
+  ever read `frontmatter.coverImage` — both always rendered a flat
+  `bg-gradient-to-br from-accent/40 via-line to-line` div regardless, and
+  `public/think/` (where those SVG paths pointed) never actually existed.
+  Per direct request with three photos attached ("Use these images as
+  the image placeholders on the article section of the home page"),
+  `ThinkCard.tsx` (the card `page.tsx`'s "What I Think" section uses —
+  also shared with `/think`'s own grid via `ThinkIndex.tsx`) now wraps
+  its placeholder div in `WorkImage` (`src/components/WorkImage.tsx`,
+  the same gradient-behind/image-on-top wrapper `WorkCard.tsx` uses —
+  see "Content model" above), passing `frontmatter.coverImage` as `src`
+  so the gradient still shows through when it's unset. `coverImage`
+  became optional (`coverImage?: string`) on `ThinkFrontmatter` in
+  `src/lib/content.ts` to make that valid. `FeaturedThinkCard.tsx` (used
+  on `/think`'s own index, not the home page) was initially **not**
+  touched — out of scope for a "home page" request.
+
+  **Then wired up too**, per direct follow-up ("Let those same images be
+  used on the correspondent articles on the think page"): `FeaturedThinkCard.tsx`
+  now wraps its placeholder div in the same `WorkImage` component, passing
+  `frontmatter.coverImage` as `src`, identical to the `ThinkCard.tsx`
+  pattern above. `ThinkIndex.tsx` renders `FeaturedThinkCard` for only the
+  single most-recent entry (`entries[0]` in the unfiltered "All" view —
+  "Architecting Scalable Design Systems in Ambiguous Environments") and
+  `ThinkCard` for the rest of the grid, so this was the one remaining spot
+  on `/think` not already reading the field — the other two photographed
+  articles ("Beyond the Logo: Branding as Behavior", "Design Is a Tool for
+  Understanding") needed no code change, since they render via the
+  already-wired `ThinkCard` in the grid beneath the featured slot.
+  Confirmed via Playwright at a 1440px viewport: the featured card shows
+  the dot-grid photo, the grid's two other photographed articles show
+  their respective photos, and "Systems That Outlast You" (no photo
+  supplied) correctly still falls back to the gradient placeholder.
+
+  Only the three articles Home's "What I Think" section actually shows
+  (`getAllThink().slice(0, 3)` — see the ordering note below; confirmed
+  by running `getAllThink()` directly, not assumed) got real
+  `coverImage` values, one photo each, matched to the article by what's
+  depicted since the photos arrived as plain attachments with no
+  filenames (same extraction-from-transcript technique as every other
+  inline image this session, confirmed via `PIL` as three clean
+  1080×1080 photos before use): a blurred dot-grid photo →
+  "Architecting Scalable Design Systems in Ambiguous Environments"
+  (category `Systems` — a grid reads as "systems"), a hand sketching
+  logo marks in a notebook → "Beyond the Logo: Branding as Behavior"
+  (category `Identity` — logo sketching is the clearest visual match for
+  a branding article), and a desk with a laptop open to a color-swatch
+  app plus physical color-swatch cards → "Design Is a Tool for
+  Understanding" (category `Design` — a general design-process image for
+  the general design article). Files live at
+  `public/images/think/<slug>.webp`, a new directory paralleling
+  `public/images/capabilities/` and `public/images/teach/`'s per-entry
+  photo convention. The other three Think entries' now-broken
+  `coverImage: "/think/placeholder-N.svg"` lines (pointing at files that
+  never existed) were removed entirely rather than left dangling now
+  that `ThinkCard` actually reads the field — they fall back to the
+  gradient placeholder correctly, same as any other unset image slot
+  sitewide. Confirmed via Playwright at a 1440px viewport: all three
+  photos render at the correct card, in the correct order.
+
+  **All 6 entries now have real `coverImage` values** — per a follow-up
+  ("These are the images of the other articles"), with 3 more photos
+  attached, covering the 3 Think entries that still fell back to the
+  gradient placeholder: `systems-that-outlast-you`,
+  `the-physics-of-organizational-change`, and
+  `the-quiet-confidence-of-intentional-constraints`. Same extraction/
+  matching discipline as the first three: pulled from the conversation
+  transcript's base64 image data (all 3 arrived as separate image blocks
+  within one message, not one image per message like the earlier batch
+  — extracting them required iterating every image block inside that one
+  message's `content` array, not assuming one image per matched
+  transcript line), confirmed via `PIL` as three clean 1080×1080 RGB
+  WebP images before use, matched to the correct article by what's
+  depicted: interlocking concrete beams forming a self-supporting
+  spiral structure → `systems-that-outlast-you` (category `Systems` —
+  a structural/interlocking-systems metaphor), four people leaning in
+  together around a desk with a laptop showing a chart → `the-physics-
+  of-organizational-change` (category `Transformation` — a team moving
+  together reads as organizational momentum), and a "THINK" sign spelled
+  in raised letters on a pegboard → `the-quiet-confidence-of-
+  intentional-constraints` (category `Leadership` — the remaining
+  article, a general reflective/thinking image). Files live at
+  `public/images/think/<slug>.webp`, same directory and naming
+  convention as the first three. Confirmed via Playwright at a 1440px
+  viewport (after clicking "Load More Thoughts" to reveal all 6 cards):
+  every entry now shows its correct photo, and the featured-card slot
+  (the most-recently-edited entry, per the ordering rule below) had
+  shifted to "The Physics of Organizational Change" as a side effect of
+  its frontmatter having just been edited twice in this session (once
+  to drop `accent: true`, once to add `coverImage`) — expected behavior
+  of the ordering rule, not a bug.
+
+  **The initial photo-to-article matching for this batch of 3 was
+  wrong** — flagged directly ("You interchanged the images for this
+  ones. please check the image labels and adjust it"). Since the
+  transcript's image blocks carry no filename/label metadata (confirmed
+  by inspecting the raw JSON — only `type`/`media_type`/`data`, nothing
+  else), and the semantic "what does this photo represent" call was
+  genuinely ambiguous the second time around, the correct mapping was
+  clarified directly with the user via `AskUserQuestion` rather than
+  guessed again: the four-people-around-a-desk photo → `systems-that-
+  outlast-you` (a team **is** a system), the interlocking-concrete-beams
+  photo → `the-quiet-confidence-of-intentional-constraints` (each beam
+  is an intentional, deliberate constraint holding the others in place),
+  and the "THINK" pegboard photo → `the-physics-of-organizational-
+  change` (all three had been assigned to each other's slot in the
+  first pass). Fixed by overwriting the three `public/images/think/
+  <slug>.webp` files in place with the correct source image for each —
+  filenames/frontmatter `coverImage` paths were already correct and
+  needed no change, only the file *contents* moved. Re-confirmed via
+  Playwright at a 1440px viewport (after "Load More Thoughts"): each of
+  the 6 cards now shows the intended photo.
 - Loaded via `src/lib/content.ts` (`getAllWork`, `getWorkBySlug`,
   `getAllThink`, `getThinkBySlug`). Adding a new `.mdx` file to either
   directory is enough to publish — no code changes needed.
@@ -1478,6 +1618,56 @@ Home's "What I Do" grid renders these four cards in a single row on
 larger screens (`sm:grid-cols-2 lg:grid-cols-4`), per the Figma
 reference — not the 2×2 grid used in an earlier pass.
 
+**`CapabilityCard` (Home's "What I Do" grid) now carries an optional
+photo background**, per direct request with four photos attached ("add
+the attached pictures as background to the cards on the what I do
+section"). First pass kept the icon badge and numbered index alongside
+the new photo (`CapabilityCard.tsx`'s `Capability` interface gained an
+optional `image?: string` field, `icon` left in place) — the request was
+only to add a background image, not (yet) to replicate Teach's
+icon-removal choice below. **Then the icon badge was dropped too**, per
+an immediate direct follow-up ("please remove the icons on the cards"),
+bringing this grid in line with the Teach offerings pattern after all:
+`icon: ReactNode` was removed entirely from the `Capability` interface
+(not just unrendered), the `IconBadge` import/usage removed from
+`CapabilityCard.tsx`, and `page.tsx`'s now-unused
+`DesignIcon`/`StrategyIcon`/`EducationIcon`/`LeadershipIcon` imports and
+per-entry `icon: <...Icon />` fields dropped from `CAPABILITIES` — those
+four icon components themselves were **not** deleted from `icons.tsx`,
+since they're still imported elsewhere (`AssessmentFlow.tsx`,
+`BuildSidebar.tsx`, `build/page.tsx`). The numbered index (`01`–`04`)
+was kept, just right-aligned on its own (`block text-right`, no more
+`flex justify-between` now that there's nothing to its left) rather than
+removed alongside the icon — only the icon was in scope for "remove the
+icons," not the numbering. `IconBadge` itself stays defined in
+`icons.tsx` and is still used by `build/page.tsx` and the About values
+grid — only `CapabilityCard.tsx`'s own usage of it was removed.
+Implementation reuses the same `grayscale` → `group-hover:grayscale-0`
+`next/image` + gradient-scrim pattern as `WorkCard.tsx`/the Teach
+offerings grid (see "Image treatment" above): the `Image` (`fill`,
+`-z-10`) and a `from-paper/90 via-paper/75 to-paper/90` scrim (also
+`-z-10`) render only when `image` is set, so a future icon-only card
+added to `CAPABILITIES` still works unchanged. The card's own wrapper
+picked up `group relative isolate overflow-hidden` to support this
+layering, matching the same wrapper classes used on `WorkCard`/Teach's
+offering cards.
+
+**Each photo had to be matched to the right capability by what's
+visible in the photo itself**, since the four images arrived as plain
+attachments with no filenames — extracted from the conversation
+transcript's base64 image data the same way as every other inline
+attachment this session, confirmed via `PIL` as four clean 2000px-wide
+JPEGs before use: a desk with a "#DESIGN" lightbox sign and a "Graphic
+Design Rules" book → `Design`; word-strip cutouts reading "strategy"
+next to "TRENDS"/"MARKETING STRATEGY" cards → `Strategy`; hands
+cutting/annotating a persona mood-board (Polish-language prompts like
+"Co go cieszy?") → `Education`; five people crowded around a laptop
+reviewing printed planning documents → `Leadership`. Files live at
+`public/images/capabilities/{design,strategy,education,leadership}.jpg`
+— a new directory, parallel to `public/images/teach/`'s per-card photo
+convention. Confirmed via Playwright at both 1440px and 390px viewports
+that each card shows the correct photo behind legible text.
+
 **All four Teach offerings cards (`/teach`'s `OFFERINGS` array) carry a
 photo background and no icon badge**, per direct request — real photos
 the user supplied, not stock/placeholder images. `Design Training` uses
@@ -1945,6 +2135,191 @@ after a voice dictation) changed from `"40px"` to `"34px"` to match the
 input's smaller base height inside the tighter pill padding — grep
 `inputEl.style.height` if that base height changes again, there are
 three call sites that must stay in sync.
+
+**Launcher collapses to a plain circle on mobile** — per a mobile-audit
+follow-up ("let's fix the floating button overlap"), the full pill
+(`"✨ Ask Sigma Companion"`, ~218px wide on desktop) was found to sit
+directly on top of page content on narrow viewports at certain scroll
+positions — e.g. covering the "Area of Interest" label on `/contact` and
+a case-study title on `/work` — since a `position:fixed` element doesn't
+make room for whatever happens to scroll beneath it. The pill itself
+isn't the problem on desktop (plenty of margin around the fixed
+bottom-right corner there), only its width on a narrow screen. Added a
+`@media (max-width:767px)` rule (767px matching the site's Tailwind `md:`
+breakpoint, for consistency, even though this widget is plain CSS, not
+Tailwind classes) that shrinks `#sigma-companion-launcher` to `width:56px;
+height:56px;padding:0` (the `border-radius:999px` it already had renders
+this as a circle once the box is square) and hides a new `.sc-launcher-label`
+span — the launcher's `innerHTML` was split into an `aria-hidden` icon span
+plus that label span specifically so the label could be hidden via CSS
+without touching the button's own `aria-label="Open Sigma Companion"`
+(unaffected either way, but this keeps the visible/accessible-name
+concerns cleanly separate). This gives the launcher the exact same 56px
+circular footprint as `WhatsAppButton.tsx` on mobile — the two already
+coexist fine with scrolling content at that size, and stacking two same-
+size circles keeps the existing 16px-gap math (`LAUNCHER_BOTTOM = 96px`)
+correct without any changes there. Confirmed via Playwright at a 390px
+viewport: `getComputedStyle` on the launcher reads `width:"56px"
+height:"56px"`, `.sc-launcher-label`'s `display` reads `"none"`, and a
+screenshot of both `/contact`'s Area of Interest field and `/work`'s
+first case-study title shows the text fully legible with only the small
+circle overlapping the row's empty trailing space — and at a 1440px
+viewport the desktop pill is unaffected (`width:"217.938px"`, label
+`display:"block"`, full `"✨Ask Sigma Companion"` text). Verified
+`node --check public/sigma-companion-widget.js` still passes, since this
+file has no build step to catch a syntax error otherwise.
+
+## Teach hero: gradient placeholder replaced with a full-bleed background photo
+
+Per direct request ("Just [like] you did for the hero section of the
+'work with me' page. use this image instead for the hero section of the
+teach page"), with a photo attached (a creative director in a rust
+double-breasted suit reviewing brand/logo concepts on a whiteboard-and-
+mood-board-covered wall with three team members, one at a laptop), the
+`/teach` hero was rebuilt to match `/contact`'s hero treatment exactly
+(see "Contact page ('Work With Me') hero background photo" above):
+`Section` was dropped in favor of a hand-rolled `relative overflow-hidden`
+wrapper with the `Image` (`fill priority sizes="100vw"
+className="object-cover"`, `alt=""`) as its first child, a `bg-black/55`
+scrim on top of it, and the actual heading/subtext in their own `relative`
+inner `mx-auto max-w-[1920px] px-3 py-16 md:px-10 md:py-24` content div
+so they stack above both — the same structure, same scrim, same inner
+padding values as Contact's hero, for consistency between the two now
+that they share the same pattern.
+
+**This replaces Teach's hero `Section`'s previous two-column grid
+entirely, not just its right-column placeholder.** The old hero was
+`<Section className="pt-[10px] md:pt-[10px]"><div className="grid
+md:grid-cols-2 md:items-center">` — text on the left, a gradient
+placeholder box (`aspect-[4/3] rounded-2xl bg-gradient-to-br from-line
+to-muted/20`) on the right, matching the sitewide "every empty image
+slot gets a gradient placeholder" convention documented under "Content
+model" above. Once the photo became the section's own full-bleed
+background, that second column had nothing left to hold — it was
+dropped along with the grid, leaving a single-column text block (still
+`md:pl-10` inset, matching the sitewide hero-copy-offset convention).
+The hero's old one-off `pt-[10px] md:pt-[10px]` top padding (documented
+under "Top padding" above as a deliberate, previously-requested
+exception) is also gone now that the hero uses Contact's own `py-16
+md:py-24` inner padding instead of `Section`'s default scale — this was
+a deliberate side effect of matching Contact's treatment exactly, not
+an oversight; if the gap to the "Design Training..." offerings grid
+below ever needs retuning, that boundary is that next `Section`'s own
+`pt-0`, unrelated to this change.
+
+**Root wrapper's `pb-10` was left in place** (`theme-dark-fixed -mb-10
+bg-paper pb-10 text-ink`, unlike Contact's, which moved its `pb-10` onto
+the hero `div` itself) — that relocation trick was specifically needed
+on Contact because the hero was the *entire* page (nothing followed it
+before Footer, so the hero needed to absorb the root's trailing padding
+to avoid an exposed-background gap). Teach's hero is followed by the
+offerings grid, speaking section, etc., so the root's `pb-10` still
+correctly applies to whatever `Section` actually ends up last on the
+page — moving it onto the hero here would have been wrong, not an
+equivalent fix.
+
+The photo lives at `public/images/teach-hero-mentorship-session.webp`
+(WebP, matching the site's photographic-asset convention). Extracted the
+same way as Contact's studio-desk photo — pulled directly from the
+conversation transcript's base64 image data (an inline chat attachment,
+not a file path) and confirmed via `PIL` as a clean 1536×1024 RGB WebP
+before being written into `public/`. Verified via Playwright screenshot
+at both 1440px and 390px viewports: the heading/subtext render clearly
+over the photo at both sizes, with no layout regression to the offerings
+grid immediately below.
+
+**Then sized to match Home's hero height** per direct follow-up ("The
+Teach hero section on desktop does not look good. Make it as big as that
+of the home page hero section") — on desktop the hero was only as tall as
+its own text content plus the `py-16 md:py-24` inner padding, noticeably
+shorter than Home's hero, which fills the viewport below `Nav` (see "Home
+page hero media" above, `md:h-[calc(100dvh-81px)]`). The outer `relative
+overflow-hidden` wrapper picked up `md:flex md:h-[calc(100dvh-81px)]
+md:items-center` — the same fixed-height/vertical-centering mechanism as
+Home's hero `Section`, reused directly since `81px` is the same measured
+`Nav` height sitewide (grep `calc(100dvh-81px)` if `Nav.tsx`'s height ever
+changes — both instances need updating together). The `Image` with `fill`
+needed no changes: it already sizes against its positioned ancestor's
+padding box, so fixing that ancestor's height to the viewport
+automatically stretches the photo to match. The inner content div picked
+up `md:w-full` alongside its existing padding, since a flex child doesn't
+stretch along the main (row) axis by default the way it does cross-axis —
+without it, the `mx-auto max-w-[1920px]` centering would have nothing to
+center within. Unlike Home's hero, no `pt-[10px]`/`pb-[10px]`-style
+symmetric-padding override was needed here: that fix on Home was only
+required because `Section`'s own default `py-*` shorthand was competing
+with a partial override (see "Top and bottom padding" above) — Teach's
+hero isn't built on `Section` at all, so its own `py-16 md:py-24` has no
+competing default to lose to. Confirmed via Playwright at a 1440×900
+viewport: both `/` and `/teach`'s hero now measure identically
+(`height: 819`, `top: 81`, `bottom: 900`) — genuinely matched, not just
+visually close. Mobile is unaffected (no `md:` prefix on the height/flex
+classes), confirmed at a 390×844 viewport where the hero still renders at
+its natural content height (488px), scoped the same way Home's own
+height cap is mobile-exempt.
+
+**Then rebuilt entirely to match Home's hero *structure*, not just its
+height** — per direct follow-up with a new photo attached ("let's change
+the image on the 'Teach' hero section to this. use the same style as it
+was applied on the home page hero section"). The full-bleed
+background-photo-with-scrim pattern (borrowed from Contact, see "Teach
+hero: gradient placeholder replaced with a full-bleed background photo"
+above) was replaced outright with Home's own two-column portrait layout
+(see "Home page hero media" above) — `Section` is no longer a hand-rolled
+`relative overflow-hidden` wrapper with an `Image` background child; it's
+now the same `md:grid-cols-[2fr_3fr]` grid Home uses, text on the left
+(`md:pl-[80px]`, each of `h1`/`p` wrapped in `HeroReveal` — newly imported
+into this page, matching Home's mount-triggered entrance animation) and
+the portrait in a `md:aspect-auto md:-mt-[10px] md:-mb-[10px]
+md:h-[calc(100%+20px)]` image column on the right, `object-cover
+object-top`, no scrim, no gradient backdrop. The `bg-black/55` scrim and
+the old `teach-hero-mentorship-session.webp` background photo are both
+gone from this page (the file itself was left in `public/`, per the
+site's convention of not deleting superseded assets).
+
+This wasn't just a style-matching choice — the new photo is a genuine
+transparent-background cutout portrait, the same asset type Home's own
+photo is (confirmed via `PIL`: `RGBA`, 1500×1472, alpha extrema `(0,
+255)`, extracted from the conversation transcript's base64 image data
+the same way as every other inline-attached photo this session). Home's
+hero deliberately has no gradient/backdrop behind its image specifically
+*because* its photo is a transparent cutout (see item 1 under "Home page
+hero media" above) — reusing that exact wrapper structure here means the
+new portrait crops against Teach's own dark `theme-dark-fixed` background
+the same way, rather than showing a placeholder gradient or a flat box
+behind it. The photo lives at `public/images/teach-hero-portrait.webp` —
+a new file, distinct from both `reiziger-ashu-hero-portrait.webp` (Home)
+and `reiziger-ashu-portrait.jpg` (About) — don't confuse the three.
+
+Confirmed via Playwright: the hero's `getBoundingClientRect()` on `/teach`
+still exactly matches `/`'s (`height: 819`, `top: 81`, `bottom: 900` at a
+1440×900 viewport — the `md:h-[calc(100dvh-81px)]` sizing carried over
+unchanged since it's now literally the same `Section` className Home
+uses), and a screenshot at both 1440px and 390px viewports confirms the
+portrait crops correctly (face fully in frame, `object-top` keeping it
+clear of the nav bar) and the mobile stack (text above image, rounded
+corners via `aspect-[4/5] rounded-2xl`) matches Home's mobile layout too.
+
+## Teach offerings grid section: brought in line with the 40px pattern
+
+The `Section` right after Teach's hero (the "Design Training" /
+"Workshops" / "Mentorship" / "Free Resources" `OFFERINGS` grid,
+previously `<Section className="pt-0">`) got the same flat, every-side,
+every-breakpoint `40px` treatment established sitewide (see "Home page:
+the same cascade gotcha on every remaining section" above and its
+follow-ups): `pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]`. Bracket-
+arbitrary syntax throughout, matching the established working pattern
+for this `md:py-40` cascade gotcha elsewhere. Confirmed via
+`getComputedStyle`: `paddingTop`/`paddingBottom` both read `40px` at a
+375px and a 1440px viewport.
+
+**Then the next section down got the same treatment too**, per direct
+follow-up ("do same for the next section please") — the "Invite me to
+speak" `Section` (previously `<Section className="pt-0">`) changed to
+`pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]`, same bracket-arbitrary,
+every-side, every-breakpoint pattern. Confirmed via `getComputedStyle`:
+`paddingTop`/`paddingBottom` both read `40px` at 375px and 1440px. Every
+`Section` on `/teach` now uses this uniform 40px convention.
 
 ## Contact form email (`/api/contact`)
 

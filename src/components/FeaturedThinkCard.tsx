@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ContentEntry, ThinkFrontmatter } from "@/lib/content";
 import { formatDate } from "@/components/ThinkCard";
+import { WorkImage } from "@/components/WorkImage";
 
 export function FeaturedThinkCard({ entry }: { entry: ContentEntry<ThinkFrontmatter> }) {
   const { slug, frontmatter } = entry;
@@ -10,7 +11,11 @@ export function FeaturedThinkCard({ entry }: { entry: ContentEntry<ThinkFrontmat
       href={`/think/${slug}`}
       className="group flex flex-col overflow-hidden rounded-2xl border border-line transition-colors hover:border-accent/50"
     >
-      <div className="aspect-[16/10] bg-gradient-to-br from-accent/40 via-line to-line" />
+      <WorkImage
+        src={frontmatter.coverImage}
+        alt=""
+        className="aspect-[16/10] bg-gradient-to-br from-accent/40 via-line to-line"
+      />
       <div className="p-6">
         <p className="text-xs font-semibold uppercase tracking-widest text-accent">
           {frontmatter.category} · {formatDate(frontmatter.date)}
