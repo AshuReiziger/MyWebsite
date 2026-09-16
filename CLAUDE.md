@@ -198,6 +198,27 @@ export default async function Page({ params }: PageProps<"/work/[slug]">) {
   its frontmatter having just been edited twice in this session (once
   to drop `accent: true`, once to add `coverImage`) — expected behavior
   of the ordering rule, not a bug.
+
+  **The initial photo-to-article matching for this batch of 3 was
+  wrong** — flagged directly ("You interchanged the images for this
+  ones. please check the image labels and adjust it"). Since the
+  transcript's image blocks carry no filename/label metadata (confirmed
+  by inspecting the raw JSON — only `type`/`media_type`/`data`, nothing
+  else), and the semantic "what does this photo represent" call was
+  genuinely ambiguous the second time around, the correct mapping was
+  clarified directly with the user via `AskUserQuestion` rather than
+  guessed again: the four-people-around-a-desk photo → `systems-that-
+  outlast-you` (a team **is** a system), the interlocking-concrete-beams
+  photo → `the-quiet-confidence-of-intentional-constraints` (each beam
+  is an intentional, deliberate constraint holding the others in place),
+  and the "THINK" pegboard photo → `the-physics-of-organizational-
+  change` (all three had been assigned to each other's slot in the
+  first pass). Fixed by overwriting the three `public/images/think/
+  <slug>.webp` files in place with the correct source image for each —
+  filenames/frontmatter `coverImage` paths were already correct and
+  needed no change, only the file *contents* moved. Re-confirmed via
+  Playwright at a 1440px viewport (after "Load More Thoughts"): each of
+  the 6 cards now shows the intended photo.
 - Loaded via `src/lib/content.ts` (`getAllWork`, `getWorkBySlug`,
   `getAllThink`, `getThinkBySlug`). Adding a new `.mdx` file to either
   directory is enough to publish — no code changes needed.
