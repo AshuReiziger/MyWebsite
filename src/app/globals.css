@@ -66,3 +66,27 @@ h4 {
 .panel-tint-strong {
   background: color-mix(in srgb, var(--color-accent) 30%, var(--color-paper));
 }
+
+/* Continuous auto-scrolling client-logo strip (ClientLogos.tsx) — the
+   track renders its logo list twice back-to-back and translates exactly
+   -50% so the loop point is invisible. Duration is set per-strip via an
+   inline --marquee-duration custom property (longer strips need more
+   time to keep scroll speed visually consistent). */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee var(--marquee-duration, 30s) linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee {
+    animation: none;
+  }
+}

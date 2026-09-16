@@ -1295,6 +1295,185 @@ still carrying a value from before the uniform-40px convention was
 established — every `Section` on `page.tsx` besides the hero itself now
 uses `pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]`.
 
+## Home page "Trusted by teams" band: real client logos
+
+`ClientLogos.tsx` used to render 6 generic "Client Name" text spans (a
+placeholder, documented under "Not yet wired up" until this pass). Per
+direct request with three logo files attached ("Instead of client name,
+we will use client logos... convert them to white and remove the
+background for those that need removing if possible"), it now renders
+the 3 real supplied logos (BlueMoon Outsourcing & Consulting, Lead from
+the Heart, Royalty World) via `next/image` instead of text — down from
+6 slots to 3, since only 3 real logos exist; there's no placeholder
+fallback for unfilled slots the way Work/Think images have one, since a
+logo band isn't meant to show empty boxes.
+
+**Background removal turned out to be unnecessary** — all three source
+PNGs already had genuine alpha transparency (confirmed via `PIL`: every
+corner pixel `(0,0,0,0)`, ~83–87% of each image fully transparent, only
+the logo artwork opaque) — the white canvas visible in the chat
+attachment previews was the image viewer's own transparency checkering,
+not a baked-in background. **The white conversion was still needed**:
+each logo's original colors (BlueMoon's navy `#194272`, Lead from the
+Heart's red `#b40000`, Royalty World's maroon `#592724`) were replaced
+with solid white while preserving the original alpha channel exactly —
+`im.split()` → new white RGBA canvas → `putalpha(original_alpha)` — so
+each logo keeps its exact silhouette/shape but renders as a flat white
+mark, readable against the section's dark `theme-dark-fixed` background
+the same way `Footer.tsx`'s literal-white-on-dark and other dark-theme
+text treatments work. Each was also cropped to its alpha bounding box
+(plus a small padding margin) to trim the large transparent margins the
+originals shipped with, so `next/image`'s intrinsic `width`/`height`
+(used for aspect-ratio sizing, not `fill`) reflect the actual logo
+content rather than mostly-empty canvas.
+
+Files live at `public/images/clients/{bluemoon,lead-from-the-heart,
+royalty-world}.png` — a new directory. Kept as PNG rather than WebP
+(unlike the site's photographic assets) since these are flat-color
+alpha-masked graphics, not photos — PNG's lossless encoding matters
+more here than WebP's smaller file size. `CLIENTS` in `ClientLogos.tsx`
+is a `{name, src, width, height}` array (the `width`/`height` are each
+logo's actual cropped intrinsic dimensions, used only so `next/image`
+can compute the correct aspect ratio); rendered at a flat `h-8 w-auto`
+(32px tall, proportional width) so all three sit on one visual baseline
+regardless of each logo's own native proportions, with `opacity-70`
+→ `hover:opacity-100` (matching the previous text version's `text-muted`
+→ `hover:text-ink` muted-until-hover treatment). Confirmed via
+Playwright at 1440px and 390px viewports: all three render crisply at
+32px height, wrap correctly to two rows on mobile, and read clearly
+against the dark hero-band background at both sizes.
+
+## Home page "Trusted by teams" band: 9 more logos, auto-scrolling marquee
+
+Per direct follow-up with a zip attached ("Here are more logos in this
+zip file... extract it and do the same check as the previous logos
+added... Let the logos fall on one row on desktop and on two rows on
+mobile... the logos automatically scroll across the view for both
+mobile and desktop views"), `CLIENTS` grew from 3 to 12 entries — the
+new 9 (`Blissful Travels`, `KinkyMe`, `Maverick Arts & Architecture`,
+`Nuriel Mercy Care`, `Nutribox`, `Orbit Interiors`, `Safe Haven for
+Nature`, `TEEF Holistic Care`, `Ubique Immigration Quest`) went through
+the identical white-conversion/alpha-crop pipeline documented above
+(all 9 already had genuine transparent backgrounds too, same as the
+first 3 — confirmed via `PIL` the same way, no removal needed for any
+of them). Files added at `public/images/clients/<slug>.png`, same
+directory/format convention.
+
+**The zip attachment didn't come through on the first two attempts** —
+the message arrived as plain text only both times (`"Here are more
+logos in this zip file..."`, then `"Here is the zip file"`), with
+nothing in the conversation's image/document content blocks and no new
+file in the session's uploads directory (checked directly rather than
+assumed). Said so plainly and asked for a re-attach rather than
+fabricating placeholder logos — the third attempt included an explicit
+`@"/root/.claude/uploads/.../6e6ba130-More_Logos.zip"` path reference,
+which resolved to a real file this time. **Unlike the first 3 logos**
+(plain image attachments with no filenames, requiring visual-content
+matching — see above), this zip's 9 PNGs had real descriptive filenames
+(`Blissful Travels.png`, `KinkyMe.png`, etc.) baked in by whoever
+exported them, so no guessing/matching step was needed this round — the
+filename *is* the client name (slugified for the file path, kept fuller
+for the `alt` text — e.g. `MAA.png` → slug `maa`, name "Maverick Arts &
+Architecture", read directly off the visible wordmark since "MAA" alone
+is just an acronym).
+
+**Layout rebuilt around a `LogoStrip` sub-component** instead of the
+previous flat `flex flex-wrap` grid, since "one row desktop / two rows
+mobile" plus continuous auto-scroll needed genuinely different DOM
+structure per breakpoint, not just a CSS wrap change:
+- `LogoStrip({ items })` renders `[...items, ...items]` (the list
+  doubled back-to-back) inside a `flex w-max` track animated via a new
+  `.animate-marquee` class (`globals.css`) that translates the track
+  exactly `-50%` on an infinite linear loop — because the content is
+  duplicated, the halfway point of the translation lines up pixel-for-
+  pixel with the untranslated start, so the loop has no visible seam or
+  jump. `--marquee-duration` is set per-strip via an inline CSS custom
+  property (`items.length * 3` seconds) rather than hardcoded, so a
+  strip with more logos (the full 12-item desktop row) takes
+  proportionally longer than a shorter one (each 6-item mobile half) —
+  keeps per-logo scroll speed visually consistent across strips of
+  different lengths instead of every strip taking the same wall-clock
+  time regardless of how much content is in it.
+- **Desktop (`md:` and up)**: a single `hidden md:block` wrapper renders
+  one `LogoStrip` fed all 12 `CLIENTS` — genuinely one row, not 12
+  squeezed into a wrap that happens to fit.
+- **Mobile**: a `flex flex-col md:hidden` wrapper renders two separate
+  `LogoStrip`s, each fed one half of `CLIENTS` (`Math.ceil(length / 2)`
+  split — 6 and 6, since 12 is even) — two independently-scrolling rows,
+  not one row wrapping onto two lines.
+- The whole marquee markup (both breakpoint variants) sits inside a
+  single `aria-hidden="true"` wrapper, with a `sr-only` span above it
+  listing all 12 client names as plain text (`Trusted by {names.join(",
+  ")}`) — a continuously-animating, content-duplicated DOM tree is poor
+  screen-reader UX (it would read every name twice, in a shifting DOM,
+  forever), so screen readers get one clean static sentence instead
+  while sighted users get the animated wall; each `Image`'s own `alt` is
+  empty (`alt=""`) accordingly, since the name is already announced once
+  via the `sr-only` span. The outer root `<div className="overflow-hidden">`
+  is what actually clips each strip's oversized `w-max` track to the
+  section's visible width — without it the doubled-length track would
+  overflow the page horizontally instead of scrolling within it.
+- `.animate-marquee` also gets a `@media (prefers-reduced-motion:
+  reduce)` override (`animation: none`) in the same `globals.css` block
+  — the site had no prior motion-preference handling anywhere (Reveal/
+  HeroReveal's one-shot fade-ins are brief enough not to need it), but a
+  perpetual, unstoppable horizontal scroll is exactly the kind of motion
+  that convention exists for, so it was added alongside the animation
+  itself rather than left as a gap.
+
+Confirmed via Playwright at 1440px and 390px viewports: at 1440px, only
+the desktop wrapper is visually `display: block` (the mobile wrapper is
+`none`), the strip contains exactly 24 `img` elements (12 logos × 2 for
+the loop), and the track's computed `transform` genuinely differs one
+second apart (confirming real motion, not a static duplicated list); at
+390px, the mobile wrapper's direct children count is exactly 2 (two
+independent strips, not one wrapped row). Screenshots at both sizes
+confirm the band reads clearly and doesn't overflow the page.
+
+## Home page "Trusted by teams" band: full-bleed, matching Selected Work
+
+Per direct follow-up ("Can you make that section full viewport like you
+did for the selected work section? that is remove the left and right
+margins/paddings"), `<ClientLogos />` was pulled out of the "Trusted by
+teams" `Section`'s `max-w-[1920px] px-3 md:px-10` inner container into
+a plain sibling `<div className="mt-8">`, following the exact same
+pattern `SelectedWorkGrid` already uses further down this page (see
+"Sitewide dark theme" above) — the heading text ("Trusted by teams
+building something worth naming") stays inside its own `Section`
+(centered, normal content width, unchanged), only the logo band itself
+moved outside `Section`'s width-capping wrapper:
+
+```tsx
+<Section className="pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]">
+  <p className="text-center text-sm font-semibold uppercase tracking-widest text-muted">
+    Trusted by teams building something worth naming
+  </p>
+</Section>
+<div className="mt-8">
+  <ClientLogos />
+</div>
+```
+
+`mt-8` (32px) reuses the gap value the old nested `<div className="mt-8">`
+already had (previously wrapping `<ClientLogos />` *inside* the `Section`)
+— moving it outside preserves the same visual spacing between the
+heading and the logo band, just via a sibling margin instead of a
+nested one. This is a smaller-scope version of the same full-bleed
+technique as "Selected Work" (there, the heading *and* a "See All
+Work →" link stay in a `Section`, and only `SelectedWorkGrid` itself
+goes full-bleed) — the same reasoning applies here, and matters more
+for this component specifically since `ClientLogos`'s marquee strips
+already need to fill the available width edge-to-edge for the
+auto-scroll to read as a continuous wall rather than a boxed carousel.
+
+Confirmed via Playwright at 1440px and 390px viewports: the
+`ClientLogos` root wrapper's `getBoundingClientRect()` now reads
+`left: 0, right: <viewport width>` at both sizes (previously inset by
+`Section`'s `px-3`/`md:px-10`, 12px/40px on each side) — genuinely
+flush with both screen edges, not just visually close. Screenshots at
+both sizes confirm the logo strips now touch the viewport edges while
+the heading text above stays centered and unaffected.
+
 ## Home page "Selected Work" section: brought in line with the 40px pattern
 
 Per direct follow-up ("Let's adjust the selected work section too to the
@@ -2473,9 +2652,6 @@ always used, now applied to all 15.
   Facebook. Instagram and YouTube are still pending — add them to the array
   once real profile URLs are supplied, rather than linking to a generic
   platform homepage in the meantime.
-- `ClientLogos.tsx` (homepage, below the hero) renders 6 generic "Client
-  Name" text placeholders — swap in real client names or logo images
-  before launch.
 - The `TESTIMONIALS` array in `src/app/page.tsx` is placeholder quote/name/
   role text — replace with real client testimonials before launch.
 - `src/content/work/aura-financial-platform.mdx` is still dummy sample
