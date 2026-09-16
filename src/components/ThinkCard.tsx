@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ContentEntry, ThinkFrontmatter } from "@/lib/content";
+import { WorkImage } from "@/components/WorkImage";
 
 function formatDate(date: string) {
   return new Date(date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
@@ -26,7 +27,11 @@ export function ThinkCard({
       }
     >
       {showImage && !dark && (
-        <div className="mb-4 aspect-[4/3] rounded-xl bg-gradient-to-br from-accent/40 via-line to-line" />
+        <WorkImage
+          src={frontmatter.coverImage}
+          alt=""
+          className="mb-4 aspect-[4/3] rounded-xl bg-gradient-to-br from-accent/40 via-line to-line"
+        />
       )}
       <span
         className={

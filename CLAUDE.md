@@ -93,9 +93,55 @@ export default async function Page({ params }: PageProps<"/work/[slug]">) {
   Add another host to `remotePatterns` if a different image CDN is ever
   needed.
 - `src/content/think/*.mdx` — articles. Frontmatter:
-  `title, date, category, excerpt, coverImage, accent?`. `accent: true`
+  `title, date, category, excerpt, coverImage?, accent?`. `accent: true`
   renders that card with the dark `bg-ink` treatment on the Think index
   for visual rhythm — used sparingly (one card), not a per-category rule.
+  **`coverImage` was dead until a direct request activated it**: every
+  entry's frontmatter always carried a `coverImage: "/think/placeholder-
+  N.svg"` value, but neither `ThinkCard.tsx` nor `FeaturedThinkCard.tsx`
+  ever read `frontmatter.coverImage` — both always rendered a flat
+  `bg-gradient-to-br from-accent/40 via-line to-line` div regardless, and
+  `public/think/` (where those SVG paths pointed) never actually existed.
+  Per direct request with three photos attached ("Use these images as
+  the image placeholders on the article section of the home page"),
+  `ThinkCard.tsx` (the card `page.tsx`'s "What I Think" section uses —
+  also shared with `/think`'s own grid via `ThinkIndex.tsx`) now wraps
+  its placeholder div in `WorkImage` (`src/components/WorkImage.tsx`,
+  the same gradient-behind/image-on-top wrapper `WorkCard.tsx` uses —
+  see "Content model" above), passing `frontmatter.coverImage` as `src`
+  so the gradient still shows through when it's unset. `coverImage`
+  became optional (`coverImage?: string`) on `ThinkFrontmatter` in
+  `src/lib/content.ts` to make that valid. `FeaturedThinkCard.tsx` (used
+  on `/think`'s own index, not the home page) was **not** touched —
+  out of scope for a "home page" request; it still always renders the
+  flat gradient, a known follow-up if a photo for the currently-featured
+  article is ever wanted there.
+
+  Only the three articles Home's "What I Think" section actually shows
+  (`getAllThink().slice(0, 3)` — see the ordering note below; confirmed
+  by running `getAllThink()` directly, not assumed) got real
+  `coverImage` values, one photo each, matched to the article by what's
+  depicted since the photos arrived as plain attachments with no
+  filenames (same extraction-from-transcript technique as every other
+  inline image this session, confirmed via `PIL` as three clean
+  1080×1080 photos before use): a blurred dot-grid photo →
+  "Architecting Scalable Design Systems in Ambiguous Environments"
+  (category `Systems` — a grid reads as "systems"), a hand sketching
+  logo marks in a notebook → "Beyond the Logo: Branding as Behavior"
+  (category `Identity` — logo sketching is the clearest visual match for
+  a branding article), and a desk with a laptop open to a color-swatch
+  app plus physical color-swatch cards → "Design Is a Tool for
+  Understanding" (category `Design` — a general design-process image for
+  the general design article). Files live at
+  `public/images/think/<slug>.webp`, a new directory paralleling
+  `public/images/capabilities/` and `public/images/teach/`'s per-entry
+  photo convention. The other three Think entries' now-broken
+  `coverImage: "/think/placeholder-N.svg"` lines (pointing at files that
+  never existed) were removed entirely rather than left dangling now
+  that `ThinkCard` actually reads the field — they fall back to the
+  gradient placeholder correctly, same as any other unset image slot
+  sitewide. Confirmed via Playwright at a 1440px viewport: all three
+  photos render at the correct card, in the correct order.
 - Loaded via `src/lib/content.ts` (`getAllWork`, `getWorkBySlug`,
   `getAllThink`, `getThinkBySlug`). Adding a new `.mdx` file to either
   directory is enough to publish — no code changes needed.
