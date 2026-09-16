@@ -166,6 +166,38 @@ export default async function Page({ params }: PageProps<"/work/[slug]">) {
   gradient placeholder correctly, same as any other unset image slot
   sitewide. Confirmed via Playwright at a 1440px viewport: all three
   photos render at the correct card, in the correct order.
+
+  **All 6 entries now have real `coverImage` values** — per a follow-up
+  ("These are the images of the other articles"), with 3 more photos
+  attached, covering the 3 Think entries that still fell back to the
+  gradient placeholder: `systems-that-outlast-you`,
+  `the-physics-of-organizational-change`, and
+  `the-quiet-confidence-of-intentional-constraints`. Same extraction/
+  matching discipline as the first three: pulled from the conversation
+  transcript's base64 image data (all 3 arrived as separate image blocks
+  within one message, not one image per message like the earlier batch
+  — extracting them required iterating every image block inside that one
+  message's `content` array, not assuming one image per matched
+  transcript line), confirmed via `PIL` as three clean 1080×1080 RGB
+  WebP images before use, matched to the correct article by what's
+  depicted: interlocking concrete beams forming a self-supporting
+  spiral structure → `systems-that-outlast-you` (category `Systems` —
+  a structural/interlocking-systems metaphor), four people leaning in
+  together around a desk with a laptop showing a chart → `the-physics-
+  of-organizational-change` (category `Transformation` — a team moving
+  together reads as organizational momentum), and a "THINK" sign spelled
+  in raised letters on a pegboard → `the-quiet-confidence-of-
+  intentional-constraints` (category `Leadership` — the remaining
+  article, a general reflective/thinking image). Files live at
+  `public/images/think/<slug>.webp`, same directory and naming
+  convention as the first three. Confirmed via Playwright at a 1440px
+  viewport (after clicking "Load More Thoughts" to reveal all 6 cards):
+  every entry now shows its correct photo, and the featured-card slot
+  (the most-recently-edited entry, per the ordering rule below) had
+  shifted to "The Physics of Organizational Change" as a side effect of
+  its frontmatter having just been edited twice in this session (once
+  to drop `accent: true`, once to add `coverImage`) — expected behavior
+  of the ordering rule, not a bug.
 - Loaded via `src/lib/content.ts` (`getAllWork`, `getWorkBySlug`,
   `getAllThink`, `getThinkBySlug`). Adding a new `.mdx` file to either
   directory is enough to publish — no code changes needed.
