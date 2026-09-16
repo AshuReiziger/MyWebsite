@@ -73,8 +73,25 @@ export default async function Page({ params }: PageProps<"/work/[slug]">) {
   `/work/...`) or an absolute URL — Cloudinary
   (`res.cloudinary.com`) is pre-allowed in `next.config.ts`'s
   `images.remotePatterns` as the secondary option for images too large
-  or numerous to commit to the repo; add another host there if a
-  different image CDN is ever needed.
+  or numerous to commit to the repo, alongside Google Drive
+  (`drive.google.com` and `lh3.googleusercontent.com`, the host Drive
+  redirects large/embedded files to — both pre-allowed per direct
+  request, "can we use google drive to collect images"). Drive links
+  only work in `next/image` as **direct file links**, not folder/sharing
+  links: from a file's Drive share dialog, "General access" must be set
+  to "Anyone with the link", then use
+  `https://drive.google.com/uc?export=view&id=<FILE_ID>` (the `id` is the
+  long token from the share link's `/d/<FILE_ID>/view` segment) — a
+  plain `drive.google.com/file/d/.../view` share URL is an HTML viewer
+  page, not an image, and won't render. This is a weaker option than
+  Cloudinary (see the recommendation given alongside this addition): Drive
+  isn't built as an image CDN, so links can get rate-limited under real
+  traffic or serve an interstitial page instead of the image for larger
+  files, and there's no automatic resizing/format optimization the way
+  Cloudinary provides — prefer Cloudinary or committing to `public/` when
+  reliability matters, reach for Drive only for a quick/low-traffic case.
+  Add another host to `remotePatterns` if a different image CDN is ever
+  needed.
 - `src/content/think/*.mdx` — articles. Frontmatter:
   `title, date, category, excerpt, coverImage, accent?`. `accent: true`
   renders that card with the dark `bg-ink` treatment on the Think index
