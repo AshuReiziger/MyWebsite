@@ -1430,6 +1430,50 @@ second apart (confirming real motion, not a static duplicated list); at
 independent strips, not one wrapped row). Screenshots at both sizes
 confirm the band reads clearly and doesn't overflow the page.
 
+## Home page "Trusted by teams" band: full-bleed, matching Selected Work
+
+Per direct follow-up ("Can you make that section full viewport like you
+did for the selected work section? that is remove the left and right
+margins/paddings"), `<ClientLogos />` was pulled out of the "Trusted by
+teams" `Section`'s `max-w-[1920px] px-3 md:px-10` inner container into
+a plain sibling `<div className="mt-8">`, following the exact same
+pattern `SelectedWorkGrid` already uses further down this page (see
+"Sitewide dark theme" above) — the heading text ("Trusted by teams
+building something worth naming") stays inside its own `Section`
+(centered, normal content width, unchanged), only the logo band itself
+moved outside `Section`'s width-capping wrapper:
+
+```tsx
+<Section className="pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]">
+  <p className="text-center text-sm font-semibold uppercase tracking-widest text-muted">
+    Trusted by teams building something worth naming
+  </p>
+</Section>
+<div className="mt-8">
+  <ClientLogos />
+</div>
+```
+
+`mt-8` (32px) reuses the gap value the old nested `<div className="mt-8">`
+already had (previously wrapping `<ClientLogos />` *inside* the `Section`)
+— moving it outside preserves the same visual spacing between the
+heading and the logo band, just via a sibling margin instead of a
+nested one. This is a smaller-scope version of the same full-bleed
+technique as "Selected Work" (there, the heading *and* a "See All
+Work →" link stay in a `Section`, and only `SelectedWorkGrid` itself
+goes full-bleed) — the same reasoning applies here, and matters more
+for this component specifically since `ClientLogos`'s marquee strips
+already need to fill the available width edge-to-edge for the
+auto-scroll to read as a continuous wall rather than a boxed carousel.
+
+Confirmed via Playwright at 1440px and 390px viewports: the
+`ClientLogos` root wrapper's `getBoundingClientRect()` now reads
+`left: 0, right: <viewport width>` at both sizes (previously inset by
+`Section`'s `px-3`/`md:px-10`, 12px/40px on each side) — genuinely
+flush with both screen edges, not just visually close. Screenshots at
+both sizes confirm the logo strips now touch the viewport edges while
+the heading text above stays centered and unaffected.
+
 ## Home page "Selected Work" section: brought in line with the 40px pattern
 
 Per direct follow-up ("Let's adjust the selected work section too to the

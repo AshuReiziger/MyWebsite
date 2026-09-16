@@ -118,10 +118,10 @@ export default function Home() {
         <p className="text-center text-sm font-semibold uppercase tracking-widest text-muted">
           Trusted by teams building something worth naming
         </p>
-        <div className="mt-8">
-          <ClientLogos />
-        </div>
       </Section>
+      <div className="mt-8">
+        <ClientLogos />
+      </div>
 
       {selectedWork.length > 0 && (
         <>
