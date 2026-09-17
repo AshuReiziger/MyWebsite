@@ -1551,6 +1551,63 @@ review that started with "Trusted by teams" — every `Section` on
 `page.tsx` now has deliberate, explicitly-confirmed padding at every
 breakpoint rather than a value that silently drifted on desktop.
 
+## Home page final CTA: background video
+
+Per direct request ("On the home page, add this video as background video
+to the 'Have an idea worth Building' card section"), with a video file
+attached, the final "Have an idea worth building?" CTA card
+(`src/app/page.tsx`'s last `Section`) got a looping background video —
+the same `relative overflow-hidden` wrapper + positioned media + `bg-
+black/55` scrim pattern already established for the Contact/Teach hero
+photos (see "Contact page ('Work With Me') hero background photo" and
+"Teach hero" above), just with a `<video autoPlay muted loop playsInline
+poster="...">` in place of `next/image`. The card's own `rounded-3xl
+border border-line` treatment was kept unchanged; the video, scrim, and
+content div were added as its children (video/scrim `absolute inset-0`,
+content wrapped in its own `relative` div so it stacks above both — no
+explicit `z-index` needed, same reasoning as every other instance of
+this pattern). The heading/subtext/button kept their existing token-
+based classes (`text-muted` subtext, `bg-ink`/`text-paper` self-
+inverting button) rather than hardcoded white — those tokens are already
+light-colored inside this page's `theme-dark-fixed` wrap, so they read
+correctly against the new scrim without any color changes, the same
+"don't hardcode, the tokens already resolve light here" reasoning
+documented for Contact/Teach's hero photos.
+
+The source file (4096×2160, 13MB, H.264/AAC, ~10s) was downscaled and
+re-encoded before committing — `ffmpeg -vf scale=1600:-2 -an -c:v libx264
+-preset slow -crf 26 -pix_fmt yuv420p -movflags +faststart`, dropping the
+audio track entirely (the tag is `muted` regardless, so shipping an AAC
+stream nobody hears is pure dead weight) and landing at 1600px wide
+(plenty for a card background, never rendered anywhere near 4K on
+screen) — this cut the file from 13MB down to ~1.3MB, in line with the
+site's existing (superseded but still-present) `reiziger-ashu-hero.mp4`,
+which is a similarly-sized H.264 file. `+faststart` moves the moov atom
+to the front so playback can begin before the whole file downloads.
+Lives at `public/videos/have-an-idea-worth-building.mp4`. A poster frame
+(`public/images/have-an-idea-worth-building-poster.jpg`, the video's
+first frame via `ffmpeg -vframes 1`) is wired via the `<video>`'s
+`poster` attribute, the same purpose `reiziger-ashu-hero.mp4`'s original
+poster served — shown immediately and while the video buffers, avoiding
+a blank/black flash.
+
+**Verified via Playwright at 1440×900 and 390×844**: the card renders
+correctly at both sizes with the heading, subtext, and "Start a
+Conversation →" button fully legible over the scrimmed video frame — see
+screenshots taken after scrolling the card into view. The test
+environment's bundled Chromium build has no H.264 decoder
+(`video.canPlayType('video/mp4; codecs="avc1..."')` returns `""`, only
+WebM/VP8/VP9 report `"probably"`), so the `<video>` element itself
+never leaves `readyState 0` / `networkState NETWORK_NO_SOURCE` in that
+specific browser despite the network request for the file succeeding
+(confirmed via a `206 Partial Content` response) — this is a limitation
+of that particular headless build, not the file: the site's own existing
+`reiziger-ashu-hero.mp4` is encoded the same way (H.264) and would hit
+the identical limitation in this same test browser, and every real
+browser (Chrome, Safari, Firefox, Edge, mobile) decodes H.264 natively.
+No WebM fallback `<source>` was added, matching the fact that the site's
+original hero video never shipped one either.
+
 ## Sitewide dark theme (`theme-dark-fixed`)
 
 Every page on the site is permanently dark — not tied to the visitor's

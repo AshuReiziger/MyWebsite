@@ -255,21 +255,34 @@ export default function Home() {
       </Section>
 
       <Section className="pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]">
-        <div className="rounded-3xl border border-line p-12 text-center md:p-20">
-          <h2 className="font-display text-3xl font-bold tracking-tight md:text-4xl">
-            Have an idea worth building?
-          </h2>
-          <p className="mx-auto mt-4 max-w-xl text-muted">
-            Whether you&apos;re developing a brand, solving a communication problem, building a
-            creative team, or exploring an idea that needs structure, I&apos;d love to hear about
-            it.
-          </p>
-          <Link
-            href="/contact"
-            className="mt-8 inline-block rounded-full bg-ink px-6 py-3 text-sm font-semibold uppercase tracking-wide text-paper transition-opacity hover:opacity-90"
+        <div className="relative overflow-hidden rounded-3xl border border-line p-12 text-center md:p-20">
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            poster="/images/have-an-idea-worth-building-poster.jpg"
+            className="absolute inset-0 h-full w-full object-cover"
           >
-            Start a Conversation →
-          </Link>
+            <source src="/videos/have-an-idea-worth-building.mp4" type="video/mp4" />
+          </video>
+          <div className="absolute inset-0 bg-black/55" />
+          <div className="relative">
+            <h2 className="font-display text-3xl font-bold tracking-tight md:text-4xl">
+              Have an idea worth building?
+            </h2>
+            <p className="mx-auto mt-4 max-w-xl text-muted">
+              Whether you&apos;re developing a brand, solving a communication problem, building a
+              creative team, or exploring an idea that needs structure, I&apos;d love to hear
+              about it.
+            </p>
+            <Link
+              href="/contact"
+              className="mt-8 inline-block rounded-full bg-ink px-6 py-3 text-sm font-semibold uppercase tracking-wide text-paper transition-opacity hover:opacity-90"
+            >
+              Start a Conversation →
+            </Link>
+          </div>
         </div>
       </Section>
     </div>
