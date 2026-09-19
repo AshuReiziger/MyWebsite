@@ -21,6 +21,12 @@ const CLIENTS: Client[] = [
   { name: "Safe Haven for Nature", src: "/images/clients/safe-haven-for-nature.png", width: 1460, height: 618 },
   { name: "TEEF Holistic Care", src: "/images/clients/teef.png", width: 594, height: 600 },
   { name: "Ubique Immigration Quest", src: "/images/clients/ubique.png", width: 1644, height: 533 },
+  { name: "Aggies Kitchen", src: "/images/clients/aggies-kitchen.png", width: 701, height: 666 },
+  { name: "Felas Vestures", src: "/images/clients/felas-vestures.png", width: 625, height: 736 },
+  { name: "HRMS", src: "/images/clients/hrms.png", width: 1495, height: 464 },
+  { name: "KMHP", src: "/images/clients/kmhp.png", width: 426, height: 662 },
+  { name: "L AND J Construction", src: "/images/clients/l-and-j-construction.png", width: 1628, height: 528 },
+  { name: "RVTC", src: "/images/clients/rvtc.png", width: 501, height: 762 },
 ];
 
 function LogoStrip({ items }: { items: Client[] }) {

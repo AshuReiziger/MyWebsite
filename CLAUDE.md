@@ -1430,6 +1430,59 @@ second apart (confirming real motion, not a static duplicated list); at
 independent strips, not one wrapped row). Screenshots at both sizes
 confirm the band reads clearly and doesn't overflow the page.
 
+## Home page "Trusted by teams" band: 6 more logos (18 total)
+
+Per direct follow-up with a zip attached ("Here are more logos, please
+add it to the 'trusted by teams...' section just as you did the
+others"), `CLIENTS` grew from 12 to 18 entries — 6 new logos (Aggies
+Kitchen, Felas Vestures, HRMS, KMHP, L AND J Construction, RVTC), same
+`@"/root/.claude/uploads/.../de394f6b-New.zip"` explicit-path delivery
+mechanism as the previous 9-logo zip batch, and same descriptive-
+filename convention (`Aggies Kitchen.png`, etc. — the filename *is* the
+client name, slugified for the file path).
+
+**Unlike every earlier logo batch, most of these arrived already
+white**: a `PIL` check of each PNG's dominant opaque color found 5 of
+the 6 (`Felas vestures`, `HRMS`, `KMHP`, `L AND J construction`, `RVTC`)
+were already pure `(255, 255, 255)` — only `Aggies Kitchen.png` had real
+color needing conversion (a dark brown `#351812` wordmark plus an
+orange `#EC4E1A` accent mark). The same recolor-preserving-alpha step
+(`im.split()` → new white RGBA canvas → `putalpha(original_alpha)`) was
+still run uniformly across all 6 regardless, rather than special-casing
+the 5 already-white ones — recoloring white to white is a no-op, and a
+uniform pipeline is simpler to reason about than a conditional one. All
+6 were then cropped to their alpha bounding box (+12px padding), same
+as every prior batch, to trim large transparent margins before setting
+`next/image`'s intrinsic `width`/`height`.
+
+Files live at `public/images/clients/{aggies-kitchen,felas-vestures,
+hrms,kmhp,l-and-j-construction,rvtc}.png` — same directory/format
+convention as every earlier logo. `CLIENTS` in `ClientLogos.tsx` is now
+18 entries; `LogoStrip`'s `Math.ceil(length / 2)` mobile split becomes
+an even 9/9 (was 6/6 at 12 entries) with no code change needed, since
+the split logic was already length-driven rather than hardcoded.
+
+Confirmed via Playwright at a 1440px viewport: all 18 client names
+appear in the `sr-only` announcement text, the desktop strip renders 72
+`img` elements (18 logos × 2 for the marquee loop), and — since the
+CSS `@keyframes`-driven scroll made it impractical to just screenshot a
+single static frame containing all 18 — the running animation was
+stopped by calling `.cancel()` on the track's live `Animation` object
+(obtained via `element.getAnimations()`, not a CSS override — a
+`.animate-marquee { animation: none !important; }` stylesheet override
+injected via `addInitScript` was tried first and did **not** reliably
+win over the running animation, likely a cascade-layering interaction
+between the injected unlayered stylesheet and Tailwind's own compiled
+CSS; cancelling the Animation object directly sidesteps that
+entirely) and the track's `transform` was then set directly via
+`style.setProperty('transform', 'translateX(-33%)', 'important')` to
+bring the batch's logos into the visible frame — this is a one-off
+Playwright verification technique for a marquee, not a change to the
+component or its animation itself. All 6 new logos (KMHP's icon, HRMS's
+full "Healing Room Medical Services" wordmark, Aggies Kitchen, L&J
+Construction, RVTC, and Felas Vestures) render as clean white marks
+against the dark band, consistent with every earlier logo.
+
 ## Home page "Trusted by teams" band: full-bleed, matching Selected Work
 
 Per direct follow-up ("Can you make that section full viewport like you
@@ -1550,6 +1603,63 @@ Confirmed via `getComputedStyle`: `40px`/`40px` at both 375px and
 review that started with "Trusted by teams" — every `Section` on
 `page.tsx` now has deliberate, explicitly-confirmed padding at every
 breakpoint rather than a value that silently drifted on desktop.
+
+## Home page final CTA: background video
+
+Per direct request ("On the home page, add this video as background video
+to the 'Have an idea worth Building' card section"), with a video file
+attached, the final "Have an idea worth building?" CTA card
+(`src/app/page.tsx`'s last `Section`) got a looping background video —
+the same `relative overflow-hidden` wrapper + positioned media + `bg-
+black/55` scrim pattern already established for the Contact/Teach hero
+photos (see "Contact page ('Work With Me') hero background photo" and
+"Teach hero" above), just with a `<video autoPlay muted loop playsInline
+poster="...">` in place of `next/image`. The card's own `rounded-3xl
+border border-line` treatment was kept unchanged; the video, scrim, and
+content div were added as its children (video/scrim `absolute inset-0`,
+content wrapped in its own `relative` div so it stacks above both — no
+explicit `z-index` needed, same reasoning as every other instance of
+this pattern). The heading/subtext/button kept their existing token-
+based classes (`text-muted` subtext, `bg-ink`/`text-paper` self-
+inverting button) rather than hardcoded white — those tokens are already
+light-colored inside this page's `theme-dark-fixed` wrap, so they read
+correctly against the new scrim without any color changes, the same
+"don't hardcode, the tokens already resolve light here" reasoning
+documented for Contact/Teach's hero photos.
+
+The source file (4096×2160, 13MB, H.264/AAC, ~10s) was downscaled and
+re-encoded before committing — `ffmpeg -vf scale=1600:-2 -an -c:v libx264
+-preset slow -crf 26 -pix_fmt yuv420p -movflags +faststart`, dropping the
+audio track entirely (the tag is `muted` regardless, so shipping an AAC
+stream nobody hears is pure dead weight) and landing at 1600px wide
+(plenty for a card background, never rendered anywhere near 4K on
+screen) — this cut the file from 13MB down to ~1.3MB, in line with the
+site's existing (superseded but still-present) `reiziger-ashu-hero.mp4`,
+which is a similarly-sized H.264 file. `+faststart` moves the moov atom
+to the front so playback can begin before the whole file downloads.
+Lives at `public/videos/have-an-idea-worth-building.mp4`. A poster frame
+(`public/images/have-an-idea-worth-building-poster.jpg`, the video's
+first frame via `ffmpeg -vframes 1`) is wired via the `<video>`'s
+`poster` attribute, the same purpose `reiziger-ashu-hero.mp4`'s original
+poster served — shown immediately and while the video buffers, avoiding
+a blank/black flash.
+
+**Verified via Playwright at 1440×900 and 390×844**: the card renders
+correctly at both sizes with the heading, subtext, and "Start a
+Conversation →" button fully legible over the scrimmed video frame — see
+screenshots taken after scrolling the card into view. The test
+environment's bundled Chromium build has no H.264 decoder
+(`video.canPlayType('video/mp4; codecs="avc1..."')` returns `""`, only
+WebM/VP8/VP9 report `"probably"`), so the `<video>` element itself
+never leaves `readyState 0` / `networkState NETWORK_NO_SOURCE` in that
+specific browser despite the network request for the file succeeding
+(confirmed via a `206 Partial Content` response) — this is a limitation
+of that particular headless build, not the file: the site's own existing
+`reiziger-ashu-hero.mp4` is encoded the same way (H.264) and would hit
+the identical limitation in this same test browser, and every real
+browser (Chrome, Safari, Firefox, Edge, mobile) decodes H.264 natively.
+No WebM fallback `<source>` was added, matching the fact that the site's
+original hero video never shipped one either.
 
 ## Sitewide dark theme (`theme-dark-fixed`)
 
