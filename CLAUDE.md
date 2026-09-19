@@ -1483,6 +1483,23 @@ full "Healing Room Medical Services" wordmark, Aggies Kitchen, L&J
 Construction, RVTC, and Felas Vestures) render as clean white marks
 against the dark band, consistent with every earlier logo.
 
+## Home page "Trusted by teams" band: Aggies Kitchen removed (17 logos)
+
+Per direct request ("Please remove aggies kitchen logo from the logo's
+in the 'trusted by teams...' section"), the Aggies Kitchen entry was
+dropped from `CLIENTS` in `ClientLogos.tsx` — 18 → 17 logos. Unlike
+every earlier image swap on this site (where a superseded asset is kept
+in `public/` per convention), this is an outright removal rather than a
+replacement, so the now-unreferenced
+`public/images/clients/aggies-kitchen.png` was deleted rather than left
+behind as dead weight. `LogoStrip`'s `Math.ceil(length / 2)` mobile
+split needed no code change — it's length-driven, so 17 logos just
+produces an uneven 9/8 split automatically. Confirmed via Playwright at
+a 1440px viewport: the `sr-only` announcement text lists all 17
+remaining names with no "Aggies Kitchen", no `img` element's `src`
+contains `aggies`, and the desktop strip's `img` count is 68 (17 × 2 ×
+2, matching the doubled marquee track — was 72 at 18 logos).
+
 ## Home page "Trusted by teams" band: full-bleed, matching Selected Work
 
 Per direct follow-up ("Can you make that section full viewport like you
