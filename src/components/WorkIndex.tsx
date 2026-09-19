@@ -16,7 +16,7 @@ export function WorkIndex({ entries }: { entries: ContentEntry<WorkFrontmatter>[
 
   return (
     <>
-      <div className="mt-16 flex flex-col gap-16">
+      <div className="mt-16 flex flex-col gap-5">
         {visible.map((entry) => (
           <WorkCard key={entry.slug} entry={entry} />
         ))}

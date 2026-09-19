@@ -1864,6 +1864,19 @@ title/eyebrow/hover-CTA all render overlaid on the image with no
 separate text block beneath the card, and the stack scrolls as a single
 column at both sizes.
 
+## Work index: card gap reduced to 20px
+
+Per direct follow-up ("Reduce the margin/padding btw the cards to
+about 20px"), `WorkIndex.tsx`'s stack changed from `flex flex-col
+gap-16` (64px) to `flex flex-col gap-5` — Tailwind's `5` step is
+exactly `1.25rem`/`20px`, so no arbitrary-value bracket syntax was
+needed here (unlike the `Section`-padding cascade gotcha documented
+throughout this file, this gap isn't competing with any conflicting
+default — `WorkIndex`'s wrapper `div` has no other gap utility on it).
+Confirmed via Playwright at a 1440px viewport: both `getBoundingClientRect()`
+math between the first two cards and `getComputedStyle(...).rowGap` on
+the flex container read exactly `20px`.
+
 ## Work index and case study page: bento redesign
 
 **`WorkCard.tsx`'s bento arrangement described in this section is
