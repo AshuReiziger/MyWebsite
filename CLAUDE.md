@@ -1790,7 +1790,88 @@ study from `/work` automatically updates this grid — no changes needed
 here unless the curation logic itself (which entries, in what order)
 should change.
 
+## Work index: single-row cards with overlaid copy and Show More/Less
+
+Per direct request ("Make the work cards one on a single row, as you did
+for the sigma studio Academy work card. Give that page the ability to
+[show] more or less functionality. let the work card copies be on the
+cards themselves, not below."), the bento-grid `WorkCard` (documented
+below under "Work index and case study page: bento redesign" — one
+full-width hero tile, two half-width tiles side by side, then an
+offset full-width tile, keyed by array index) was replaced with a
+single uniform treatment: **every entry now renders full-width, one per
+row** — the same layout the old bento's index-0 hero tile got
+exclusively (a full-width `aspect-[16/9]` card was already the treatment
+whichever entry happened to land in the bento's first slot got — most
+recently "Sigma Studio Academy," the specific card named in the
+request, per the last-edited ordering rule — hence "as you did for the
+sigma studio Academy work card" meant apply that one card's existing
+full-row treatment to all of them, not add anything new).
+
+`WorkCard.tsx` was rewritten from scratch: the `index`/`COL_SPAN`/
+`ASPECT` array lookup is gone entirely (no more per-position variation),
+every card is now `aspect-[16/9] w-full`, and the copy — previously a
+separate `h2` + divider rendered *below* the image in normal document
+flow — now lives *inside* the card, overlaid on the image via the same
+gradient-scrim technique `SelectedWorkGrid.tsx`'s `WorkTile` already
+uses on the home page (`bg-gradient-to-t from-paper/95 via-paper/25
+to-transparent` + an `absolute inset-x-0 bottom-0` text block): an
+eyebrow line (`{tag or category} — {client}`) above the title, plus a
+"View Case Study →" affordance that fades in on hover
+(`opacity-0 group-hover:opacity-100`, `ArrowRightIcon`) — the same three
+elements `SelectedWorkGrid`'s tiles already show, reused rather than
+inventing a new overlay pattern. `paper`/`ink` in that gradient/text
+resolve to their `theme-dark-fixed` dark/light roles respectively, the
+same token-role handling `SelectedWorkGrid` and the original `WorkCard`
+already needed (see "Sitewide dark theme" below) — nothing new to get
+right here, just reused correctly. The bottom-pill client badge the old
+card had (`absolute bottom-6 left-6 ... rounded-full`) is gone, folded
+into the new eyebrow line instead of living as a separate floating
+element.
+
+**New `WorkIndex.tsx`** (client component, mirroring the pattern
+`ThinkIndex.tsx` already established for "Load More Thoughts" — see
+"Think index" below) replaces the plain `work.map(...)` grid in
+`work/page.tsx`: an `INITIAL_VISIBLE = 4` / `LOAD_MORE_STEP = 4` pair
+drives a `visibleCount` state, cards render in a plain `flex flex-col
+gap-16` stack (no grid/column-span math needed anymore now that every
+card is the same full width), and two buttons sit below the stack —
+"Show More Work" (appears while `visibleCount < entries.length`) and
+"Show Less" (appears once `visibleCount > INITIAL_VISIBLE`, collapsing
+back to the initial 4) — matching the literal "show more or less"
+ask, which is a step beyond Think's one-directional Load More (that
+page has no collapse-back control). `work/page.tsx` itself just renders
+`<WorkIndex entries={work} />` in place of the old inline grid `div` —
+the surrounding `Section`/`SectionHeading` are untouched.
+
+Since the site currently only has 4 real work entries (the 5th,
+`aura-financial-platform.mdx`, is placeholder content per "Not yet
+wired up" below — so effectively 4 real + 1 placeholder = the 5 case
+studies that exist today are all under the initial-4 threshold anyway
+for the *real* ones), the "Show More"/"Show Less" buttons don't appear
+in the current build — confirmed correct behavior (`hasMore`/
+`canShowLess` both false at exactly `INITIAL_VISIBLE` entries), not a
+bug: the mechanism was verified directly by temporarily lowering
+`INITIAL_VISIBLE`/`LOAD_MORE_STEP` to 2/1, confirming via Playwright
+that "Show More Work" reveals one additional card (2→3) and "Show Less"
+correctly collapses back to 2, then reverting both constants to their
+real 4/4 values before committing. It'll start actually showing once a
+6th+ work entry is added.
+
+Confirmed via Playwright at 1440×900 and 390×844: every card renders at
+its container's full width (no more half-width/offset bento tiles), the
+title/eyebrow/hover-CTA all render overlaid on the image with no
+separate text block beneath the card, and the stack scrolls as a single
+column at both sizes.
+
 ## Work index and case study page: bento redesign
+
+**`WorkCard.tsx`'s bento arrangement described in this section is
+superseded** — see "Work index: single-row cards with overlaid copy and
+Show More/Less" above. The index/`COL_SPAN`/`ASPECT` bento layout and
+the below-image `h2`+divider copy block it describes no longer exist;
+kept here for history only. `CaseStudyLayout.tsx`'s own redesign
+(unrelated to `WorkCard`) is untouched and still accurate.
 
 `/work` (`WorkCard.tsx`) and `/work/[slug]` (`CaseStudyLayout.tsx`) were
 rebuilt from a pair of HTML/CSS reference files ("Selected Work" index +
