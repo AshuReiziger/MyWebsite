@@ -1430,6 +1430,59 @@ second apart (confirming real motion, not a static duplicated list); at
 independent strips, not one wrapped row). Screenshots at both sizes
 confirm the band reads clearly and doesn't overflow the page.
 
+## Home page "Trusted by teams" band: 6 more logos (18 total)
+
+Per direct follow-up with a zip attached ("Here are more logos, please
+add it to the 'trusted by teams...' section just as you did the
+others"), `CLIENTS` grew from 12 to 18 entries — 6 new logos (Aggies
+Kitchen, Felas Vestures, HRMS, KMHP, L AND J Construction, RVTC), same
+`@"/root/.claude/uploads/.../de394f6b-New.zip"` explicit-path delivery
+mechanism as the previous 9-logo zip batch, and same descriptive-
+filename convention (`Aggies Kitchen.png`, etc. — the filename *is* the
+client name, slugified for the file path).
+
+**Unlike every earlier logo batch, most of these arrived already
+white**: a `PIL` check of each PNG's dominant opaque color found 5 of
+the 6 (`Felas vestures`, `HRMS`, `KMHP`, `L AND J construction`, `RVTC`)
+were already pure `(255, 255, 255)` — only `Aggies Kitchen.png` had real
+color needing conversion (a dark brown `#351812` wordmark plus an
+orange `#EC4E1A` accent mark). The same recolor-preserving-alpha step
+(`im.split()` → new white RGBA canvas → `putalpha(original_alpha)`) was
+still run uniformly across all 6 regardless, rather than special-casing
+the 5 already-white ones — recoloring white to white is a no-op, and a
+uniform pipeline is simpler to reason about than a conditional one. All
+6 were then cropped to their alpha bounding box (+12px padding), same
+as every prior batch, to trim large transparent margins before setting
+`next/image`'s intrinsic `width`/`height`.
+
+Files live at `public/images/clients/{aggies-kitchen,felas-vestures,
+hrms,kmhp,l-and-j-construction,rvtc}.png` — same directory/format
+convention as every earlier logo. `CLIENTS` in `ClientLogos.tsx` is now
+18 entries; `LogoStrip`'s `Math.ceil(length / 2)` mobile split becomes
+an even 9/9 (was 6/6 at 12 entries) with no code change needed, since
+the split logic was already length-driven rather than hardcoded.
+
+Confirmed via Playwright at a 1440px viewport: all 18 client names
+appear in the `sr-only` announcement text, the desktop strip renders 72
+`img` elements (18 logos × 2 for the marquee loop), and — since the
+CSS `@keyframes`-driven scroll made it impractical to just screenshot a
+single static frame containing all 18 — the running animation was
+stopped by calling `.cancel()` on the track's live `Animation` object
+(obtained via `element.getAnimations()`, not a CSS override — a
+`.animate-marquee { animation: none !important; }` stylesheet override
+injected via `addInitScript` was tried first and did **not** reliably
+win over the running animation, likely a cascade-layering interaction
+between the injected unlayered stylesheet and Tailwind's own compiled
+CSS; cancelling the Animation object directly sidesteps that
+entirely) and the track's `transform` was then set directly via
+`style.setProperty('transform', 'translateX(-33%)', 'important')` to
+bring the batch's logos into the visible frame — this is a one-off
+Playwright verification technique for a marquee, not a change to the
+component or its animation itself. All 6 new logos (KMHP's icon, HRMS's
+full "Healing Room Medical Services" wordmark, Aggies Kitchen, L&J
+Construction, RVTC, and Felas Vestures) render as clean white marks
+against the dark band, consistent with every earlier logo.
+
 ## Home page "Trusted by teams" band: full-bleed, matching Selected Work
 
 Per direct follow-up ("Can you make that section full viewport like you
