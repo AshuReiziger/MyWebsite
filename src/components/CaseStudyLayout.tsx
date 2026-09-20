@@ -42,7 +42,7 @@ export function CaseStudyLayout({
         />
       </div>
 
-      <div className="mt-20 flex flex-col gap-16 md:mt-40 md:gap-20">
+      <div className="mt-[10px] flex flex-col gap-[10px] md:mt-[10px] md:gap-[10px]">
         {frontmatter.sections.map((section, i) =>
           section.type === "text" ? (
             <div key={i} className="mx-auto max-w-3xl px-6">

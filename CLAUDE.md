@@ -2389,6 +2389,52 @@ side by side — the first true square-framed pair on the site, visibly
 different from every landscape image elsewhere on the page cropped into
 the wide `1440×810`/`390×219` single-row frame.
 
+**The remaining 3 blocked images were abandoned by direct decision**
+("we will do without the 3 other images. I will just remove them from
+the drive") — `Notebook Mockup.png`/`Billboard_Mockup_4.png` (System)
+and `Billboard_Mockup_3.png` (Challenge) are not coming; the Challenge
+section stays at 1 of its folder's original 2 images and the System
+section stays at 6 of its original 8, and this is the case study's
+final, intended image set — not a still-open item. If the user deletes
+these from Drive as stated, a future `search_files` on those folders
+will simply show fewer files; no code or content change is needed here
+unless they ask for something new in these slots.
+
+## Case study sections: gap tightened to a flat 10px
+
+Per direct request ("reduce the top/bottom paddings/margins of the
+image cards to about 10px"), `CaseStudyLayout.tsx`'s sections list —
+previously `mt-20 flex flex-col gap-16 md:mt-40 md:gap-20` (64px mobile/
+80px desktop between the hero image and the first section, and between
+every subsequent section) — changed to `mt-[10px] flex flex-col
+gap-[10px] md:mt-[10px] md:gap-[10px]`: a flat 10px at every breakpoint,
+both the hero-to-first-section gap and every inter-section gap.
+
+This applies uniformly to **every** section in the flow, text and image
+alike, not just the `images`-type ones — the container uses a single
+CSS `gap` (via Tailwind's flex `gap-*`) shared by all children, so there
+was no way to give image sections their own tighter spacing without
+giving every text section between them extra margin to compensate (which
+nobody asked for); the literal ask ("the image cards") is satisfied
+correctly under this reading too, since on this page most cards *are*
+images — 15 of the 19 items in the flow (hero + 18 `sections` entries)
+are `images`-type, so a uniform gap change reads, in practice, almost
+entirely as "the image cards got closer together." Text sections
+picked up the same tighter rhythm as a side effect, which reads
+correctly as a genuinely tighter, more gallery-like page overall rather
+than an inconsistency.
+
+Confirmed via Playwright at a 1440px viewport: `getComputedStyle` on
+the sections container reads `marginTop: "10px"`, `gap: "10px"`; the
+gap between the hero image's bottom edge and the first section's top
+edge, and every one of the 17 gaps between the 18 `sections` entries,
+all measure exactly `10px` via `getBoundingClientRect()` — not just the
+container's CSS value, the actual rendered spacing. Screenshots at
+1440px and 390px confirm the tighter rhythm reads cleanly at both sizes
+— hero photo, Challenge text, Challenge image, and Strategy text now
+sit close together with consistent small gaps instead of the previous
+64–80px spacer between every beat.
+
 ## Work index: single-row cards with overlaid copy and Show More/Less
 
 Per direct request ("Make the work cards one on a single row, as you did
