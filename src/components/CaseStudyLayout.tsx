@@ -19,7 +19,7 @@ export function CaseStudyLayout({
 
   return (
     <div className="theme-dark-fixed -mb-10 bg-paper pb-10 text-ink">
-      <div className="mx-auto flex max-w-3xl flex-col gap-8 px-6 pt-16 pb-16 md:pt-24 md:pb-24">
+      <div className="mx-auto flex max-w-3xl flex-col gap-8 px-6 pt-16 pb-5 md:pt-24 md:pb-5">
         <h1 className="font-display text-[2em] font-bold tracking-tight">{frontmatter.title}</h1>
         <div className="flex flex-wrap gap-3">
           {chips.map((chip) => (
@@ -85,7 +85,7 @@ export function CaseStudyLayout({
       )}
 
       {related.length > 0 && (
-        <div className="mx-auto mt-24 max-w-[1920px] px-3 py-24 md:mt-40 md:px-10 md:py-40">
+        <div className="mx-auto mt-[20px] max-w-[1920px] px-3 py-[20px] md:mt-[20px] md:px-10 md:py-[20px]">
           <p className="text-center text-xs font-semibold uppercase tracking-widest text-muted">
             Related Projects
           </p>

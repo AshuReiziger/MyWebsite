@@ -2513,6 +2513,54 @@ Peace — the 3 entries cyclically following it in `getAllWork()`'s
 last-edited order), rendering as a 3-column row on desktop and a
 single stacked column on mobile.
 
+**The hero copy's bottom padding and the Related Projects section's
+exterior spacing were both tightened in an immediate follow-up** ("I
+guess those changes will make the case study page perfect... Exceptionally
+for the hero copies on the case study pages, reduce the bottom padding
+to about 20px. Also reduce the exterior top and bottom padding/margin
+of the "related projects" section to 20px as well."):
+
+- The hero copy wrapper's bottom padding (set to match its top padding,
+  `pb-16 md:pb-24`, in the pass above) was reduced to a flat `pb-5
+  md:pb-5` (Tailwind's `5` step is exactly 20px, so no bracket-arbitrary
+  syntax was needed — this div isn't built on `Section` and has no
+  competing shorthand default to lose to, unlike the `md:py-40` cascade
+  gotcha documented elsewhere in this file). Top padding (`pt-16
+  md:pt-24`, 64px/96px) is **unchanged** — the request called out "the
+  bottom padding" specifically, and "Exceptionally for the hero copies"
+  marks this as a deliberate one-off exception to the general
+  every-text-block-gets-symmetric-padding rule just established above,
+  not a reversal of it. Every other `text`-type section in the sections
+  loop (`py-16 md:py-24`) is untouched — the request named "the hero
+  copies" specifically, not every copy block on the page.
+- The "Related Projects" section's outer wrapper — previously `mt-24
+  max-w-[1920px] px-3 py-24 md:mt-40 md:px-10 md:py-40` (the same
+  `mt-24/40 + py-24/40` spacer pattern shared with the final CTA
+  section) — had every one of its top/bottom spacing values (the `mt-*`
+  gap from the sections list above it, and the `py-*` padding around
+  the "Related Projects" label and card grid) flattened to `20px` at
+  every breakpoint: `mt-[20px] px-3 py-[20px] md:mt-[20px] md:px-10
+  md:py-[20px]`. Bracket-arbitrary syntax here since `20px` isn't a
+  round Tailwind step at every one of these three properties in
+  combination with the existing `px-3 md:px-10` (kept unchanged — only
+  vertical spacing was in scope). The final CTA section right below
+  it (`panel-tint mt-24 ... md:mt-40 ...`) was **not** touched — the
+  request named "the 'related projects' section" specifically.
+
+Confirmed via Playwright at 1440×900 and 390×844: the hero copy's
+`getComputedStyle` padding now reads `paddingTop: "96px"`/`"64px"`
+(desktop/mobile, unchanged) and `paddingBottom: "20px"` at both sizes
+(down from `96px`/`64px`) — superseding the padding numbers quoted in
+the paragraph above, which predate this pass. The Related Projects
+container's `marginTop`/`paddingTop`/`paddingBottom` all read `20px` at
+both viewport sizes, and the measured gap between the previous element
+(the last sections-loop block, or the optional trailing MDX body) and
+the Related Projects container's own top edge is exactly `20px` via
+`getBoundingClientRect()` — not just the CSS value, the actual rendered
+gap. Screenshots at both sizes confirm the hero copy now sits close
+against the hero photo below it, and the Related Projects heading/cards
+sit closer to both the content above and the final CTA band below.
+
 ## Work index: single-row cards with overlaid copy and Show More/Less
 
 Per direct request ("Make the work cards one on a single row, as you did
