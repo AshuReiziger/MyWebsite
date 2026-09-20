@@ -38,7 +38,7 @@ export function CaseStudyLayout({
         <WorkImage
           src={frontmatter.coverImage}
           alt={frontmatter.title}
-          className="aspect-[21/9] bg-gradient-to-br from-accent/30 via-paper to-paper grayscale transition-[filter] duration-700 hover:grayscale-0"
+          className="aspect-[16/9] bg-gradient-to-br from-accent/30 via-paper to-paper grayscale transition-[filter] duration-700 hover:grayscale-0"
         />
       </div>
 
@@ -71,7 +71,7 @@ export function CaseStudyLayout({
                   src={src}
                   alt={`${frontmatter.title} — image ${i + 1}.${j + 1}`}
                   className={
-                    (section.images.length > 1 ? "aspect-square" : "aspect-[21/9]") +
+                    (section.images.length > 1 ? "aspect-square" : "aspect-[16/9]") +
                     " bg-gradient-to-br from-accent/30 via-paper to-paper"
                   }
                 />

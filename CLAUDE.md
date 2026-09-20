@@ -2268,6 +2268,40 @@ limitation noted above, unrelated to this change) but the layout
 structure (full-bleed hero below copy, two equal-width square-framed
 tiles side by side) is confirmed correct and unaffected.
 
+## Case study full-bleed image frame: 21:9 changed to 16:9
+
+Per direct request ("adjust the height of the full bleed image cards;
+instead of the current 1920 by 823 px, make it 1920 by 1080 px instead"),
+`CaseStudyLayout.tsx`'s single-image frame changed from `aspect-[21/9]`
+(1920×823 at a 1920px viewport) to `aspect-[16/9]` (1920×1080) — a
+taller, less extreme crop. This is the frame shared by **both** the hero
+cover image and every single-image body `section` (the "rectangular"
+treatment from the pass above); the two-image `aspect-square` frame was
+untouched, since the request named only the full-bleed cards specifically.
+Confirmed via Playwright at a 1920px viewport: the hero image and every
+single-image section now measure exactly `1920×1080` (`ratio: 1.778`),
+up from `1920×823` (`ratio: 2.333`).
+
+**This session's container had a stale local git checkout** — pinned to
+an old pre-squash-merge commit (`98a13eb`, whose content had already
+landed on `origin/main` as the squashed `3200dc1`) rather than the branch
+tip. `origin/claude/personal-website-strategy-vatzoh` itself was correct
+and fully up to date (merge-base with `origin/main` was `origin/main`'s
+own tip, confirming a clean fork with no missing history) — only this
+particular session's local working copy lagged behind by several commits,
+including the entire Orbit Interiors sections-model rebuild. Caught before
+editing anything, since the file's actual content (still the old bento
+`BEATS`/`GALLERY_SPAN` template) didn't match what should have been
+current — fixed with `git checkout -B claude/personal-website-strategy-
+vatzoh origin/claude/personal-website-strategy-vatzoh` (working tree was
+already clean, confirmed via `git status --short` before resetting).
+**Lesson for any future session that finds a file's content doesn't match
+what CLAUDE.md or recent conversation history says it should be**: check
+`git status --short --branch` for an `ahead/behind` mismatch against the
+tracked remote branch before assuming the documentation is wrong or the
+work was lost — it may just be a stale local checkout in a fresh
+container, fixable with a reset rather than redoing the work.
+
 ## Work index: single-row cards with overlaid copy and Show More/Less
 
 Per direct request ("Make the work cards one on a single row, as you did
