@@ -5,11 +5,11 @@ import { WorkImage } from "@/components/WorkImage";
 
 export function CaseStudyLayout({
   entry,
-  next,
+  related,
   children,
 }: {
   entry: ContentEntry<WorkFrontmatter>;
-  next: ContentEntry<WorkFrontmatter> | null;
+  related: ContentEntry<WorkFrontmatter>[];
   children: ReactNode;
 }) {
   const { frontmatter } = entry;
@@ -19,7 +19,7 @@ export function CaseStudyLayout({
 
   return (
     <div className="theme-dark-fixed -mb-10 bg-paper pb-10 text-ink">
-      <div className="mx-auto flex max-w-3xl flex-col gap-8 px-6 pt-16 md:pt-24">
+      <div className="mx-auto flex max-w-3xl flex-col gap-8 px-6 pt-16 pb-16 md:pt-24 md:pb-24">
         <h1 className="font-display text-[2em] font-bold tracking-tight">{frontmatter.title}</h1>
         <div className="flex flex-wrap gap-3">
           {chips.map((chip) => (
@@ -45,12 +45,9 @@ export function CaseStudyLayout({
       <div className="mt-[10px] flex flex-col gap-[10px] md:mt-[10px] md:gap-[10px]">
         {frontmatter.sections.map((section, i) =>
           section.type === "text" ? (
-            <div key={i} className="mx-auto max-w-3xl px-6">
-              {section.eyebrow && (
-                <p className="font-display text-sm font-bold text-accent">{section.eyebrow}</p>
-              )}
+            <div key={i} className="mx-auto max-w-3xl px-6 py-16 md:py-24">
               {section.heading && (
-                <h2 className="mt-3 font-display text-2xl font-bold tracking-tight">
+                <h2 className="font-display text-2xl font-bold tracking-tight">
                   {section.heading}
                 </h2>
               )}
@@ -87,17 +84,25 @@ export function CaseStudyLayout({
         </div>
       )}
 
-      {next && (
-        <div className="mx-auto mt-24 flex max-w-[1920px] flex-col items-center gap-6 px-3 py-24 text-center md:mt-40 md:px-10 md:py-40">
-          <span className="rounded-full border border-line px-6 py-2 text-xs font-semibold uppercase tracking-widest text-muted">
-            Next Project
-          </span>
-          <Link href={`/work/${next.slug}`} className="group relative inline-block">
-            <h2 className="font-display text-3xl font-bold tracking-tight transition-colors group-hover:text-accent md:text-5xl">
-              {next.frontmatter.title}
-            </h2>
-            <div className="absolute bottom-0 left-0 h-[2px] w-0 bg-accent transition-all duration-500 ease-in-out group-hover:w-full" />
-          </Link>
+      {related.length > 0 && (
+        <div className="mx-auto mt-24 max-w-[1920px] px-3 py-24 md:mt-40 md:px-10 md:py-40">
+          <p className="text-center text-xs font-semibold uppercase tracking-widest text-muted">
+            Related Projects
+          </p>
+          <div className="mt-10 grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3">
+            {related.map((item) => (
+              <Link key={item.slug} href={`/work/${item.slug}`} className="group block">
+                <WorkImage
+                  src={item.frontmatter.coverImage}
+                  alt={item.frontmatter.title}
+                  className="aspect-[4/3] bg-gradient-to-br from-accent/30 via-paper to-paper grayscale transition-[filter] duration-700 group-hover:grayscale-0"
+                />
+                <h3 className="mt-4 font-display text-lg font-bold tracking-tight transition-colors group-hover:text-accent">
+                  {item.frontmatter.title}
+                </h3>
+              </Link>
+            ))}
+          </div>
         </div>
       )}
 

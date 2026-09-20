@@ -2435,6 +2435,84 @@ container's CSS value, the actual rendered spacing. Screenshots at
 sit close together with consistent small gaps instead of the previous
 64–80px spacer between every beat.
 
+## Case study page: symmetric copy padding, eyebrow labels removed, "Next Project" replaced with "Related Projects" thumbnails
+
+Three follow-up requests on `CaseStudyLayout.tsx`, made together right
+after the 10px section-gap change above shipped ("Great! I love how it
+looks now. Let's make a few more adjustments on the case study page"):
+
+1. **Every text block's internal padding now matches the hero copy's.**
+   The hero copy wrapper (title/chips/summary) already had `pt-16
+   md:pt-24` — top padding only, no bottom. Per "I love the top/bottom
+   paddings on the hero copy. I need you to do same for every other
+   copy on the page," it became symmetric (`pt-16 pb-16 md:pt-24
+   md:pb-24`), and every `text`-type section's own wrapper div (`mx-auto
+   max-w-3xl px-6`, previously with no `py` at all) picked up the exact
+   same values (`py-16 md:py-24`). This is **internal** padding on each
+   text block, separate from and additive to the already-approved
+   `gap-[10px]` *between* sections in the flex list (documented in the
+   section above) — that gap was left untouched, since the user
+   explicitly said they loved how the page looked and only asked for
+   more of the hero-copy treatment, not a change to the inter-section
+   rhythm. In practice a text section now reads as: 10px gap → 64/96px
+   internal top padding → heading/body copy → 64/96px internal bottom
+   padding → 10px gap to the next section — the small flex gap keeps
+   sections visually close while each block's own generous internal
+   padding keeps its copy from feeling cramped against its own
+   image/text neighbors.
+2. **Eyebrow labels (e.g. "02 — The Challenge") no longer render.** Per
+   "Remove the labels from the copies; for example the heading "02 -
+   The challenge" is not needed," the `{section.eyebrow && (...)}`
+   paragraph in the text-section branch was deleted outright — only the
+   rendering was removed, not the underlying data: `section.eyebrow`
+   stays defined on `WorkTextSection` (`src/lib/content.ts`) and every
+   `.mdx` file's frontmatter keeps its `eyebrow: "..."` lines unchanged
+   (Orbit Interiors' `02 — The Challenge` / `03 — The Strategy` / `04 —
+   The Identity` / `05 — The System` / `06 — Final Statement`, and the
+   `01 — The Challenge`-style eyebrows on the other 4 case studies) —
+   cheaper to leave the field in place than to strip it from 5 content
+   files for a purely visual change, and it costs nothing since nothing
+   reads it anymore. `section.heading` (e.g. "Understanding the
+   Challenge") is unaffected and still renders — the user's own example
+   named the eyebrow specifically, not the heading. This is a
+   page-template change, so it applies uniformly across all 5 existing
+   case studies, not just Orbit Interiors — correct scope per the
+   request's plural phrasing ("the copies," not "Orbit's copies").
+3. **"Next Project" (a single cyclic-next text link, no image) became
+   "Related Projects" (a grid of thumbnail cards).** Per "Replace the
+   section that says "next project" to be replaced with "Related
+   projects" instead, let it show thumbnails of about 2 or 3 projects,"
+   `CaseStudyLayout.tsx`'s `next: ContentEntry<WorkFrontmatter> | null`
+   prop was replaced with `related: ContentEntry<WorkFrontmatter>[]`,
+   and the closing block became a centered "Related Projects" label
+   over a `grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3` of
+   cards — each a `WorkImage` (`aspect-[4/3]`, the same
+   `grayscale`→`group-hover:grayscale-0` hover treatment used
+   sitewide, see "Image treatment" above) plus a title underneath,
+   linking to `/work/<slug>`. `src/app/work/[slug]/page.tsx` now
+   computes up to 3 entries instead of 1: `Array.from({ length:
+   Math.min(3, allWork.length - 1) }, (_, i) => allWork[(currentIndex +
+   1 + i) % allWork.length])` — the same cyclic-next logic as before,
+   just walking 3 steps forward through `getAllWork()`'s order instead
+   of 1, and naturally shrinking (to 2, 1, or 0) on a site with fewer
+   than 4 total case studies rather than assuming there are always 3
+   others available. The section is conditionally rendered
+   (`related.length > 0`), same guard style as the old `next &&` check.
+
+Confirmed via Playwright at 1440×900 and 390×844 (scrolling
+incrementally before each screenshot, per the established lazy-load
+capture caveat — see "Motion" above): at both sizes, no text on the
+page reads "02 — The Challenge" or any other eyebrow string, and no
+text reads "Next Project"; the hero copy's `getComputedStyle` padding
+reads `96px`/`96px` (desktop) and `64px`/`64px` (mobile) top/bottom,
+and the "Understanding the Challenge" text section's wrapper measures
+the identical values; the "Related Projects" heading is present with
+exactly 3 linked thumbnail cards beneath it (on Orbit Interiors:
+Sigma Studio Academy, Aura Financial Platform, House of Trust for
+Peace — the 3 entries cyclically following it in `getAllWork()`'s
+last-edited order), rendering as a 3-column row on desktop and a
+single stacked column on mobile.
+
 ## Work index: single-row cards with overlaid copy and Show More/Less
 
 Per direct request ("Make the work cards one on a single row, as you did

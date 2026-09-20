@@ -26,10 +26,13 @@ export default async function WorkCaseStudyPage({ params }: PageProps<"/work/[sl
 
   const allWork = getAllWork();
   const currentIndex = allWork.findIndex((e) => e.slug === slug);
-  const next = allWork.length > 1 ? allWork[(currentIndex + 1) % allWork.length] : null;
+  const relatedCount = Math.min(3, allWork.length - 1);
+  const related = Array.from({ length: Math.max(relatedCount, 0) }, (_, i) =>
+    allWork[(currentIndex + 1 + i) % allWork.length]
+  );
 
   return (
-    <CaseStudyLayout entry={entry} next={next}>
+    <CaseStudyLayout entry={entry} related={related}>
       <MDXRemote source={entry.content} />
     </CaseStudyLayout>
   );
