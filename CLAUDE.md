@@ -1483,6 +1483,23 @@ full "Healing Room Medical Services" wordmark, Aggies Kitchen, L&J
 Construction, RVTC, and Felas Vestures) render as clean white marks
 against the dark band, consistent with every earlier logo.
 
+## Home page "Trusted by teams" band: Aggies Kitchen removed (17 logos)
+
+Per direct request ("Please remove aggies kitchen logo from the logo's
+in the 'trusted by teams...' section"), the Aggies Kitchen entry was
+dropped from `CLIENTS` in `ClientLogos.tsx` — 18 → 17 logos. Unlike
+every earlier image swap on this site (where a superseded asset is kept
+in `public/` per convention), this is an outright removal rather than a
+replacement, so the now-unreferenced
+`public/images/clients/aggies-kitchen.png` was deleted rather than left
+behind as dead weight. `LogoStrip`'s `Math.ceil(length / 2)` mobile
+split needed no code change — it's length-driven, so 17 logos just
+produces an uneven 9/8 split automatically. Confirmed via Playwright at
+a 1440px viewport: the `sr-only` announcement text lists all 17
+remaining names with no "Aggies Kitchen", no `img` element's `src`
+contains `aggies`, and the desktop strip's `img` count is 68 (17 × 2 ×
+2, matching the doubled marquee track — was 72 at 18 logos).
+
 ## Home page "Trusted by teams" band: full-bleed, matching Selected Work
 
 Per direct follow-up ("Can you make that section full viewport like you
@@ -1773,7 +1790,881 @@ study from `/work` automatically updates this grid — no changes needed
 here unless the curation logic itself (which entries, in what order)
 should change.
 
+## New case study: Orbit Interiors (initial pass — image curation since superseded)
+
+**The specific images chosen/cropped for each section in this pass were
+superseded** — see "New case study: Orbit Interiors, rebuilt onto the
+sections model" further below, which replaced the bento-template
+Challenge/Insight/Strategy/Impact + Design-grid structure entirely and,
+per a direct follow-up instruction not to interchange images between
+folders, dropped this pass's cropped-hero-substitute technique. The
+Google Drive access path, the disk-spill download workaround, and the
+"READ ME FIRST doc as the copy/structure source" discovery documented
+here are all still accurate and still in use — only the specific image
+selections and the page template they were placed into changed.
+
+Per direct request ("Above is the link of a case study i need you to put on
+my work page... read the 'READ ME FIRST' document" — a Google Drive folder
+link), a real case study (`src/content/work/orbit-interiors.mdx`) was added
+using source copy and image assets pulled from that folder — the site's
+first fully-sourced-from-Drive case study.
+
+**Access path**: `drive.google.com` is blocked by this environment's
+network egress proxy (confirmed via both a direct `curl`/`gdown` attempt
+and the `WebFetch` tool, both `EGRESS_BLOCKED`/403) — no amount of the
+folder's own sharing settings changes that, since the block is on the
+session's outbound network, not the file's permissions. Direct URL access
+was a dead end regardless of link-sharing settings. The fix was connecting
+the **Google Drive MCP connector** (`ListConnectors`/`SearchMcpRegistry`
+confirmed it existed in the registry but wasn't installed) — once the user
+connected and enabled it for the chat, its tools
+(`search_files`/`read_file_content`/`download_file_content`) reach Drive
+through Anthropic's authenticated backend rather than this session's own
+sandboxed network, sidestepping the egress block entirely. This is the
+path to reach for any future "here's a Drive/Docs/Sheets link" request —
+don't retry raw network fetches once EGRESS_BLOCKED is confirmed, go
+straight to suggesting the connector.
+
+**The "READ ME FIRST" doc** (`search_files` with `parentId = '<folder id>'`
+located it, `read_file_content` returned its text) is the copy source and
+laid out both the full case-study copy *and* an explicit instruction for
+how to structure the page: "01 — Hero, 02 — The Challenge, 03 — The
+Strategy, 04 — The Identity, 05 — The System, 06 — Final Statement," each
+paired with a same-named image subfolder, plus "make sure you reduce the
+size of the images before using on the site." The subfolders were `Hero`,
+`The Challenge`, `The Strategy`, `The Identity`, `The System` (found via
+the same `parentId` search pattern, one call per folder).
+
+**That structure doesn't name an "Insight" section**, but it maps cleanly
+onto the site's existing, unchanged `CaseStudyLayout.tsx` template (which
+*does* hard-code Challenge/Insight/Strategy/Impact + a "05 — The Design"
+image grid — see "Work index and case study page: bento redesign" above)
+without needing any template changes: the doc's "Strategy" paragraph
+itself splits naturally into an analytical insight ("spaces should reflect
+the identity of the people who inhabit them") and the resulting big idea
+("COME ALIVE"), so `insight` and `strategy` frontmatter fields were drawn
+from the same paragraph's two halves rather than invented from nothing;
+the doc's "Identity" + "System" copy (which the template has no dedicated
+long-form field for) went into the `.mdx` body under `## The Identity` /
+`## The Brand System` headings — the same "Extended notes"-style body
+convention `house-of-trust-for-peace.mdx` already established — closing
+with the client's own "COME ALIVE." final-statement line as an italicized
+closer, matching that file's own closing-italic-paragraph pattern.
+`category`/`tags`/`year`/`client` were read directly off the doc's own
+"Client / Industry / Year / Scope" summary line at the bottom.
+
+**Image downloads hit a hard tool limit, worked around without ever
+loading raw image data into context**: `download_file_content` returns
+base64 file content, but any result over roughly 100K characters gets
+diverted to a `tool-results/*.txt` file on disk instead of being handed
+back inline (confirmed empirically — even a 148KB PNG's ~198K-character
+base64 tripped this), and files at or above ~10MB fail outright (one
+21.9MB file returned an explicit "File too large... over limit of 10 MB"
+error; several ~9-10MB files instead failed with a generic "session
+expired" — both outcomes treated the same way: pick a different, smaller
+source image rather than keep retrying). The workaround exploits the
+disk-spill behavior rather than fighting it: a small `decode_drive_result.py`
+script (`json.load` the spilled file, `base64.b64decode(d['content'])`,
+write the raw bytes straight to a `.png`) turns every download into a
+local file without the base64 text ever passing through the model's
+own context window — this is the pattern to reuse for any future
+Drive-image pull, not re-deriving it from scratch.
+
+**The one file in the dedicated `Hero` folder (`Billboard_Mockup_2.png`,
+9.9MB) never downloaded successfully** despite five separate retries
+across two reconnects (mix of "File too large"/"session expired") — with
+no smaller alternative in that folder, the coverImage was sourced instead
+by **cropping a clean interior photo out of a different, already-downloaded
+image**: `RollUp Banner_01.png` (a product-mockup render, 987KB, from `The
+System` folder) has a large embedded lifestyle photo (a warm-toned
+armchair/floor-lamp scene) inset within the rendered banner-stand mockup.
+A `PIL` crop isolating just that embedded photo region (found by
+eyeballing the mockup's layout, then tightened using a background-color-
+diff bounding-box script rather than more guesswork) produced a clean,
+text-free, frame-free interior shot with no visible trace of the banner
+mockup it came from — used as `coverImage`. The Challenge gallery slot
+used the same crop-out-of-a-slide technique on `Brand Book-32.png` (a
+brand-book "Photography" page with a full-bleed kitchen photo and a large
+"Photography" title baked directly into the pixels): the numpy
+background-diff bounding-box script found the photo's true edges, and a
+crop of the slide's clean right-hand portion (away from both the title
+and its body-copy block) produced a usable kitchen-detail shot. **This
+crop-a-slide technique — diff against the flat page background to find
+the true image bounds, then crop to a region clear of any baked-in text
+— is the fallback whenever a "clean" source photo isn't available but a
+text-and-photo composite slide is.**
+
+**Final gallery mapping** (all processed through the same pipeline: PIL
+resize to a 1600px-max width where larger, re-encoded as WebP at quality
+82, written to `public/work/orbit-interiors/` — a new directory,
+following the `public/work/...` local-path convention documented under
+"Content model" above rather than Cloudinary, since these are one-off
+assets for a single case study, not a recurring need): `gallery[0]`
+Challenge = the cropped kitchen detail; `gallery[1]` Insight =
+`Logo-Moodboard.png` (the logo's early exploratory sketches — reads as
+"the insight/process" beat); `gallery[2]` Strategy =
+`Creative-Direction_FULL.png` (the three-concept creative-direction
+moodboard); `gallery[3]` Impact = the *un-cropped* `RollUp Banner_01.png`
+mockup (showing the brand actually applied in the world doubles as a
+fitting "impact" visual, distinct from its cropped-interior use as
+`coverImage`); `gallery[4]`–`[6]` (the "05 — The Design" tiles) =
+`Brand Book-22.png`/`Brand Book-27.png`/`Brand Book-24.png` (clean logo-
+intro, logo-construction-grid, and pattern-swatch brand-book pages, all
+already free of stray text/chrome once cropped to their own slide
+bounds — no further cropping needed for these three). Every processed
+file landed under 400KB (`design-3.webp`, the pattern texture, is the
+largest at 382KB — a high-frequency repeating pattern compresses worse
+than photography), satisfying the doc's own "reduce the size of the
+images" instruction by a wide margin.
+
+Confirmed via Playwright at 1440×900 and 390×844: the hero photo, the
+4-tile gallery, all four narrative beats' copy, the three Design tiles,
+the MDX body (Identity/Brand System sections + closing italic), and the
+"Next Project" teaser (cyclically pointing at `house-of-trust-for-peace`,
+the entry the ordering rule now places right after it) all render
+correctly at both sizes — and, since `getAllWork()`'s ordering is by
+last-edited-commit (see "Ordering is by last edit" above), the new entry
+being the most recently added correctly makes it the hero tile on both
+`/work`'s index (now rendered via the single-row `WorkCard`/`WorkIndex`
+layout documented above) and Home's full-bleed `SelectedWorkGrid`.
+
+## Case study page rebuilt: ordered text/image sections, not a fixed template
+
+Per direct request ("adjust the case study page to just a simple page that
+can accept text and images in the order specified by the READ ME file...
+let the image columns be a maximum of 2 columns... images should always
+be full bleed of the case study page... use all the images as specified
+in the READ ME FIRST docs without changing it or even interchanging the
+image folders... compress heavy images to smaller sizes... without
+affecting the image quality"), the case-study body was rebuilt from a
+fixed Challenge/Insight/Strategy/Impact + "05 — The Design" template
+(documented above, now superseded — see its own superseded-note) into a
+**generic ordered list of blocks**, each either text or images, rendered
+in exactly the order a case study's own frontmatter specifies. This is a
+deliberate, direct override of the "Case studies always follow the 5-part
+[Challenge→Insight→Strategy→Design→Impact] structure" brand-voice rule
+documented above (sourced from `docs/WEBSITE-STRATEGY.md`) — that
+convention remains a *reasonable default* to reach for (every existing
+case study still uses it), but it's no longer enforced by the template
+itself, since a client's own brief (like Orbit Interiors' READ ME FIRST
+doc, which used Hero/Challenge/Strategy/Identity/System/Final Statement —
+no "Insight," a different section named "Identity"+"System" instead of
+"Design") won't always match that exact shape.
+
+**`src/lib/content.ts`**: `WorkFrontmatter`'s `challenge`/`insight`/
+`strategy`/`impact`/`gallery` fields are gone, replaced by
+`sections: WorkSection[]`, a discriminated union:
+```ts
+export interface WorkTextSection {
+  type: "text";
+  eyebrow?: string;   // e.g. "01 — The Challenge"
+  heading?: string;
+  body: string;
+}
+export interface WorkImageSection {
+  type: "images";
+  images: string[];   // 1 or 2 — never more; split into multiple sections for more
+}
+export type WorkSection = WorkTextSection | WorkImageSection;
+```
+The hero block (title/chips/summary/`coverImage`) is **not** part of
+`sections` — every case study needs those regardless of its own section
+flow, so they stay as their own top-level frontmatter fields, unchanged
+from before. Everything after the hero is just `sections`, rendered
+in array order with no hardcoded headings/numbering — `eyebrow`/
+`heading` are optional per section precisely so a future case study
+that doesn't want the "01 — The Challenge" numbering convention doesn't
+have to use it.
+
+**`CaseStudyLayout.tsx`** was rewritten around this: the `BEATS`/
+`GALLERY_SPAN` arrays and the hardcoded "05 — The Design" block are
+gone. It now maps over `frontmatter.sections`: a `text` section renders
+in a constrained `max-w-3xl mx-auto px-6` column (the same width the
+old beats used) with its optional eyebrow/heading above a body
+paragraph; an `images` section renders as a **plain sibling `div` with
+no `max-w`/`px-*` wrapper at all** — the same full-viewport-bleed
+technique `SelectedWorkGrid`/`ClientLogos` already use elsewhere (see
+"Full-bleed sections" above) — one image fills the full section at
+`aspect-[21/9]`, two images split into a `sm:grid-cols-2` row at
+`aspect-[4/5]` each (matching the "max 2 columns" ask exactly; a
+hypothetical 3rd+ image in one YAML block is silently ignored via
+`.slice(0, 2)` — write it as two sections instead). Both aspect ratios
+reuse values already established elsewhere on the site (`SelectedWorkGrid`'s
+own hero/grid tiles) rather than inventing new ones. `object-cover`
+inside both crops/resizes each photo to fill its frame exactly, which is
+the "crop to fit the frame" latitude the request explicitly allowed.
+Confirmed via Playwright at 1440px and 390px: single-image sections
+measure the full viewport width (`left: 0`, `width` = viewport width);
+two-image sections split into two equal `left: 0`/`left: <half>` tiles —
+genuinely full-bleed, not just visually close.
+
+The old trailing `.prose prose-invert` MDX body (`children`, still
+rendered via `<MDXRemote source={entry.content} />` in
+`work/[slug]/page.tsx`, unchanged) is kept but now **conditionally
+rendered** — `{entry.content.trim() && (...)}\` — the same
+optional-preview-block pattern already established for Resources (see
+"Resources: lead magnets and assessments" above), since most case
+studies now put everything through `sections` and have nothing left
+over for a trailing body; `house-of-trust-for-peace.mdx` still uses it
+for its "Design principles" numbered list and "Outcome" bullet list,
+which don't fit cleanly into a single YAML string body.
+
+**All 5 existing work entries were migrated to the new schema in the
+same pass** — this was a breaking content-model change, not something
+that could be limited to just the new entry:
+- `sigma-studio-rebrand.mdx`, `academy-launch-system.mdx`,
+  `aura-financial-platform.mdx` — each had no gallery images to begin
+  with, so their migration was mechanical: the same four challenge/
+  insight/strategy/impact strings became four `text` sections with the
+  same eyebrow/heading pairs the old hardcoded `BEATS` array used
+  (`"01 — The Challenge"` / `"Understanding the Challenge"`, etc.) —
+  visually identical to before, just data-driven now instead of
+  template-driven.
+- `house-of-trust-for-peace.mdx` — its 3 Cloudinary gallery images
+  (previously consumed positionally as beat-adjacent images 0–2) became
+  two `images` sections: a 2-image section (`Participant_Profiles`,
+  `Participant_Profiles_01`) placed right after the Challenge text, and
+  a 1-image section (`Free_Poster_Mockup_1`) placed after the Strategy
+  text — preserving the same three photos, just as explicit ordered
+  blocks instead of implicit index-based slots. Its `coverImage` and
+  MDX body (design-principles list, outcome list, closing italic) are
+  untouched.
+
+## New case study: Orbit Interiors, rebuilt onto the sections model
+
+`orbit-interiors.mdx` (added in the previous pass, see below) was
+rewritten to use the new `sections` schema, following the READ ME FIRST
+doc's **own explicit order** (02 Challenge → 03 Strategy → 04 Identity →
+05 System → 06 Final Statement — "01 Hero" is the page's fixed hero
+block, not a `sections` entry) with every successfully-downloaded image
+placed under its own section, in its own source folder's listing order,
+never borrowed from a different folder's section:
+
+- **02 — The Challenge**: text only. *No images* — see the blocked-files
+  note below; the Challenge folder's both images failed to download.
+- **03 — The Strategy**: text, then two 2-image sections in the
+  Strategy folder's own order — `[Creative-Direction_FULL, Logo-Moodboard]`,
+  `[Brand Book-08 ("Know Our Personality"), Brand Book-10 ("Big Idea —
+  Come Alive")]`. All 4 of the Strategy folder's images are used.
+- **04 — The Identity**: text, then `[Brand Book-34, Brand Book-27]`
+  (2-image) and `[Brand Book-22]` (1-image), in folder order. All 3 of
+  the Identity folder's images are used.
+- **05 — The System**: text, then `[Brand Book-32 ("Photography"),
+  Brand Book-24 ("The Pattern")]` (2-image) and `[RollUp Banner_01]`
+  (1-image, used here as the full, uncropped product mockup — unlike
+  the previous pass, which cropped a photo out of it for the hero; this
+  pass keeps every image whole per the "don't crop unless fitting the
+  frame" instruction, cropping only for aspect-ratio fit via
+  `object-cover`, never to extract a different sub-image). Only 3 of
+  the System folder's 8 images downloaded successfully — see below.
+- **06 — Final Statement**: text only (`"COME ALIVE. Making spaces and
+  individuals come alive."`), no folder/images in the original doc.
+
+All 10 images were reprocessed from the same raw downloads as the
+previous pass (`public/work/orbit-interiors/{strategy,identity,system}-N.webp`,
+replacing that pass's differently-named/differently-curated set — the
+old `hero.webp`/`challenge.webp`/`insight.webp`/`impact.webp`/`design-N.webp`
+files were deleted, since this pass's per-folder naming and the "use
+every image, don't interchange" rule superseded that curation entirely):
+`PIL`, resized to a 1800px-max width (up from the previous pass's 1600px,
+since these now render full-viewport-width rather than inside a bento
+tile) and re-encoded as WebP at quality 88 (up from 82, per the "without
+affecting image quality" instruction) rather than a more aggressive
+compression. Every file landed under 600KB (the "The Pattern" repeating-
+texture swatch, `system-2.webp`, is the largest at 576KB — a
+high-frequency pattern always compresses worse than a photo or a mostly-
+flat brand-book slide).
+
+**8 of the 18 total source images could not be downloaded — this is a
+confirmed, reproducible tool limitation, not a choice.** The Google
+Drive connector's `download_file_content` tool (see "New case study:
+Orbit Interiors" below for how the connector itself was set up) returns
+inline base64 for small files, auto-spills anything over roughly 100K
+characters of base64 to a `tool-results/*.txt` file instead (confirmed
+harmless — a `decode_drive_result.py` helper script decodes that spilled
+JSON straight to a binary file without ever pulling the raw base64
+through the model's own context), but **hard-fails on anything roughly
+≥9MB** — sometimes with an explicit "File too large... over limit of 10
+MB" error, sometimes with a generic "MCP server session expired" for
+files right around 9–10MB (both treated as the same outcome: the file
+cannot be fetched by this tool, full stop — retrying a "session expired"
+failure on the same file reliably reproduces it again, this isn't
+transient flakiness). Every file below ~1MB succeeded on the first try;
+nothing between 8.9MB and 24.7MB ever succeeded across roughly a dozen
+attempts spread over several tool-session reconnects. The 8 blocked
+files, by their own folder (not reassigned, not substituted — left
+out of the case study entirely pending the user's direction):
+- **Hero**: `Billboard_Mockup_2.png` (9.9MB) — the *only* file in this
+  folder, so `coverImage` is currently unset on this entry (falls back
+  to the sitewide gradient placeholder, same as any other unset image
+  slot — see "Content model" above).
+- **The Challenge**: `Logo Mockup.png` (14MB), `Billboard_Mockup_3.png`
+  (21.9MB) — both of this folder's images, so the Challenge section
+  currently has no image block at all.
+- **The System**: `Notebook Mockup.png` (9.7MB), `T-shirt Mockup_04.png`
+  (11MB), `cap-mockup.png` (8.9MB), `Orbit Interiors Business-Card-
+  Mockup_02.png` (9.9MB), `Billboard_Mockup_4.png` (24.7MB) — 5 of this
+  folder's 8 images; the 3 that did download are used (see above).
+
+Per the direct instruction not to interchange or substitute images
+across folders, **no workaround was applied for these 8** (unlike the
+previous pass, which cropped a stand-in hero photo out of a different
+folder's image — a choice this pass's explicit instruction supersedes).
+Getting these into the case study needs either a smaller re-export of
+each specific file from the client (well under ~9MB, e.g. resized/
+re-compressed before re-sharing to Drive) or explicit sign-off to relax
+the no-substitution rule for just these 8 — flagged to the user directly
+rather than guessed at.
+
+Confirmed via Playwright at 1440px and 390px (scrolling incrementally
+before each full-page screenshot — `next/image`'s native lazy-loading
+means an instantly-captured `fullPage` shot below the fold can show
+unloaded images as flat gradient-placeholder-only blocks even though the
+`<img>` tag and `src` are both correct; this is the same capture-timing
+caveat already documented under "Motion" above for `whileInView`
+reveals, just for image lazy-loading instead of scroll-triggered
+animation — always scroll through incrementally first, don't trust a
+one-shot `fullPage` capture for a page with off-screen images): every
+section renders in its specified order, both 2-image and 1-image blocks
+render full-bleed, and `house-of-trust-for-peace.mdx`'s migrated
+sections (its Cloudinary images render as broken-image alt text in this
+specific sandboxed test environment only — the same pre-existing
+`drive.google.com`-adjacent Cloudinary-egress limitation documented in
+the previous pass, confirmed unrelated to this change) still show the
+correct text/section structure and its MDX body's numbered/bulleted
+lists intact.
+
+## Orbit Interiors: image re-download retry, rectangular-vs-square section layout, full-bleed hero
+
+Per direct follow-up ("The 8 images re-uploaded, Please try again"), the
+user re-exported and re-uploaded the 8 files that failed in the previous
+pass (all originally 8.9MB–24.7MB) at smaller sizes (6.2MB–9.1MB — still
+right around the connector's practical ceiling, not comfortably under
+it). Retried `download_file_content` on all 8: **only 1 of 8 succeeded**
+(`T-shirt Mockup_04.png`, 6.2MB, System folder — succeeded on the very
+first attempt) — the other 7 (including files as small as 6.3MB, well
+under the previously-confirmed ~9MB ceiling) failed with "MCP server
+session expired" on every retry across roughly 15 attempts spread across
+several reconnects. This is a **different failure mode than the previous
+pass's**: previously, failure correlated cleanly with file size (≥9MB
+failed, everything smaller succeeded reliably); this time even small
+files failed the majority of the time, pointing to the Drive MCP
+connector itself being in a broadly unstable state that session, not a
+per-file size problem. `get_file_metadata` calls against the same file
+IDs succeeded reliably throughout, confirming the instability was
+specific to the (much larger-payload) `download_file_content` call, not
+a lost connection to Drive generally.
+
+**7 of the 8 files remain undelivered as of this pass**: `Billboard_Mockup_2.png`
+(Hero, 7.3MB — so `coverImage` is still unset, still falling back to the
+gradient placeholder), `Logo Mockup.png` (8.9MB) and `Billboard_Mockup_3.png`
+(6.8MB, both Challenge — so the Challenge section is still text-only),
+and `Notebook Mockup.png` (6.9MB), `cap-mockup.png` (7.6MB),
+`Billboard_Mockup_4.png` (9.1MB), and `Orbit Interiors Business-Card-Mockup_02.png`
+(6.3MB, all System). Per the same "don't substitute across folders"
+instruction still in force, none of these were worked around — getting
+them in still needs either a re-attempt once the connector is stable
+again, or the user re-exporting them smaller still.
+
+**The one successful download (`system-1.webp` = the T-shirt mockup) was
+inserted into the System folder's own listing position**, not appended —
+the System folder's own file order is Notebook Mockup, cap-mockup,
+Billboard_Mockup_4, **T-shirt Mockup_04**, Business-Card-Mockup, Brand
+Book-32, Brand Book-24, RollUp Banner_01, so the already-downloaded trio
+(previously `system-1`/`system-2`/`system-3` = Brand Book-32/Brand
+Book-24/RollUp Banner_01) were renamed up a slot each
+(`git mv system-3→system-4`, `system-2→system-3`, `system-1→system-2`)
+before the new file was written to `system-1.webp`, keeping the
+numbering in the folder's own order as more of its files arrive later.
+
+**Separately, the user flagged that the existing images "do not fit well
+in the sizes of the frames of the case study page"** and gave the fix
+directly: rectangular images should render as single full-row sections,
+square images should pair into two-column sections. Checking every
+downloaded Orbit Interiors source image's actual aspect ratio (`PIL`)
+showed **all 11 are landscape/rectangular** — 8 of the brand-book/
+creative-direction/logo-moodboard slides are 1920×1080 (1.78:1), the
+rollup-banner mockup is 3000×2000 (1.5:1), and the new T-shirt mockup is
+2250×1500 (1.5:1); none are anywhere near square. This explained the fit
+complaint directly: the *previous* pass's pairing (folder-order-based,
+not shape-based) had put several of these same 16:9/3:2 landscape images
+into the two-column slot, which forced them into `CaseStudyLayout.tsx`'s
+`aspect-[4/5]` frame — a **portrait** box — for a landscape source image,
+cropping away most of the image's width to fill a taller-than-wide frame.
+
+Fixed in two parts:
+1. **`orbit-interiors.mdx`'s `sections` array was rebuilt so every image
+   is its own single-image section** (full-row, `aspect-[21/9]` frame) —
+   since every currently-available image is rectangular, none currently
+   use the two-column layout; that's a correct outcome of the new rule,
+   not a shortcut, given none of the source photography is square-ish.
+   Order within each folder's images is unchanged (folder listing order,
+   per the "don't interchange folders" constraint still in force) — only
+   the *grouping* (1-per-section instead of 2-per-section) changed. If a
+   future re-export of the still-blocked files (cap-mockup, notebook
+   mockup, business-card mockup — product-photography mockups that are
+   plausibly closer to square) turns out genuinely square-ish once
+   downloaded, those should pair into two-column `images` sections
+   instead of single-row ones, per this same rule.
+2. **`CaseStudyLayout.tsx`'s two-column frame aspect ratio changed from
+   `aspect-[4/5]` (portrait) to `aspect-square`** — a literal 1:1 box,
+   matching what "square" images actually need rather than a portrait
+   crop. This is a shared, sitewide change (the component is used by
+   every case study, not just Orbit Interiors) — intentional, since the
+   user's fix ("square ones can occupy the rows that have two columns")
+   describes a general layout rule, not an Orbit-specific tweak. The
+   single-row frame (`aspect-[21/9]`) was already a wide/rectangular
+   shape and needed no change.
+
+**The hero was also restructured** per the same message ("the hero image
+should equally take the full bleed, while the copy goes above"): the
+previous `lg:grid-cols-12` side-by-side split (text in a `lg:col-span-5`
+column, `coverImage` cropped into a portrait `aspect-[4/5]` box in a
+`lg:col-span-7` column) is gone. The copy (title, chips, summary) now
+renders first, in the same constrained `mx-auto max-w-3xl px-6` column
+every text `section` below it already uses (for visual consistency with
+the rest of the page, not a new width convention); the cover image
+renders immediately after, **full-bleed** — no `max-w` wrapper, spanning
+the full viewport edge to edge — using the exact same `aspect-[21/9]`
+frame the single-image body sections use ("equally take the full bleed"
+read literally: the hero image gets the identical full-bleed treatment,
+not a bespoke one). The `rounded-2xl border border-line` treatment the
+old boxed hero image had was dropped along with the box itself — no
+other full-bleed image on the site carries a border/radius, and the hero
+is now one of them. The `grayscale` → hover-color transition was kept.
+
+Confirmed via Playwright at 1440×900 and 390×844 (scrolling incrementally
+before each full-page screenshot, same lazy-load caveat as above):
+`heroCopy` (the `h1`) sits above and is width-constrained; the hero image
+wrapper measures `left: 0` and `width` equal to the full viewport at both
+sizes (genuinely full-bleed, not just visually close); every body image
+section (`strategy-1` through `system-4`) measures the same full-viewport
+width at a `21:9` ratio. **One real bug surfaced and was fixed during
+this verification, unrelated to the code change itself**: the first
+screenshot showed the wrong image at several positions (the System
+section's `system-1` slot showing the "Photography" brand-book slide
+instead of the new T-shirt mockup, and the rollup-banner mockup
+appearing twice) — root-caused to a **stale `.next/cache/images` entry
+plus a leftover `next start` process from earlier in this session**: the
+Next.js image optimizer cache had transformed copies of `system-1.webp`
+etc. from *before* this pass's `git mv` renames, and the old server
+process was still serving them under the same URLs. Fixed by killing the
+stale `next-server` process (`ps aux | grep next-server`, `kill -9`),
+clearing `rm -rf .next/cache/images`, and restarting on a fresh port —
+re-verified via a direct `curl` of `/_next/image?url=...system-1.webp...`
+showing the correct T-shirt mockup content before re-running the full
+Playwright pass, which then showed every image in its correct slot with
+no duplicates. **This is a reusable lesson**: after renaming/replacing
+files under `public/work/<slug>/...` mid-session, restart the dev/prod
+server and clear `.next/cache/images` before trusting a screenshot —
+Next's image optimizer cache can silently outlive a source-file rename.
+
+`house-of-trust-for-peace.mdx`'s existing 2-image section (`Participant_Profiles`/
+`Participant_Profiles_01`) now renders in the new `aspect-square` frame
+instead of the old `aspect-[4/5]` — spot-checked via Playwright at
+1440×900; the two images still render as broken-image alt text in this
+sandboxed environment (the same pre-existing Cloudinary-egress
+limitation noted above, unrelated to this change) but the layout
+structure (full-bleed hero below copy, two equal-width square-framed
+tiles side by side) is confirmed correct and unaffected.
+
+## Case study full-bleed image frame: 21:9 changed to 16:9
+
+Per direct request ("adjust the height of the full bleed image cards;
+instead of the current 1920 by 823 px, make it 1920 by 1080 px instead"),
+`CaseStudyLayout.tsx`'s single-image frame changed from `aspect-[21/9]`
+(1920×823 at a 1920px viewport) to `aspect-[16/9]` (1920×1080) — a
+taller, less extreme crop. This is the frame shared by **both** the hero
+cover image and every single-image body `section` (the "rectangular"
+treatment from the pass above); the two-image `aspect-square` frame was
+untouched, since the request named only the full-bleed cards specifically.
+Confirmed via Playwright at a 1920px viewport: the hero image and every
+single-image section now measure exactly `1920×1080` (`ratio: 1.778`),
+up from `1920×823` (`ratio: 2.333`).
+
+**This session's container had a stale local git checkout** — pinned to
+an old pre-squash-merge commit (`98a13eb`, whose content had already
+landed on `origin/main` as the squashed `3200dc1`) rather than the branch
+tip. `origin/claude/personal-website-strategy-vatzoh` itself was correct
+and fully up to date (merge-base with `origin/main` was `origin/main`'s
+own tip, confirming a clean fork with no missing history) — only this
+particular session's local working copy lagged behind by several commits,
+including the entire Orbit Interiors sections-model rebuild. Caught before
+editing anything, since the file's actual content (still the old bento
+`BEATS`/`GALLERY_SPAN` template) didn't match what should have been
+current — fixed with `git checkout -B claude/personal-website-strategy-
+vatzoh origin/claude/personal-website-strategy-vatzoh` (working tree was
+already clean, confirmed via `git status --short` before resetting).
+**Lesson for any future session that finds a file's content doesn't match
+what CLAUDE.md or recent conversation history says it should be**: check
+`git status --short --branch` for an `ahead/behind` mismatch against the
+tracked remote branch before assuming the documentation is wrong or the
+work was lost — it may just be a stale local checkout in a fresh
+container, fixable with a reset rather than redoing the work.
+
+## Orbit Interiors: 4 of the last 7 blocked images finally downloaded
+
+Per direct follow-up ("Retry the downloads now"), the 7 still-blocked
+Drive files were retried: `get_file_metadata` on the old file ID for
+`Orbit Interiors Business-Card-Mockup_02.png` came back "Requested
+entity was not found" — a different failure mode than the earlier
+"session expired" errors, which turned out to mean the file had been
+re-uploaded again under a **new file ID** since the last check.
+Re-searching all three Drive folders (`search_files` with
+`parentId = '<folder id>'`) found **4 of the 7 files re-uploaded yet
+again, this time much smaller** (818KB–3.2MB, well under the
+connector's practical ceiling, vs. 6.3–9.1MB the previous round):
+`cap-mockup.png`, `Orbit Interiors Business-Card-Mockup_02.png`,
+`Logo Mockup.png`, and `Billboard_Mockup_2.png` (Hero) — all 4
+downloaded successfully on the first attempt at their new IDs. The
+other 3 (`Notebook Mockup.png`, `Billboard_Mockup_4.png`,
+`Billboard_Mockup_3.png`) were **not** re-uploaded this round — same
+old file IDs, same old sizes (6.8–9.1MB) — and failed with the
+familiar "session expired" error across several retries, so they
+remain blocked.
+
+**Checking each new image's actual aspect ratio changed the plan for
+where it goes**, per the rectangular-vs-square rule established in the
+previous pass:
+- `Billboard_Mockup_2.png` (Hero) is 1920×1080 — landscape, and as it
+  happens an exact match for the hero frame's own `aspect-[16/9]` ratio
+  (see the pass above that changed the hero/single-image frame to
+  16:9). Set as `coverImage` (`/work/orbit-interiors/hero.webp`) — the
+  entry's first real cover image; it previously always fell back to the
+  gradient placeholder.
+- `Logo Mockup.png` is 1920×823 (21:9) — landscape/rectangular. Added
+  as a new single-image `images` section (`challenge-1.webp`) right
+  after the Challenge text block, which previously had no image at all.
+- `cap-mockup.png` and `Orbit Interiors Business-Card-Mockup_02.png`
+  are **both exactly 958×958 — genuinely square**, the first images in
+  this case study to actually qualify for the two-column `aspect-square`
+  frame (every image in the previous pass was landscape). Paired
+  together into one 2-image `images` section.
+
+**Pairing the two square images meant breaking their strict folder-listing
+order** — a deliberate, narrow exception to the "preserve folder order"
+convention from the previous pass. The System folder's true listing
+order (among files actually downloaded) is `cap-mockup` (position 2),
+`T-shirt Mockup_04` (position 4, already placed as `system-1.webp` from
+the prior pass), `Business-Card-Mockup_02` (position 5), then the three
+already-placed singles. Since `cap-mockup` and `business-card-mockup`
+only make visual sense paired together (identical dimensions, both
+product-mockup photography, unlike the brand-book slides and rollup
+banner around them), they were grouped into one section ahead of
+`T-shirt Mockup_04`, which shifted from `system-1` to `system-3`:
+`git mv system-4→system-6`, `system-3→system-5`, `system-2→system-4`,
+`system-1→system-3` (each prior single moved up two slots), then
+`cap-mockup.png` → new `system-1.webp` and
+`Business-Card-Mockup_02.png` → new `system-2.webp`, paired in one
+`images` section. This is the one deliberate case where "shape trumps
+strict folder order" — every other image in this case study, across
+both passes, still follows its folder's own listing order exactly.
+
+All 4 new images went through the same pipeline as before: `PIL`,
+resized to a 1800px-max width, re-encoded as WebP at quality 88. Files
+land at `public/work/orbit-interiors/{hero,challenge-1}.webp` (new) and
+`system-1.webp`/`system-2.webp` (the new square pair, reusing the
+filenames the shifted-up singles vacated).
+
+**3 files remain blocked** as of this pass: `Notebook Mockup.png`
+(System, still no image for that folder position), `Billboard_Mockup_4.png`
+(System), and `Billboard_Mockup_3.png` (Challenge, so the Challenge
+section still shows only 1 of its folder's 2 images). Same guidance as
+before applies if these come up again: check `search_files` on the
+parent folder for a possibly-new file ID before assuming the old one
+is still valid — this pass's Business-Card-Mockup fileId lookup
+returned "entity not found" specifically because of a silent
+re-upload, a third distinct failure mode alongside "session expired"
+and "file too large."
+
+Confirmed via Playwright at 1440×900 and 390×844 (scrolling
+incrementally before each screenshot, restarting the prod server and
+clearing `.next/cache/images` first per the stale-cache lesson
+documented above, since `public/work/orbit-interiors/` files were
+renamed again): the hero photo renders full-bleed at `1440×810` (a real
+16:9 photo, not the gradient placeholder); the new Challenge image
+renders full-bleed in its own section; the `system-1`/`system-2` pair
+renders as two genuine `718×718` (desktop) / `390×390` (mobile) squares
+side by side — the first true square-framed pair on the site, visibly
+different from every landscape image elsewhere on the page cropped into
+the wide `1440×810`/`390×219` single-row frame.
+
+**The remaining 3 blocked images were abandoned by direct decision**
+("we will do without the 3 other images. I will just remove them from
+the drive") — `Notebook Mockup.png`/`Billboard_Mockup_4.png` (System)
+and `Billboard_Mockup_3.png` (Challenge) are not coming; the Challenge
+section stays at 1 of its folder's original 2 images and the System
+section stays at 6 of its original 8, and this is the case study's
+final, intended image set — not a still-open item. If the user deletes
+these from Drive as stated, a future `search_files` on those folders
+will simply show fewer files; no code or content change is needed here
+unless they ask for something new in these slots.
+
+## Case study sections: gap tightened to a flat 10px
+
+Per direct request ("reduce the top/bottom paddings/margins of the
+image cards to about 10px"), `CaseStudyLayout.tsx`'s sections list —
+previously `mt-20 flex flex-col gap-16 md:mt-40 md:gap-20` (64px mobile/
+80px desktop between the hero image and the first section, and between
+every subsequent section) — changed to `mt-[10px] flex flex-col
+gap-[10px] md:mt-[10px] md:gap-[10px]`: a flat 10px at every breakpoint,
+both the hero-to-first-section gap and every inter-section gap.
+
+This applies uniformly to **every** section in the flow, text and image
+alike, not just the `images`-type ones — the container uses a single
+CSS `gap` (via Tailwind's flex `gap-*`) shared by all children, so there
+was no way to give image sections their own tighter spacing without
+giving every text section between them extra margin to compensate (which
+nobody asked for); the literal ask ("the image cards") is satisfied
+correctly under this reading too, since on this page most cards *are*
+images — 15 of the 19 items in the flow (hero + 18 `sections` entries)
+are `images`-type, so a uniform gap change reads, in practice, almost
+entirely as "the image cards got closer together." Text sections
+picked up the same tighter rhythm as a side effect, which reads
+correctly as a genuinely tighter, more gallery-like page overall rather
+than an inconsistency.
+
+Confirmed via Playwright at a 1440px viewport: `getComputedStyle` on
+the sections container reads `marginTop: "10px"`, `gap: "10px"`; the
+gap between the hero image's bottom edge and the first section's top
+edge, and every one of the 17 gaps between the 18 `sections` entries,
+all measure exactly `10px` via `getBoundingClientRect()` — not just the
+container's CSS value, the actual rendered spacing. Screenshots at
+1440px and 390px confirm the tighter rhythm reads cleanly at both sizes
+— hero photo, Challenge text, Challenge image, and Strategy text now
+sit close together with consistent small gaps instead of the previous
+64–80px spacer between every beat.
+
+## Case study page: symmetric copy padding, eyebrow labels removed, "Next Project" replaced with "Related Projects" thumbnails
+
+Three follow-up requests on `CaseStudyLayout.tsx`, made together right
+after the 10px section-gap change above shipped ("Great! I love how it
+looks now. Let's make a few more adjustments on the case study page"):
+
+1. **Every text block's internal padding now matches the hero copy's.**
+   The hero copy wrapper (title/chips/summary) already had `pt-16
+   md:pt-24` — top padding only, no bottom. Per "I love the top/bottom
+   paddings on the hero copy. I need you to do same for every other
+   copy on the page," it became symmetric (`pt-16 pb-16 md:pt-24
+   md:pb-24`), and every `text`-type section's own wrapper div (`mx-auto
+   max-w-3xl px-6`, previously with no `py` at all) picked up the exact
+   same values (`py-16 md:py-24`). This is **internal** padding on each
+   text block, separate from and additive to the already-approved
+   `gap-[10px]` *between* sections in the flex list (documented in the
+   section above) — that gap was left untouched, since the user
+   explicitly said they loved how the page looked and only asked for
+   more of the hero-copy treatment, not a change to the inter-section
+   rhythm. In practice a text section now reads as: 10px gap → 64/96px
+   internal top padding → heading/body copy → 64/96px internal bottom
+   padding → 10px gap to the next section — the small flex gap keeps
+   sections visually close while each block's own generous internal
+   padding keeps its copy from feeling cramped against its own
+   image/text neighbors.
+2. **Eyebrow labels (e.g. "02 — The Challenge") no longer render.** Per
+   "Remove the labels from the copies; for example the heading "02 -
+   The challenge" is not needed," the `{section.eyebrow && (...)}`
+   paragraph in the text-section branch was deleted outright — only the
+   rendering was removed, not the underlying data: `section.eyebrow`
+   stays defined on `WorkTextSection` (`src/lib/content.ts`) and every
+   `.mdx` file's frontmatter keeps its `eyebrow: "..."` lines unchanged
+   (Orbit Interiors' `02 — The Challenge` / `03 — The Strategy` / `04 —
+   The Identity` / `05 — The System` / `06 — Final Statement`, and the
+   `01 — The Challenge`-style eyebrows on the other 4 case studies) —
+   cheaper to leave the field in place than to strip it from 5 content
+   files for a purely visual change, and it costs nothing since nothing
+   reads it anymore. `section.heading` (e.g. "Understanding the
+   Challenge") is unaffected and still renders — the user's own example
+   named the eyebrow specifically, not the heading. This is a
+   page-template change, so it applies uniformly across all 5 existing
+   case studies, not just Orbit Interiors — correct scope per the
+   request's plural phrasing ("the copies," not "Orbit's copies").
+3. **"Next Project" (a single cyclic-next text link, no image) became
+   "Related Projects" (a grid of thumbnail cards).** Per "Replace the
+   section that says "next project" to be replaced with "Related
+   projects" instead, let it show thumbnails of about 2 or 3 projects,"
+   `CaseStudyLayout.tsx`'s `next: ContentEntry<WorkFrontmatter> | null`
+   prop was replaced with `related: ContentEntry<WorkFrontmatter>[]`,
+   and the closing block became a centered "Related Projects" label
+   over a `grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3` of
+   cards — each a `WorkImage` (`aspect-[4/3]`, the same
+   `grayscale`→`group-hover:grayscale-0` hover treatment used
+   sitewide, see "Image treatment" above) plus a title underneath,
+   linking to `/work/<slug>`. `src/app/work/[slug]/page.tsx` now
+   computes up to 3 entries instead of 1: `Array.from({ length:
+   Math.min(3, allWork.length - 1) }, (_, i) => allWork[(currentIndex +
+   1 + i) % allWork.length])` — the same cyclic-next logic as before,
+   just walking 3 steps forward through `getAllWork()`'s order instead
+   of 1, and naturally shrinking (to 2, 1, or 0) on a site with fewer
+   than 4 total case studies rather than assuming there are always 3
+   others available. The section is conditionally rendered
+   (`related.length > 0`), same guard style as the old `next &&` check.
+
+Confirmed via Playwright at 1440×900 and 390×844 (scrolling
+incrementally before each screenshot, per the established lazy-load
+capture caveat — see "Motion" above): at both sizes, no text on the
+page reads "02 — The Challenge" or any other eyebrow string, and no
+text reads "Next Project"; the hero copy's `getComputedStyle` padding
+reads `96px`/`96px` (desktop) and `64px`/`64px` (mobile) top/bottom,
+and the "Understanding the Challenge" text section's wrapper measures
+the identical values; the "Related Projects" heading is present with
+exactly 3 linked thumbnail cards beneath it (on Orbit Interiors:
+Sigma Studio Academy, Aura Financial Platform, House of Trust for
+Peace — the 3 entries cyclically following it in `getAllWork()`'s
+last-edited order), rendering as a 3-column row on desktop and a
+single stacked column on mobile.
+
+**The hero copy's bottom padding and the Related Projects section's
+exterior spacing were both tightened in an immediate follow-up** ("I
+guess those changes will make the case study page perfect... Exceptionally
+for the hero copies on the case study pages, reduce the bottom padding
+to about 20px. Also reduce the exterior top and bottom padding/margin
+of the "related projects" section to 20px as well."):
+
+- The hero copy wrapper's bottom padding (set to match its top padding,
+  `pb-16 md:pb-24`, in the pass above) was reduced to a flat `pb-5
+  md:pb-5` (Tailwind's `5` step is exactly 20px, so no bracket-arbitrary
+  syntax was needed — this div isn't built on `Section` and has no
+  competing shorthand default to lose to, unlike the `md:py-40` cascade
+  gotcha documented elsewhere in this file). Top padding (`pt-16
+  md:pt-24`, 64px/96px) is **unchanged** — the request called out "the
+  bottom padding" specifically, and "Exceptionally for the hero copies"
+  marks this as a deliberate one-off exception to the general
+  every-text-block-gets-symmetric-padding rule just established above,
+  not a reversal of it. Every other `text`-type section in the sections
+  loop (`py-16 md:py-24`) is untouched — the request named "the hero
+  copies" specifically, not every copy block on the page.
+- The "Related Projects" section's outer wrapper — previously `mt-24
+  max-w-[1920px] px-3 py-24 md:mt-40 md:px-10 md:py-40` (the same
+  `mt-24/40 + py-24/40` spacer pattern shared with the final CTA
+  section) — had every one of its top/bottom spacing values (the `mt-*`
+  gap from the sections list above it, and the `py-*` padding around
+  the "Related Projects" label and card grid) flattened to `20px` at
+  every breakpoint: `mt-[20px] px-3 py-[20px] md:mt-[20px] md:px-10
+  md:py-[20px]`. Bracket-arbitrary syntax here since `20px` isn't a
+  round Tailwind step at every one of these three properties in
+  combination with the existing `px-3 md:px-10` (kept unchanged — only
+  vertical spacing was in scope). The final CTA section right below
+  it (`panel-tint mt-24 ... md:mt-40 ...`) was **not** touched — the
+  request named "the 'related projects' section" specifically.
+
+Confirmed via Playwright at 1440×900 and 390×844: the hero copy's
+`getComputedStyle` padding now reads `paddingTop: "96px"`/`"64px"`
+(desktop/mobile, unchanged) and `paddingBottom: "20px"` at both sizes
+(down from `96px`/`64px`) — superseding the padding numbers quoted in
+the paragraph above, which predate this pass. The Related Projects
+container's `marginTop`/`paddingTop`/`paddingBottom` all read `20px` at
+both viewport sizes, and the measured gap between the previous element
+(the last sections-loop block, or the optional trailing MDX body) and
+the Related Projects container's own top edge is exactly `20px` via
+`getBoundingClientRect()` — not just the CSS value, the actual rendered
+gap. Screenshots at both sizes confirm the hero copy now sits close
+against the hero photo below it, and the Related Projects heading/cards
+sit closer to both the content above and the final CTA band below.
+
+## Work index: single-row cards with overlaid copy and Show More/Less
+
+Per direct request ("Make the work cards one on a single row, as you did
+for the sigma studio Academy work card. Give that page the ability to
+[show] more or less functionality. let the work card copies be on the
+cards themselves, not below."), the bento-grid `WorkCard` (documented
+below under "Work index and case study page: bento redesign" — one
+full-width hero tile, two half-width tiles side by side, then an
+offset full-width tile, keyed by array index) was replaced with a
+single uniform treatment: **every entry now renders full-width, one per
+row** — the same layout the old bento's index-0 hero tile got
+exclusively (a full-width `aspect-[16/9]` card was already the treatment
+whichever entry happened to land in the bento's first slot got — most
+recently "Sigma Studio Academy," the specific card named in the
+request, per the last-edited ordering rule — hence "as you did for the
+sigma studio Academy work card" meant apply that one card's existing
+full-row treatment to all of them, not add anything new).
+
+`WorkCard.tsx` was rewritten from scratch: the `index`/`COL_SPAN`/
+`ASPECT` array lookup is gone entirely (no more per-position variation),
+every card is now `aspect-[16/9] w-full`, and the copy — previously a
+separate `h2` + divider rendered *below* the image in normal document
+flow — now lives *inside* the card, overlaid on the image via the same
+gradient-scrim technique `SelectedWorkGrid.tsx`'s `WorkTile` already
+uses on the home page (`bg-gradient-to-t from-paper/95 via-paper/25
+to-transparent` + an `absolute inset-x-0 bottom-0` text block): an
+eyebrow line (`{tag or category} — {client}`) above the title, plus a
+"View Case Study →" affordance that fades in on hover
+(`opacity-0 group-hover:opacity-100`, `ArrowRightIcon`) — the same three
+elements `SelectedWorkGrid`'s tiles already show, reused rather than
+inventing a new overlay pattern. `paper`/`ink` in that gradient/text
+resolve to their `theme-dark-fixed` dark/light roles respectively, the
+same token-role handling `SelectedWorkGrid` and the original `WorkCard`
+already needed (see "Sitewide dark theme" below) — nothing new to get
+right here, just reused correctly. The bottom-pill client badge the old
+card had (`absolute bottom-6 left-6 ... rounded-full`) is gone, folded
+into the new eyebrow line instead of living as a separate floating
+element.
+
+**New `WorkIndex.tsx`** (client component, mirroring the pattern
+`ThinkIndex.tsx` already established for "Load More Thoughts" — see
+"Think index" below) replaces the plain `work.map(...)` grid in
+`work/page.tsx`: an `INITIAL_VISIBLE = 4` / `LOAD_MORE_STEP = 4` pair
+drives a `visibleCount` state, cards render in a plain `flex flex-col
+gap-16` stack (no grid/column-span math needed anymore now that every
+card is the same full width), and two buttons sit below the stack —
+"Show More Work" (appears while `visibleCount < entries.length`) and
+"Show Less" (appears once `visibleCount > INITIAL_VISIBLE`, collapsing
+back to the initial 4) — matching the literal "show more or less"
+ask, which is a step beyond Think's one-directional Load More (that
+page has no collapse-back control). `work/page.tsx` itself just renders
+`<WorkIndex entries={work} />` in place of the old inline grid `div` —
+the surrounding `Section`/`SectionHeading` are untouched.
+
+Since the site currently only has 4 real work entries (the 5th,
+`aura-financial-platform.mdx`, is placeholder content per "Not yet
+wired up" below — so effectively 4 real + 1 placeholder = the 5 case
+studies that exist today are all under the initial-4 threshold anyway
+for the *real* ones), the "Show More"/"Show Less" buttons don't appear
+in the current build — confirmed correct behavior (`hasMore`/
+`canShowLess` both false at exactly `INITIAL_VISIBLE` entries), not a
+bug: the mechanism was verified directly by temporarily lowering
+`INITIAL_VISIBLE`/`LOAD_MORE_STEP` to 2/1, confirming via Playwright
+that "Show More Work" reveals one additional card (2→3) and "Show Less"
+correctly collapses back to 2, then reverting both constants to their
+real 4/4 values before committing. It'll start actually showing once a
+6th+ work entry is added.
+
+Confirmed via Playwright at 1440×900 and 390×844: every card renders at
+its container's full width (no more half-width/offset bento tiles), the
+title/eyebrow/hover-CTA all render overlaid on the image with no
+separate text block beneath the card, and the stack scrolls as a single
+column at both sizes.
+
+## Work index: card gap reduced to 20px
+
+Per direct follow-up ("Reduce the margin/padding btw the cards to
+about 20px"), `WorkIndex.tsx`'s stack changed from `flex flex-col
+gap-16` (64px) to `flex flex-col gap-5` — Tailwind's `5` step is
+exactly `1.25rem`/`20px`, so no arbitrary-value bracket syntax was
+needed here (unlike the `Section`-padding cascade gotcha documented
+throughout this file, this gap isn't competing with any conflicting
+default — `WorkIndex`'s wrapper `div` has no other gap utility on it).
+Confirmed via Playwright at a 1440px viewport: both `getBoundingClientRect()`
+math between the first two cards and `getComputedStyle(...).rowGap` on
+the flex container read exactly `20px`.
+
 ## Work index and case study page: bento redesign
+
+**`WorkCard.tsx`'s bento arrangement described in this section is
+superseded** — see "Work index: single-row cards with overlaid copy and
+Show More/Less" above. The index/`COL_SPAN`/`ASPECT` bento layout and
+the below-image `h2`+divider copy block it describes no longer exist;
+kept here for history only. **`CaseStudyLayout.tsx`'s own hero-split
+(the `lg:grid-cols-12`/`lg:col-span-5`+`lg:col-span-7` title/chips/
+summary vs. cover-image layout) is also superseded** — see "Orbit
+Interiors: image re-download retry, rectangular-vs-square section
+layout, full-bleed hero" further below, which replaced this side-by-side
+split with copy-above/image-full-bleed-below. Everything *below* the hero described in
+this section (the 4-tile bento gallery, the hardcoded Challenge/Insight/
+Strategy/Impact `BEATS` array, the "05 — The Design" 3-tile grid) is
+superseded — see "Case study page rebuilt: ordered text/image sections,
+not a fixed template" further below, which replaced all of it with a
+generic ordered `sections` list.
 
 `/work` (`WorkCard.tsx`) and `/work/[slug]` (`CaseStudyLayout.tsx`) were
 rebuilt from a pair of HTML/CSS reference files ("Selected Work" index +
@@ -1793,9 +2684,13 @@ content model.
   5th+ entry). Each tile keeps the established grayscale→color
   hover-image treatment and now shows the client name in a pill badge
   over the image instead of a separate text panel.
-- **`CaseStudyLayout.tsx`** hero is now a 2-column split (`lg:grid-cols-12`,
-  text `lg:col-span-5`, cover image `lg:col-span-7` at `aspect-[4/5]`),
-  with a chips row of year/category/tags. **Chips must be deduplicated**
+- **`CaseStudyLayout.tsx`** hero was a 2-column split (`lg:grid-cols-12`,
+  text `lg:col-span-5`, cover image `lg:col-span-7` at `aspect-[4/5]`) at
+  the time of this pass — since superseded by a copy-above/image-full-
+  bleed-below layout, see "Orbit Interiors: image re-download retry,
+  rectangular-vs-square section layout, full-bleed hero" below — with a
+  chips row of year/category/tags, unchanged by that later pass.
+  **Chips must be deduplicated**
   (`Array.from(new Set([year, category, ...tags]))`) — several entries'
   `tags` array repeats the `category` value verbatim (e.g.
   `sigma-studio-rebrand`: `category: "Brand Identity"`,

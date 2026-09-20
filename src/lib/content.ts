@@ -7,20 +7,38 @@ const WORK_DIR = path.join(process.cwd(), "src/content/work");
 const THINK_DIR = path.join(process.cwd(), "src/content/think");
 const RESOURCES_DIR = path.join(process.cwd(), "src/content/resources");
 
+export interface WorkTextSection {
+  type: "text";
+  /** Optional small numbered label above the heading, e.g. "01 — The Challenge". */
+  eyebrow?: string;
+  heading?: string;
+  body: string;
+}
+
+export interface WorkImageSection {
+  type: "images";
+  /** 1 image renders full-bleed/full-width; 2 render as a full-bleed two-column row. Never more than 2 — split into multiple sections for more. */
+  images: string[];
+}
+
+export type WorkSection = WorkTextSection | WorkImageSection;
+
 export interface WorkFrontmatter {
   title: string;
   client: string;
   year: string;
   category: string;
   coverImage?: string;
-  /** Additional images, used in order for the index's supporting gallery strip, the case-study beats, and the Design tiles. Falls back to the gradient placeholder wherever no image is supplied. */
-  gallery?: string[];
   summary: string;
-  challenge: string;
-  insight: string;
-  strategy: string;
-  impact: string;
   tags?: string[];
+  /**
+   * The case-study body as an ordered list of text/image blocks, rendered
+   * exactly in this order — the page has no fixed narrative structure
+   * beyond the hero, so a case study can follow whatever section flow its
+   * own brief specifies (Challenge/Insight/Strategy/Impact is a convention
+   * to reach for, not a requirement).
+   */
+  sections: WorkSection[];
 }
 
 export interface ThinkFrontmatter {

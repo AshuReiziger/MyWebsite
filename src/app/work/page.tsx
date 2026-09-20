@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Section, SectionHeading } from "@/components/Section";
-import { WorkCard } from "@/components/WorkCard";
+import { WorkIndex } from "@/components/WorkIndex";
 import { getAllWork } from "@/lib/content";
 
 export const metadata: Metadata = {
@@ -19,11 +19,7 @@ export default function WorkPage() {
           title="Where Ideas Become Visible"
           description="A collection of identities, campaigns, systems, and creative solutions built for people and organizations with something meaningful to communicate."
         />
-        <div className="mt-16 grid grid-cols-1 gap-x-8 gap-y-16 md:grid-cols-12">
-          {work.map((entry, i) => (
-            <WorkCard key={entry.slug} entry={entry} index={i} />
-          ))}
-        </div>
+        <WorkIndex entries={work} />
       </Section>
     </div>
   );
