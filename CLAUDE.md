@@ -1790,7 +1790,18 @@ study from `/work` automatically updates this grid — no changes needed
 here unless the curation logic itself (which entries, in what order)
 should change.
 
-## New case study: Orbit Interiors
+## New case study: Orbit Interiors (initial pass — image curation since superseded)
+
+**The specific images chosen/cropped for each section in this pass were
+superseded** — see "New case study: Orbit Interiors, rebuilt onto the
+sections model" further below, which replaced the bento-template
+Challenge/Insight/Strategy/Impact + Design-grid structure entirely and,
+per a direct follow-up instruction not to interchange images between
+folders, dropped this pass's cropped-hero-substitute technique. The
+Google Drive access path, the disk-spill download workaround, and the
+"READ ME FIRST doc as the copy/structure source" discovery documented
+here are all still accurate and still in use — only the specific image
+selections and the page template they were placed into changed.
 
 Per direct request ("Above is the link of a case study i need you to put on
 my work page... read the 'READ ME FIRST' document" — a Google Drive folder
@@ -1917,6 +1928,212 @@ being the most recently added correctly makes it the hero tile on both
 `/work`'s index (now rendered via the single-row `WorkCard`/`WorkIndex`
 layout documented above) and Home's full-bleed `SelectedWorkGrid`.
 
+## Case study page rebuilt: ordered text/image sections, not a fixed template
+
+Per direct request ("adjust the case study page to just a simple page that
+can accept text and images in the order specified by the READ ME file...
+let the image columns be a maximum of 2 columns... images should always
+be full bleed of the case study page... use all the images as specified
+in the READ ME FIRST docs without changing it or even interchanging the
+image folders... compress heavy images to smaller sizes... without
+affecting the image quality"), the case-study body was rebuilt from a
+fixed Challenge/Insight/Strategy/Impact + "05 — The Design" template
+(documented above, now superseded — see its own superseded-note) into a
+**generic ordered list of blocks**, each either text or images, rendered
+in exactly the order a case study's own frontmatter specifies. This is a
+deliberate, direct override of the "Case studies always follow the 5-part
+[Challenge→Insight→Strategy→Design→Impact] structure" brand-voice rule
+documented above (sourced from `docs/WEBSITE-STRATEGY.md`) — that
+convention remains a *reasonable default* to reach for (every existing
+case study still uses it), but it's no longer enforced by the template
+itself, since a client's own brief (like Orbit Interiors' READ ME FIRST
+doc, which used Hero/Challenge/Strategy/Identity/System/Final Statement —
+no "Insight," a different section named "Identity"+"System" instead of
+"Design") won't always match that exact shape.
+
+**`src/lib/content.ts`**: `WorkFrontmatter`'s `challenge`/`insight`/
+`strategy`/`impact`/`gallery` fields are gone, replaced by
+`sections: WorkSection[]`, a discriminated union:
+```ts
+export interface WorkTextSection {
+  type: "text";
+  eyebrow?: string;   // e.g. "01 — The Challenge"
+  heading?: string;
+  body: string;
+}
+export interface WorkImageSection {
+  type: "images";
+  images: string[];   // 1 or 2 — never more; split into multiple sections for more
+}
+export type WorkSection = WorkTextSection | WorkImageSection;
+```
+The hero block (title/chips/summary/`coverImage`) is **not** part of
+`sections` — every case study needs those regardless of its own section
+flow, so they stay as their own top-level frontmatter fields, unchanged
+from before. Everything after the hero is just `sections`, rendered
+in array order with no hardcoded headings/numbering — `eyebrow`/
+`heading` are optional per section precisely so a future case study
+that doesn't want the "01 — The Challenge" numbering convention doesn't
+have to use it.
+
+**`CaseStudyLayout.tsx`** was rewritten around this: the `BEATS`/
+`GALLERY_SPAN` arrays and the hardcoded "05 — The Design" block are
+gone. It now maps over `frontmatter.sections`: a `text` section renders
+in a constrained `max-w-3xl mx-auto px-6` column (the same width the
+old beats used) with its optional eyebrow/heading above a body
+paragraph; an `images` section renders as a **plain sibling `div` with
+no `max-w`/`px-*` wrapper at all** — the same full-viewport-bleed
+technique `SelectedWorkGrid`/`ClientLogos` already use elsewhere (see
+"Full-bleed sections" above) — one image fills the full section at
+`aspect-[21/9]`, two images split into a `sm:grid-cols-2` row at
+`aspect-[4/5]` each (matching the "max 2 columns" ask exactly; a
+hypothetical 3rd+ image in one YAML block is silently ignored via
+`.slice(0, 2)` — write it as two sections instead). Both aspect ratios
+reuse values already established elsewhere on the site (`SelectedWorkGrid`'s
+own hero/grid tiles) rather than inventing new ones. `object-cover`
+inside both crops/resizes each photo to fill its frame exactly, which is
+the "crop to fit the frame" latitude the request explicitly allowed.
+Confirmed via Playwright at 1440px and 390px: single-image sections
+measure the full viewport width (`left: 0`, `width` = viewport width);
+two-image sections split into two equal `left: 0`/`left: <half>` tiles —
+genuinely full-bleed, not just visually close.
+
+The old trailing `.prose prose-invert` MDX body (`children`, still
+rendered via `<MDXRemote source={entry.content} />` in
+`work/[slug]/page.tsx`, unchanged) is kept but now **conditionally
+rendered** — `{entry.content.trim() && (...)}\` — the same
+optional-preview-block pattern already established for Resources (see
+"Resources: lead magnets and assessments" above), since most case
+studies now put everything through `sections` and have nothing left
+over for a trailing body; `house-of-trust-for-peace.mdx` still uses it
+for its "Design principles" numbered list and "Outcome" bullet list,
+which don't fit cleanly into a single YAML string body.
+
+**All 5 existing work entries were migrated to the new schema in the
+same pass** — this was a breaking content-model change, not something
+that could be limited to just the new entry:
+- `sigma-studio-rebrand.mdx`, `academy-launch-system.mdx`,
+  `aura-financial-platform.mdx` — each had no gallery images to begin
+  with, so their migration was mechanical: the same four challenge/
+  insight/strategy/impact strings became four `text` sections with the
+  same eyebrow/heading pairs the old hardcoded `BEATS` array used
+  (`"01 — The Challenge"` / `"Understanding the Challenge"`, etc.) —
+  visually identical to before, just data-driven now instead of
+  template-driven.
+- `house-of-trust-for-peace.mdx` — its 3 Cloudinary gallery images
+  (previously consumed positionally as beat-adjacent images 0–2) became
+  two `images` sections: a 2-image section (`Participant_Profiles`,
+  `Participant_Profiles_01`) placed right after the Challenge text, and
+  a 1-image section (`Free_Poster_Mockup_1`) placed after the Strategy
+  text — preserving the same three photos, just as explicit ordered
+  blocks instead of implicit index-based slots. Its `coverImage` and
+  MDX body (design-principles list, outcome list, closing italic) are
+  untouched.
+
+## New case study: Orbit Interiors, rebuilt onto the sections model
+
+`orbit-interiors.mdx` (added in the previous pass, see below) was
+rewritten to use the new `sections` schema, following the READ ME FIRST
+doc's **own explicit order** (02 Challenge → 03 Strategy → 04 Identity →
+05 System → 06 Final Statement — "01 Hero" is the page's fixed hero
+block, not a `sections` entry) with every successfully-downloaded image
+placed under its own section, in its own source folder's listing order,
+never borrowed from a different folder's section:
+
+- **02 — The Challenge**: text only. *No images* — see the blocked-files
+  note below; the Challenge folder's both images failed to download.
+- **03 — The Strategy**: text, then two 2-image sections in the
+  Strategy folder's own order — `[Creative-Direction_FULL, Logo-Moodboard]`,
+  `[Brand Book-08 ("Know Our Personality"), Brand Book-10 ("Big Idea —
+  Come Alive")]`. All 4 of the Strategy folder's images are used.
+- **04 — The Identity**: text, then `[Brand Book-34, Brand Book-27]`
+  (2-image) and `[Brand Book-22]` (1-image), in folder order. All 3 of
+  the Identity folder's images are used.
+- **05 — The System**: text, then `[Brand Book-32 ("Photography"),
+  Brand Book-24 ("The Pattern")]` (2-image) and `[RollUp Banner_01]`
+  (1-image, used here as the full, uncropped product mockup — unlike
+  the previous pass, which cropped a photo out of it for the hero; this
+  pass keeps every image whole per the "don't crop unless fitting the
+  frame" instruction, cropping only for aspect-ratio fit via
+  `object-cover`, never to extract a different sub-image). Only 3 of
+  the System folder's 8 images downloaded successfully — see below.
+- **06 — Final Statement**: text only (`"COME ALIVE. Making spaces and
+  individuals come alive."`), no folder/images in the original doc.
+
+All 10 images were reprocessed from the same raw downloads as the
+previous pass (`public/work/orbit-interiors/{strategy,identity,system}-N.webp`,
+replacing that pass's differently-named/differently-curated set — the
+old `hero.webp`/`challenge.webp`/`insight.webp`/`impact.webp`/`design-N.webp`
+files were deleted, since this pass's per-folder naming and the "use
+every image, don't interchange" rule superseded that curation entirely):
+`PIL`, resized to a 1800px-max width (up from the previous pass's 1600px,
+since these now render full-viewport-width rather than inside a bento
+tile) and re-encoded as WebP at quality 88 (up from 82, per the "without
+affecting image quality" instruction) rather than a more aggressive
+compression. Every file landed under 600KB (the "The Pattern" repeating-
+texture swatch, `system-2.webp`, is the largest at 576KB — a
+high-frequency pattern always compresses worse than a photo or a mostly-
+flat brand-book slide).
+
+**8 of the 18 total source images could not be downloaded — this is a
+confirmed, reproducible tool limitation, not a choice.** The Google
+Drive connector's `download_file_content` tool (see "New case study:
+Orbit Interiors" below for how the connector itself was set up) returns
+inline base64 for small files, auto-spills anything over roughly 100K
+characters of base64 to a `tool-results/*.txt` file instead (confirmed
+harmless — a `decode_drive_result.py` helper script decodes that spilled
+JSON straight to a binary file without ever pulling the raw base64
+through the model's own context), but **hard-fails on anything roughly
+≥9MB** — sometimes with an explicit "File too large... over limit of 10
+MB" error, sometimes with a generic "MCP server session expired" for
+files right around 9–10MB (both treated as the same outcome: the file
+cannot be fetched by this tool, full stop — retrying a "session expired"
+failure on the same file reliably reproduces it again, this isn't
+transient flakiness). Every file below ~1MB succeeded on the first try;
+nothing between 8.9MB and 24.7MB ever succeeded across roughly a dozen
+attempts spread over several tool-session reconnects. The 8 blocked
+files, by their own folder (not reassigned, not substituted — left
+out of the case study entirely pending the user's direction):
+- **Hero**: `Billboard_Mockup_2.png` (9.9MB) — the *only* file in this
+  folder, so `coverImage` is currently unset on this entry (falls back
+  to the sitewide gradient placeholder, same as any other unset image
+  slot — see "Content model" above).
+- **The Challenge**: `Logo Mockup.png` (14MB), `Billboard_Mockup_3.png`
+  (21.9MB) — both of this folder's images, so the Challenge section
+  currently has no image block at all.
+- **The System**: `Notebook Mockup.png` (9.7MB), `T-shirt Mockup_04.png`
+  (11MB), `cap-mockup.png` (8.9MB), `Orbit Interiors Business-Card-
+  Mockup_02.png` (9.9MB), `Billboard_Mockup_4.png` (24.7MB) — 5 of this
+  folder's 8 images; the 3 that did download are used (see above).
+
+Per the direct instruction not to interchange or substitute images
+across folders, **no workaround was applied for these 8** (unlike the
+previous pass, which cropped a stand-in hero photo out of a different
+folder's image — a choice this pass's explicit instruction supersedes).
+Getting these into the case study needs either a smaller re-export of
+each specific file from the client (well under ~9MB, e.g. resized/
+re-compressed before re-sharing to Drive) or explicit sign-off to relax
+the no-substitution rule for just these 8 — flagged to the user directly
+rather than guessed at.
+
+Confirmed via Playwright at 1440px and 390px (scrolling incrementally
+before each full-page screenshot — `next/image`'s native lazy-loading
+means an instantly-captured `fullPage` shot below the fold can show
+unloaded images as flat gradient-placeholder-only blocks even though the
+`<img>` tag and `src` are both correct; this is the same capture-timing
+caveat already documented under "Motion" above for `whileInView`
+reveals, just for image lazy-loading instead of scroll-triggered
+animation — always scroll through incrementally first, don't trust a
+one-shot `fullPage` capture for a page with off-screen images): every
+section renders in its specified order, both 2-image and 1-image blocks
+render full-bleed, and `house-of-trust-for-peace.mdx`'s migrated
+sections (its Cloudinary images render as broken-image alt text in this
+specific sandboxed test environment only — the same pre-existing
+`drive.google.com`-adjacent Cloudinary-egress limitation documented in
+the previous pass, confirmed unrelated to this change) still show the
+correct text/section structure and its MDX body's numbered/bulleted
+lists intact.
+
 ## Work index: single-row cards with overlaid copy and Show More/Less
 
 Per direct request ("Make the work cards one on a single row, as you did
@@ -2010,8 +2227,15 @@ the flex container read exactly `20px`.
 superseded** — see "Work index: single-row cards with overlaid copy and
 Show More/Less" above. The index/`COL_SPAN`/`ASPECT` bento layout and
 the below-image `h2`+divider copy block it describes no longer exist;
-kept here for history only. `CaseStudyLayout.tsx`'s own redesign
-(unrelated to `WorkCard`) is untouched and still accurate.
+kept here for history only. **`CaseStudyLayout.tsx`'s own hero-split
+(the `lg:grid-cols-12`/`lg:col-span-5`+`lg:col-span-7` title/chips/
+summary vs. cover-image layout) is still accurate** — that part wasn't
+touched by either later pass. Everything *below* the hero described in
+this section (the 4-tile bento gallery, the hardcoded Challenge/Insight/
+Strategy/Impact `BEATS` array, the "05 — The Design" 3-tile grid) is
+superseded — see "Case study page rebuilt: ordered text/image sections,
+not a fixed template" further below, which replaced all of it with a
+generic ordered `sections` list.
 
 `/work` (`WorkCard.tsx`) and `/work/[slug]` (`CaseStudyLayout.tsx`) were
 rebuilt from a pair of HTML/CSS reference files ("Selected Work" index +

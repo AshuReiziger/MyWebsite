@@ -3,20 +3,6 @@ import type { ReactNode } from "react";
 import type { ContentEntry, WorkFrontmatter } from "@/lib/content";
 import { WorkImage } from "@/components/WorkImage";
 
-const BEATS: { key: keyof WorkFrontmatter; num: string; heading: string }[] = [
-  { key: "challenge", num: "01 — The Challenge", heading: "Understanding the Challenge" },
-  { key: "insight", num: "02 — The Insight", heading: "Naming What Was Missing" },
-  { key: "strategy", num: "03 — The Strategy", heading: "Building the Strategic Foundation" },
-  { key: "impact", num: "04 — The Impact", heading: "Proven by Results" },
-];
-
-const GALLERY_SPAN = [
-  "md:col-span-2 md:row-span-2 aspect-square md:aspect-auto",
-  "aspect-square",
-  "aspect-square",
-  "md:col-span-2 lg:col-span-1 aspect-[16/9] lg:aspect-square",
-];
-
 export function CaseStudyLayout({
   entry,
   next,
@@ -61,52 +47,50 @@ export function CaseStudyLayout({
         </div>
       </div>
 
-      <div className="mx-auto mt-20 max-w-[1920px] px-3 md:mt-40 md:px-10">
-        <div className="grid auto-rows-[minmax(220px,auto)] grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {[0, 1, 2, 3].map((i) => (
-            <WorkImage
+      <div className="mt-20 flex flex-col gap-16 md:mt-40 md:gap-20">
+        {frontmatter.sections.map((section, i) =>
+          section.type === "text" ? (
+            <div key={i} className="mx-auto max-w-3xl px-6">
+              {section.eyebrow && (
+                <p className="font-display text-sm font-bold text-accent">{section.eyebrow}</p>
+              )}
+              {section.heading && (
+                <h2 className="mt-3 font-display text-2xl font-bold tracking-tight">
+                  {section.heading}
+                </h2>
+              )}
+              <p className="mt-4 text-lg leading-relaxed text-muted">{section.body}</p>
+            </div>
+          ) : (
+            <div
               key={i}
-              src={frontmatter.gallery?.[i]}
-              alt={`${frontmatter.title} — gallery image ${i + 1}`}
               className={
-                "overflow-hidden rounded-2xl border border-line bg-gradient-to-br from-accent/30 via-paper to-paper transition-transform duration-700 hover:scale-[1.02] " +
-                GALLERY_SPAN[i]
+                section.images.length > 1
+                  ? "grid grid-cols-1 gap-1 sm:grid-cols-2"
+                  : "grid grid-cols-1"
               }
-            />
-          ))}
+            >
+              {section.images.slice(0, 2).map((src, j) => (
+                <WorkImage
+                  key={j}
+                  src={src}
+                  alt={`${frontmatter.title} — image ${i + 1}.${j + 1}`}
+                  className={
+                    (section.images.length > 1 ? "aspect-[4/5]" : "aspect-[21/9]") +
+                    " bg-gradient-to-br from-accent/30 via-paper to-paper"
+                  }
+                />
+              ))}
+            </div>
+          )
+        )}
+      </div>
+
+      {entry.content.trim() && (
+        <div className="prose prose-invert mx-auto mt-20 max-w-[1920px] px-3 md:mt-40 md:px-10">
+          {children}
         </div>
-      </div>
-
-      <div className="mx-auto flex max-w-3xl flex-col gap-16 px-6 pt-20 md:gap-20 md:pt-40">
-        {BEATS.map(({ key, num, heading }) => (
-          <div key={key}>
-            <p className="font-display text-sm font-bold text-accent">{num}</p>
-            <h2 className="mt-3 font-display text-2xl font-bold tracking-tight">{heading}</h2>
-            <p className="mt-4 text-lg leading-relaxed text-muted">{frontmatter[key]}</p>
-          </div>
-        ))}
-
-        <div>
-          <p className="font-display text-sm font-bold text-accent">05 — The Design</p>
-          <h2 className="mt-3 font-display text-2xl font-bold tracking-tight">
-            Designing the Solution
-          </h2>
-          <div className="mt-8 grid grid-cols-3 gap-4">
-            {[0, 1, 2].map((i) => (
-              <WorkImage
-                key={i}
-                src={frontmatter.gallery?.[BEATS.length + i]}
-                alt={`${frontmatter.title} — design detail`}
-                className="aspect-square rounded-2xl bg-gradient-to-br from-accent/70 via-paper to-paper"
-              />
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <div className="prose prose-invert mx-auto mt-20 max-w-[1920px] px-3 md:mt-40 md:px-10">
-        {children}
-      </div>
+      )}
 
       {next && (
         <div className="mx-auto mt-24 flex max-w-[1920px] flex-col items-center gap-6 px-3 py-24 text-center md:mt-40 md:px-10 md:py-40">
