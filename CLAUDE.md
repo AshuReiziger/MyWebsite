@@ -1790,6 +1790,133 @@ study from `/work` automatically updates this grid — no changes needed
 here unless the curation logic itself (which entries, in what order)
 should change.
 
+## New case study: Orbit Interiors
+
+Per direct request ("Above is the link of a case study i need you to put on
+my work page... read the 'READ ME FIRST' document" — a Google Drive folder
+link), a real case study (`src/content/work/orbit-interiors.mdx`) was added
+using source copy and image assets pulled from that folder — the site's
+first fully-sourced-from-Drive case study.
+
+**Access path**: `drive.google.com` is blocked by this environment's
+network egress proxy (confirmed via both a direct `curl`/`gdown` attempt
+and the `WebFetch` tool, both `EGRESS_BLOCKED`/403) — no amount of the
+folder's own sharing settings changes that, since the block is on the
+session's outbound network, not the file's permissions. Direct URL access
+was a dead end regardless of link-sharing settings. The fix was connecting
+the **Google Drive MCP connector** (`ListConnectors`/`SearchMcpRegistry`
+confirmed it existed in the registry but wasn't installed) — once the user
+connected and enabled it for the chat, its tools
+(`search_files`/`read_file_content`/`download_file_content`) reach Drive
+through Anthropic's authenticated backend rather than this session's own
+sandboxed network, sidestepping the egress block entirely. This is the
+path to reach for any future "here's a Drive/Docs/Sheets link" request —
+don't retry raw network fetches once EGRESS_BLOCKED is confirmed, go
+straight to suggesting the connector.
+
+**The "READ ME FIRST" doc** (`search_files` with `parentId = '<folder id>'`
+located it, `read_file_content` returned its text) is the copy source and
+laid out both the full case-study copy *and* an explicit instruction for
+how to structure the page: "01 — Hero, 02 — The Challenge, 03 — The
+Strategy, 04 — The Identity, 05 — The System, 06 — Final Statement," each
+paired with a same-named image subfolder, plus "make sure you reduce the
+size of the images before using on the site." The subfolders were `Hero`,
+`The Challenge`, `The Strategy`, `The Identity`, `The System` (found via
+the same `parentId` search pattern, one call per folder).
+
+**That structure doesn't name an "Insight" section**, but it maps cleanly
+onto the site's existing, unchanged `CaseStudyLayout.tsx` template (which
+*does* hard-code Challenge/Insight/Strategy/Impact + a "05 — The Design"
+image grid — see "Work index and case study page: bento redesign" above)
+without needing any template changes: the doc's "Strategy" paragraph
+itself splits naturally into an analytical insight ("spaces should reflect
+the identity of the people who inhabit them") and the resulting big idea
+("COME ALIVE"), so `insight` and `strategy` frontmatter fields were drawn
+from the same paragraph's two halves rather than invented from nothing;
+the doc's "Identity" + "System" copy (which the template has no dedicated
+long-form field for) went into the `.mdx` body under `## The Identity` /
+`## The Brand System` headings — the same "Extended notes"-style body
+convention `house-of-trust-for-peace.mdx` already established — closing
+with the client's own "COME ALIVE." final-statement line as an italicized
+closer, matching that file's own closing-italic-paragraph pattern.
+`category`/`tags`/`year`/`client` were read directly off the doc's own
+"Client / Industry / Year / Scope" summary line at the bottom.
+
+**Image downloads hit a hard tool limit, worked around without ever
+loading raw image data into context**: `download_file_content` returns
+base64 file content, but any result over roughly 100K characters gets
+diverted to a `tool-results/*.txt` file on disk instead of being handed
+back inline (confirmed empirically — even a 148KB PNG's ~198K-character
+base64 tripped this), and files at or above ~10MB fail outright (one
+21.9MB file returned an explicit "File too large... over limit of 10 MB"
+error; several ~9-10MB files instead failed with a generic "session
+expired" — both outcomes treated the same way: pick a different, smaller
+source image rather than keep retrying). The workaround exploits the
+disk-spill behavior rather than fighting it: a small `decode_drive_result.py`
+script (`json.load` the spilled file, `base64.b64decode(d['content'])`,
+write the raw bytes straight to a `.png`) turns every download into a
+local file without the base64 text ever passing through the model's
+own context window — this is the pattern to reuse for any future
+Drive-image pull, not re-deriving it from scratch.
+
+**The one file in the dedicated `Hero` folder (`Billboard_Mockup_2.png`,
+9.9MB) never downloaded successfully** despite five separate retries
+across two reconnects (mix of "File too large"/"session expired") — with
+no smaller alternative in that folder, the coverImage was sourced instead
+by **cropping a clean interior photo out of a different, already-downloaded
+image**: `RollUp Banner_01.png` (a product-mockup render, 987KB, from `The
+System` folder) has a large embedded lifestyle photo (a warm-toned
+armchair/floor-lamp scene) inset within the rendered banner-stand mockup.
+A `PIL` crop isolating just that embedded photo region (found by
+eyeballing the mockup's layout, then tightened using a background-color-
+diff bounding-box script rather than more guesswork) produced a clean,
+text-free, frame-free interior shot with no visible trace of the banner
+mockup it came from — used as `coverImage`. The Challenge gallery slot
+used the same crop-out-of-a-slide technique on `Brand Book-32.png` (a
+brand-book "Photography" page with a full-bleed kitchen photo and a large
+"Photography" title baked directly into the pixels): the numpy
+background-diff bounding-box script found the photo's true edges, and a
+crop of the slide's clean right-hand portion (away from both the title
+and its body-copy block) produced a usable kitchen-detail shot. **This
+crop-a-slide technique — diff against the flat page background to find
+the true image bounds, then crop to a region clear of any baked-in text
+— is the fallback whenever a "clean" source photo isn't available but a
+text-and-photo composite slide is.**
+
+**Final gallery mapping** (all processed through the same pipeline: PIL
+resize to a 1600px-max width where larger, re-encoded as WebP at quality
+82, written to `public/work/orbit-interiors/` — a new directory,
+following the `public/work/...` local-path convention documented under
+"Content model" above rather than Cloudinary, since these are one-off
+assets for a single case study, not a recurring need): `gallery[0]`
+Challenge = the cropped kitchen detail; `gallery[1]` Insight =
+`Logo-Moodboard.png` (the logo's early exploratory sketches — reads as
+"the insight/process" beat); `gallery[2]` Strategy =
+`Creative-Direction_FULL.png` (the three-concept creative-direction
+moodboard); `gallery[3]` Impact = the *un-cropped* `RollUp Banner_01.png`
+mockup (showing the brand actually applied in the world doubles as a
+fitting "impact" visual, distinct from its cropped-interior use as
+`coverImage`); `gallery[4]`–`[6]` (the "05 — The Design" tiles) =
+`Brand Book-22.png`/`Brand Book-27.png`/`Brand Book-24.png` (clean logo-
+intro, logo-construction-grid, and pattern-swatch brand-book pages, all
+already free of stray text/chrome once cropped to their own slide
+bounds — no further cropping needed for these three). Every processed
+file landed under 400KB (`design-3.webp`, the pattern texture, is the
+largest at 382KB — a high-frequency repeating pattern compresses worse
+than photography), satisfying the doc's own "reduce the size of the
+images" instruction by a wide margin.
+
+Confirmed via Playwright at 1440×900 and 390×844: the hero photo, the
+4-tile gallery, all four narrative beats' copy, the three Design tiles,
+the MDX body (Identity/Brand System sections + closing italic), and the
+"Next Project" teaser (cyclically pointing at `house-of-trust-for-peace`,
+the entry the ordering rule now places right after it) all render
+correctly at both sizes — and, since `getAllWork()`'s ordering is by
+last-edited-commit (see "Ordering is by last edit" above), the new entry
+being the most recently added correctly makes it the hero tile on both
+`/work`'s index (now rendered via the single-row `WorkCard`/`WorkIndex`
+layout documented above) and Home's full-bleed `SelectedWorkGrid`.
+
 ## Work index: single-row cards with overlaid copy and Show More/Less
 
 Per direct request ("Make the work cards one on a single row, as you did
