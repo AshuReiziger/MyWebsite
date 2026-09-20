@@ -19,32 +19,27 @@ export function CaseStudyLayout({
 
   return (
     <div className="theme-dark-fixed -mb-10 bg-paper pb-10 text-ink">
-      <div className="mx-auto max-w-[1920px] px-3 pt-16 md:px-10 md:pt-24">
-        <div className="grid items-center gap-8 lg:grid-cols-12">
-          <div className="order-2 flex flex-col gap-8 lg:order-1 lg:col-span-5">
-            <h1 className="font-display text-[2em] font-bold tracking-tight">
-              {frontmatter.title}
-            </h1>
-            <div className="flex flex-wrap gap-3">
-              {chips.map((chip) => (
-                <span
-                  key={chip}
-                  className="rounded-full border border-line px-4 py-1 text-xs font-semibold uppercase tracking-widest text-muted"
-                >
-                  {chip}
-                </span>
-              ))}
-            </div>
-            <p className="max-w-xl leading-relaxed text-muted">{frontmatter.summary}</p>
-          </div>
-          <div className="order-1 lg:order-2 lg:col-span-7">
-            <WorkImage
-              src={frontmatter.coverImage}
-              alt={frontmatter.title}
-              className="aspect-[4/5] rounded-2xl border border-line bg-gradient-to-br from-accent/30 via-paper to-paper grayscale transition-[filter] duration-700 hover:grayscale-0"
-            />
-          </div>
+      <div className="mx-auto flex max-w-3xl flex-col gap-8 px-6 pt-16 md:pt-24">
+        <h1 className="font-display text-[2em] font-bold tracking-tight">{frontmatter.title}</h1>
+        <div className="flex flex-wrap gap-3">
+          {chips.map((chip) => (
+            <span
+              key={chip}
+              className="rounded-full border border-line px-4 py-1 text-xs font-semibold uppercase tracking-widest text-muted"
+            >
+              {chip}
+            </span>
+          ))}
         </div>
+        <p className="max-w-xl leading-relaxed text-muted">{frontmatter.summary}</p>
+      </div>
+
+      <div className="mt-12 md:mt-16">
+        <WorkImage
+          src={frontmatter.coverImage}
+          alt={frontmatter.title}
+          className="aspect-[21/9] bg-gradient-to-br from-accent/30 via-paper to-paper grayscale transition-[filter] duration-700 hover:grayscale-0"
+        />
       </div>
 
       <div className="mt-20 flex flex-col gap-16 md:mt-40 md:gap-20">
@@ -76,7 +71,7 @@ export function CaseStudyLayout({
                   src={src}
                   alt={`${frontmatter.title} — image ${i + 1}.${j + 1}`}
                   className={
-                    (section.images.length > 1 ? "aspect-[4/5]" : "aspect-[21/9]") +
+                    (section.images.length > 1 ? "aspect-square" : "aspect-[21/9]") +
                     " bg-gradient-to-br from-accent/30 via-paper to-paper"
                   }
                 />

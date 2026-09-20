@@ -2134,6 +2134,140 @@ the previous pass, confirmed unrelated to this change) still show the
 correct text/section structure and its MDX body's numbered/bulleted
 lists intact.
 
+## Orbit Interiors: image re-download retry, rectangular-vs-square section layout, full-bleed hero
+
+Per direct follow-up ("The 8 images re-uploaded, Please try again"), the
+user re-exported and re-uploaded the 8 files that failed in the previous
+pass (all originally 8.9MB–24.7MB) at smaller sizes (6.2MB–9.1MB — still
+right around the connector's practical ceiling, not comfortably under
+it). Retried `download_file_content` on all 8: **only 1 of 8 succeeded**
+(`T-shirt Mockup_04.png`, 6.2MB, System folder — succeeded on the very
+first attempt) — the other 7 (including files as small as 6.3MB, well
+under the previously-confirmed ~9MB ceiling) failed with "MCP server
+session expired" on every retry across roughly 15 attempts spread across
+several reconnects. This is a **different failure mode than the previous
+pass's**: previously, failure correlated cleanly with file size (≥9MB
+failed, everything smaller succeeded reliably); this time even small
+files failed the majority of the time, pointing to the Drive MCP
+connector itself being in a broadly unstable state that session, not a
+per-file size problem. `get_file_metadata` calls against the same file
+IDs succeeded reliably throughout, confirming the instability was
+specific to the (much larger-payload) `download_file_content` call, not
+a lost connection to Drive generally.
+
+**7 of the 8 files remain undelivered as of this pass**: `Billboard_Mockup_2.png`
+(Hero, 7.3MB — so `coverImage` is still unset, still falling back to the
+gradient placeholder), `Logo Mockup.png` (8.9MB) and `Billboard_Mockup_3.png`
+(6.8MB, both Challenge — so the Challenge section is still text-only),
+and `Notebook Mockup.png` (6.9MB), `cap-mockup.png` (7.6MB),
+`Billboard_Mockup_4.png` (9.1MB), and `Orbit Interiors Business-Card-Mockup_02.png`
+(6.3MB, all System). Per the same "don't substitute across folders"
+instruction still in force, none of these were worked around — getting
+them in still needs either a re-attempt once the connector is stable
+again, or the user re-exporting them smaller still.
+
+**The one successful download (`system-1.webp` = the T-shirt mockup) was
+inserted into the System folder's own listing position**, not appended —
+the System folder's own file order is Notebook Mockup, cap-mockup,
+Billboard_Mockup_4, **T-shirt Mockup_04**, Business-Card-Mockup, Brand
+Book-32, Brand Book-24, RollUp Banner_01, so the already-downloaded trio
+(previously `system-1`/`system-2`/`system-3` = Brand Book-32/Brand
+Book-24/RollUp Banner_01) were renamed up a slot each
+(`git mv system-3→system-4`, `system-2→system-3`, `system-1→system-2`)
+before the new file was written to `system-1.webp`, keeping the
+numbering in the folder's own order as more of its files arrive later.
+
+**Separately, the user flagged that the existing images "do not fit well
+in the sizes of the frames of the case study page"** and gave the fix
+directly: rectangular images should render as single full-row sections,
+square images should pair into two-column sections. Checking every
+downloaded Orbit Interiors source image's actual aspect ratio (`PIL`)
+showed **all 11 are landscape/rectangular** — 8 of the brand-book/
+creative-direction/logo-moodboard slides are 1920×1080 (1.78:1), the
+rollup-banner mockup is 3000×2000 (1.5:1), and the new T-shirt mockup is
+2250×1500 (1.5:1); none are anywhere near square. This explained the fit
+complaint directly: the *previous* pass's pairing (folder-order-based,
+not shape-based) had put several of these same 16:9/3:2 landscape images
+into the two-column slot, which forced them into `CaseStudyLayout.tsx`'s
+`aspect-[4/5]` frame — a **portrait** box — for a landscape source image,
+cropping away most of the image's width to fill a taller-than-wide frame.
+
+Fixed in two parts:
+1. **`orbit-interiors.mdx`'s `sections` array was rebuilt so every image
+   is its own single-image section** (full-row, `aspect-[21/9]` frame) —
+   since every currently-available image is rectangular, none currently
+   use the two-column layout; that's a correct outcome of the new rule,
+   not a shortcut, given none of the source photography is square-ish.
+   Order within each folder's images is unchanged (folder listing order,
+   per the "don't interchange folders" constraint still in force) — only
+   the *grouping* (1-per-section instead of 2-per-section) changed. If a
+   future re-export of the still-blocked files (cap-mockup, notebook
+   mockup, business-card mockup — product-photography mockups that are
+   plausibly closer to square) turns out genuinely square-ish once
+   downloaded, those should pair into two-column `images` sections
+   instead of single-row ones, per this same rule.
+2. **`CaseStudyLayout.tsx`'s two-column frame aspect ratio changed from
+   `aspect-[4/5]` (portrait) to `aspect-square`** — a literal 1:1 box,
+   matching what "square" images actually need rather than a portrait
+   crop. This is a shared, sitewide change (the component is used by
+   every case study, not just Orbit Interiors) — intentional, since the
+   user's fix ("square ones can occupy the rows that have two columns")
+   describes a general layout rule, not an Orbit-specific tweak. The
+   single-row frame (`aspect-[21/9]`) was already a wide/rectangular
+   shape and needed no change.
+
+**The hero was also restructured** per the same message ("the hero image
+should equally take the full bleed, while the copy goes above"): the
+previous `lg:grid-cols-12` side-by-side split (text in a `lg:col-span-5`
+column, `coverImage` cropped into a portrait `aspect-[4/5]` box in a
+`lg:col-span-7` column) is gone. The copy (title, chips, summary) now
+renders first, in the same constrained `mx-auto max-w-3xl px-6` column
+every text `section` below it already uses (for visual consistency with
+the rest of the page, not a new width convention); the cover image
+renders immediately after, **full-bleed** — no `max-w` wrapper, spanning
+the full viewport edge to edge — using the exact same `aspect-[21/9]`
+frame the single-image body sections use ("equally take the full bleed"
+read literally: the hero image gets the identical full-bleed treatment,
+not a bespoke one). The `rounded-2xl border border-line` treatment the
+old boxed hero image had was dropped along with the box itself — no
+other full-bleed image on the site carries a border/radius, and the hero
+is now one of them. The `grayscale` → hover-color transition was kept.
+
+Confirmed via Playwright at 1440×900 and 390×844 (scrolling incrementally
+before each full-page screenshot, same lazy-load caveat as above):
+`heroCopy` (the `h1`) sits above and is width-constrained; the hero image
+wrapper measures `left: 0` and `width` equal to the full viewport at both
+sizes (genuinely full-bleed, not just visually close); every body image
+section (`strategy-1` through `system-4`) measures the same full-viewport
+width at a `21:9` ratio. **One real bug surfaced and was fixed during
+this verification, unrelated to the code change itself**: the first
+screenshot showed the wrong image at several positions (the System
+section's `system-1` slot showing the "Photography" brand-book slide
+instead of the new T-shirt mockup, and the rollup-banner mockup
+appearing twice) — root-caused to a **stale `.next/cache/images` entry
+plus a leftover `next start` process from earlier in this session**: the
+Next.js image optimizer cache had transformed copies of `system-1.webp`
+etc. from *before* this pass's `git mv` renames, and the old server
+process was still serving them under the same URLs. Fixed by killing the
+stale `next-server` process (`ps aux | grep next-server`, `kill -9`),
+clearing `rm -rf .next/cache/images`, and restarting on a fresh port —
+re-verified via a direct `curl` of `/_next/image?url=...system-1.webp...`
+showing the correct T-shirt mockup content before re-running the full
+Playwright pass, which then showed every image in its correct slot with
+no duplicates. **This is a reusable lesson**: after renaming/replacing
+files under `public/work/<slug>/...` mid-session, restart the dev/prod
+server and clear `.next/cache/images` before trusting a screenshot —
+Next's image optimizer cache can silently outlive a source-file rename.
+
+`house-of-trust-for-peace.mdx`'s existing 2-image section (`Participant_Profiles`/
+`Participant_Profiles_01`) now renders in the new `aspect-square` frame
+instead of the old `aspect-[4/5]` — spot-checked via Playwright at
+1440×900; the two images still render as broken-image alt text in this
+sandboxed environment (the same pre-existing Cloudinary-egress
+limitation noted above, unrelated to this change) but the layout
+structure (full-bleed hero below copy, two equal-width square-framed
+tiles side by side) is confirmed correct and unaffected.
+
 ## Work index: single-row cards with overlaid copy and Show More/Less
 
 Per direct request ("Make the work cards one on a single row, as you did
@@ -2229,8 +2363,10 @@ Show More/Less" above. The index/`COL_SPAN`/`ASPECT` bento layout and
 the below-image `h2`+divider copy block it describes no longer exist;
 kept here for history only. **`CaseStudyLayout.tsx`'s own hero-split
 (the `lg:grid-cols-12`/`lg:col-span-5`+`lg:col-span-7` title/chips/
-summary vs. cover-image layout) is still accurate** — that part wasn't
-touched by either later pass. Everything *below* the hero described in
+summary vs. cover-image layout) is also superseded** — see "Orbit
+Interiors: image re-download retry, rectangular-vs-square section
+layout, full-bleed hero" further below, which replaced this side-by-side
+split with copy-above/image-full-bleed-below. Everything *below* the hero described in
 this section (the 4-tile bento gallery, the hardcoded Challenge/Insight/
 Strategy/Impact `BEATS` array, the "05 — The Design" 3-tile grid) is
 superseded — see "Case study page rebuilt: ordered text/image sections,
@@ -2255,9 +2391,13 @@ content model.
   5th+ entry). Each tile keeps the established grayscale→color
   hover-image treatment and now shows the client name in a pill badge
   over the image instead of a separate text panel.
-- **`CaseStudyLayout.tsx`** hero is now a 2-column split (`lg:grid-cols-12`,
-  text `lg:col-span-5`, cover image `lg:col-span-7` at `aspect-[4/5]`),
-  with a chips row of year/category/tags. **Chips must be deduplicated**
+- **`CaseStudyLayout.tsx`** hero was a 2-column split (`lg:grid-cols-12`,
+  text `lg:col-span-5`, cover image `lg:col-span-7` at `aspect-[4/5]`) at
+  the time of this pass — since superseded by a copy-above/image-full-
+  bleed-below layout, see "Orbit Interiors: image re-download retry,
+  rectangular-vs-square section layout, full-bleed hero" below — with a
+  chips row of year/category/tags, unchanged by that later pass.
+  **Chips must be deduplicated**
   (`Array.from(new Set([year, category, ...tags]))`) — several entries'
   `tags` array repeats the `category` value verbatim (e.g.
   `sigma-studio-rebrand`: `category: "Brand Identity"`,
