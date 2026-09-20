@@ -2302,6 +2302,93 @@ tracked remote branch before assuming the documentation is wrong or the
 work was lost — it may just be a stale local checkout in a fresh
 container, fixable with a reset rather than redoing the work.
 
+## Orbit Interiors: 4 of the last 7 blocked images finally downloaded
+
+Per direct follow-up ("Retry the downloads now"), the 7 still-blocked
+Drive files were retried: `get_file_metadata` on the old file ID for
+`Orbit Interiors Business-Card-Mockup_02.png` came back "Requested
+entity was not found" — a different failure mode than the earlier
+"session expired" errors, which turned out to mean the file had been
+re-uploaded again under a **new file ID** since the last check.
+Re-searching all three Drive folders (`search_files` with
+`parentId = '<folder id>'`) found **4 of the 7 files re-uploaded yet
+again, this time much smaller** (818KB–3.2MB, well under the
+connector's practical ceiling, vs. 6.3–9.1MB the previous round):
+`cap-mockup.png`, `Orbit Interiors Business-Card-Mockup_02.png`,
+`Logo Mockup.png`, and `Billboard_Mockup_2.png` (Hero) — all 4
+downloaded successfully on the first attempt at their new IDs. The
+other 3 (`Notebook Mockup.png`, `Billboard_Mockup_4.png`,
+`Billboard_Mockup_3.png`) were **not** re-uploaded this round — same
+old file IDs, same old sizes (6.8–9.1MB) — and failed with the
+familiar "session expired" error across several retries, so they
+remain blocked.
+
+**Checking each new image's actual aspect ratio changed the plan for
+where it goes**, per the rectangular-vs-square rule established in the
+previous pass:
+- `Billboard_Mockup_2.png` (Hero) is 1920×1080 — landscape, and as it
+  happens an exact match for the hero frame's own `aspect-[16/9]` ratio
+  (see the pass above that changed the hero/single-image frame to
+  16:9). Set as `coverImage` (`/work/orbit-interiors/hero.webp`) — the
+  entry's first real cover image; it previously always fell back to the
+  gradient placeholder.
+- `Logo Mockup.png` is 1920×823 (21:9) — landscape/rectangular. Added
+  as a new single-image `images` section (`challenge-1.webp`) right
+  after the Challenge text block, which previously had no image at all.
+- `cap-mockup.png` and `Orbit Interiors Business-Card-Mockup_02.png`
+  are **both exactly 958×958 — genuinely square**, the first images in
+  this case study to actually qualify for the two-column `aspect-square`
+  frame (every image in the previous pass was landscape). Paired
+  together into one 2-image `images` section.
+
+**Pairing the two square images meant breaking their strict folder-listing
+order** — a deliberate, narrow exception to the "preserve folder order"
+convention from the previous pass. The System folder's true listing
+order (among files actually downloaded) is `cap-mockup` (position 2),
+`T-shirt Mockup_04` (position 4, already placed as `system-1.webp` from
+the prior pass), `Business-Card-Mockup_02` (position 5), then the three
+already-placed singles. Since `cap-mockup` and `business-card-mockup`
+only make visual sense paired together (identical dimensions, both
+product-mockup photography, unlike the brand-book slides and rollup
+banner around them), they were grouped into one section ahead of
+`T-shirt Mockup_04`, which shifted from `system-1` to `system-3`:
+`git mv system-4→system-6`, `system-3→system-5`, `system-2→system-4`,
+`system-1→system-3` (each prior single moved up two slots), then
+`cap-mockup.png` → new `system-1.webp` and
+`Business-Card-Mockup_02.png` → new `system-2.webp`, paired in one
+`images` section. This is the one deliberate case where "shape trumps
+strict folder order" — every other image in this case study, across
+both passes, still follows its folder's own listing order exactly.
+
+All 4 new images went through the same pipeline as before: `PIL`,
+resized to a 1800px-max width, re-encoded as WebP at quality 88. Files
+land at `public/work/orbit-interiors/{hero,challenge-1}.webp` (new) and
+`system-1.webp`/`system-2.webp` (the new square pair, reusing the
+filenames the shifted-up singles vacated).
+
+**3 files remain blocked** as of this pass: `Notebook Mockup.png`
+(System, still no image for that folder position), `Billboard_Mockup_4.png`
+(System), and `Billboard_Mockup_3.png` (Challenge, so the Challenge
+section still shows only 1 of its folder's 2 images). Same guidance as
+before applies if these come up again: check `search_files` on the
+parent folder for a possibly-new file ID before assuming the old one
+is still valid — this pass's Business-Card-Mockup fileId lookup
+returned "entity not found" specifically because of a silent
+re-upload, a third distinct failure mode alongside "session expired"
+and "file too large."
+
+Confirmed via Playwright at 1440×900 and 390×844 (scrolling
+incrementally before each screenshot, restarting the prod server and
+clearing `.next/cache/images` first per the stale-cache lesson
+documented above, since `public/work/orbit-interiors/` files were
+renamed again): the hero photo renders full-bleed at `1440×810` (a real
+16:9 photo, not the gradient placeholder); the new Challenge image
+renders full-bleed in its own section; the `system-1`/`system-2` pair
+renders as two genuine `718×718` (desktop) / `390×390` (mobile) squares
+side by side — the first true square-framed pair on the site, visibly
+different from every landscape image elsewhere on the page cropped into
+the wide `1440×810`/`390×219` single-row frame.
+
 ## Work index: single-row cards with overlaid copy and Show More/Less
 
 Per direct request ("Make the work cards one on a single row, as you did
