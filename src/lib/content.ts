@@ -156,7 +156,13 @@ function readEntries<T>(dir: string): ContentEntry<T>[] {
 }
 
 export function getAllWork(): ContentEntry<WorkFrontmatter>[] {
-  return readEntries<WorkFrontmatter>(WORK_DIR);
+  // Case studies order by their own `year` field (most recent first), not
+  // by last edit — see "Content model" in CLAUDE.md. Array.prototype.sort
+  // is stable, so entries sharing a year keep readEntries's own
+  // most-recently-edited-first order as a tie-breaker.
+  return readEntries<WorkFrontmatter>(WORK_DIR).sort(
+    (a, b) => Number(b.frontmatter.year) - Number(a.frontmatter.year)
+  );
 }
 
 export function getWorkBySlug(slug: string): ContentEntry<WorkFrontmatter> | null {

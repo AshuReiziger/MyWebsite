@@ -222,16 +222,20 @@ export default async function Page({ params }: PageProps<"/work/[slug]">) {
 - Loaded via `src/lib/content.ts` (`getAllWork`, `getWorkBySlug`,
   `getAllThink`, `getThinkBySlug`). Adding a new `.mdx` file to either
   directory is enough to publish — no code changes needed.
-- **Ordering is by last edit, not by the `year`/`date` field.** Both
-  `getAllWork` and `getAllThink` sort by each file's actual last-commit
-  time (`git log -1 --format=%ct` in `getLastEditedTime()`) — editing an
-  old entry's copy bumps it back to the top without touching `year`/
-  `date`, which stay purely for display (the "2025" badge, the Think
-  card date) and no longer drive order. Every listing built on
-  `getAllWork`/`getAllThink` inherits this automatically: the Work
-  index, the Think index (including which article is "featured" in the
-  All view), Home's "Recent writing", and `CaseStudyLayout`'s Related
-  Projects.
+- **Think articles order by last edit, not by the `date` field —
+  Work case studies order by their own `year` field instead (see
+  "Work ordering switched from last-edit to the `year` field" below
+  for why this diverges from Think's rule).** `getAllThink` sorts by
+  each file's actual last-commit time (`git log -1 --format=%ct` in
+  `getLastEditedTime()`) — editing an old entry's copy bumps it back to
+  the top without touching `date`, which stays purely for display (the
+  Think card date) and doesn't drive order. Every listing built on
+  `getAllThink` inherits this automatically: the Think index (including
+  which article is "featured" in the All view) and Home's "Recent
+  writing." `getAllWork`, by contrast, sorts by `Number(frontmatter.
+  year)` descending — see that section below for the full history;
+  `year` now drives display *and* order for case studies, `date`
+  still only drives display for Think.
   **Vercel's build clone is shallow by default (depth 10)** — `git log`
   finds nothing for a file whose last touching commit has aged out of
   that window, even though the file is genuinely tracked. Falling back
@@ -2715,6 +2719,59 @@ Work" correctly absent since 3 is still under its `INITIAL_VISIBLE = 4`
 threshold (see "Work index: single-row cards with overlaid copy and
 Show More/Less" below). A production build (`npm run build`) confirms
 exactly 3 prerendered `/work/[slug]` paths.
+
+## Work ordering switched from last-edit to the `year` field
+
+Per direct request ("Filter the projects by date; so let the top most
+or recent projects be the latest projects by date"), `getAllWork()`
+(`src/lib/content.ts`) no longer orders case studies by last-edited-
+commit time — it now sorts by each entry's own `year` frontmatter
+field, descending, so the most recent project by year always leads.
+This is a deliberate, direct override of the "Ordering is by last edit"
+convention documented under "Content model" above (now updated to
+describe the split) — that convention was originally chosen so editing
+an old case study's copy would surface it without needing to bump a
+date by hand, but the user's ask here is the opposite: ordering should
+track the project's actual date, not editing activity.
+
+**Scoped to Work only, not Think.** `readEntries<T>()` (the shared
+loader both `getAllWork`/`getAllThink` call) still does its own
+last-edited-first sort exactly as before — `getAllWork()` just re-sorts
+that already-lastEdited-sorted array by `Number(frontmatter.year)`
+descending on top. `getAllThink()` was left untouched: the request
+named "projects" specifically (the site's own term for case studies —
+"Selected Work," "Portfolio"), and Think's own "most recently edited
+surfaces it, without needing to bump a date by hand" reasoning still
+holds for articles, which weren't part of this ask. Since
+`Array.prototype.sort` is a stable sort in Node's V8 engine, two
+entries sharing the same `year` keep `readEntries`'s own most-
+recently-edited-first relative order as an implicit tie-breaker —
+not a new mechanism, just relying on sort stability rather than adding
+a second explicit sort key.
+
+`entry.lastEdited` itself is unchanged and still computed for every
+Work entry (via the same `getLastEditedTime()` — grep confirmed it has
+no other reader in the codebase besides this sort), so nothing else
+that might read it later breaks; only which field drives *Work's*
+final order changed.
+
+With the site's 3 real case studies' current `year` values —
+House of Trust for Peace `"2026"`, Orbit Interiors `"2025"`, L&J
+Construction `"2024"` — the new order is House of Trust for Peace →
+Orbit Interiors → L&J Construction, a reshuffle from the previous
+last-edited order (L&J Construction → House of Trust for Peace →
+Orbit Interiors, since L&J was the most recently added entry). This
+reordering is the correct, intended outcome of the new rule, not a
+regression — a case study's `year` is now authoritative for where it
+sits, the same way it always was for its own displayed "2025"-style
+badge.
+
+Confirmed via Playwright at a 1440px viewport: `/work`'s index and the
+home page's Selected Work grid both list `/work/house-of-trust-for-
+peace`, `/work/orbit-interiors`, `/work/l-and-j-construction` in that
+exact order — genuinely reflecting `year` descending, not the prior
+last-edited order. A production build (`npm run build`) confirms the
+same order in the prerendered `/work/[slug]` path list.
 
 ## Work index: single-row cards with overlaid copy and Show More/Less
 
