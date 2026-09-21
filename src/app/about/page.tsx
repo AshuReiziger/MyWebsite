@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { Section, SectionHeading } from "@/components/Section";
 import { Timeline, type TimelineEntry } from "@/components/Timeline";
+import { HeroReveal } from "@/components/HeroReveal";
 
 export const metadata: Metadata = {
   title: "About — Reiziger Ashu",
@@ -77,22 +78,28 @@ export default function AboutPage() {
     <div className="theme-dark-fixed -mb-10 bg-paper pb-10 text-ink">
       <Section className="pb-0 pt-16 md:flex md:h-[calc(100dvh-81px)] md:items-center md:pb-0 md:pt-24">
         <div className="flex flex-col items-center gap-10 text-center md:w-full md:flex-row md:justify-center md:gap-16 md:text-left">
-          <div className="relative h-56 w-56 shrink-0 overflow-hidden rounded-full md:h-80 md:w-80">
-            <Image
-              src="/images/reiziger-ashu-portrait.jpg"
-              alt="Reiziger Ashu"
-              fill
-              className="object-cover object-[50%_22%]"
-            />
-          </div>
+          <HeroReveal delay={0.15}>
+            <div className="relative h-56 w-56 shrink-0 overflow-hidden rounded-full md:h-80 md:w-80">
+              <Image
+                src="/images/reiziger-ashu-portrait.jpg"
+                alt="Reiziger Ashu"
+                fill
+                className="object-cover object-[50%_22%]"
+              />
+            </div>
+          </HeroReveal>
           <div>
-            <h1 className="font-display text-[3em] font-bold leading-tight tracking-tight">
-              I&apos;m Rei
-            </h1>
-            <blockquote className="mx-auto mt-6 max-w-xl font-display italic text-muted md:mx-0">
-              &ldquo;I didn&apos;t begin designing because I wanted to make things look good. I
-              began because I became fascinated by the power of ideas.&rdquo;
-            </blockquote>
+            <HeroReveal delay={0}>
+              <h1 className="font-display text-[3em] font-bold leading-tight tracking-tight">
+                I&apos;m Rei...
+              </h1>
+            </HeroReveal>
+            <HeroReveal delay={0.2}>
+              <blockquote className="mx-auto mt-6 max-w-xl font-display italic text-muted md:mx-0">
+                &ldquo;I didn&apos;t begin designing because I wanted to make things look good. I
+                began because I became fascinated by the power of ideas.&rdquo;
+              </blockquote>
+            </HeroReveal>
           </div>
         </div>
       </Section>
