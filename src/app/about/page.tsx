@@ -2,15 +2,6 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { Section, SectionHeading } from "@/components/Section";
 import { Timeline, type TimelineEntry } from "@/components/Timeline";
-import { IconBadge } from "@/components/icons";
-import {
-  PurposeIcon,
-  ExcellenceIcon,
-  CuriosityIcon,
-  IntegrityIcon,
-  ImpactIcon,
-  StewardshipIcon,
-} from "@/components/icons";
 
 export const metadata: Metadata = {
   title: "About — Reiziger Ashu",
@@ -54,42 +45,34 @@ const VALUES = [
     title: "Purpose",
     description:
       "Design must have intent. I believe in creating solutions that are not just beautiful, but meaningful — addressing real user needs and driving sustainable business value.",
-    icon: <PurposeIcon />,
   },
   {
     title: "Excellence",
     description:
       "A commitment to the highest standards of craft. Rejecting 'good enough' in favor of rigorous iteration and continuous refinement.",
-    icon: <ExcellenceIcon />,
   },
   {
     title: "Curiosity",
     description:
       "The relentless desire to understand 'why'. Staying open to new paradigms, technologies, and perspectives to inform better design decisions.",
-    icon: <CuriosityIcon />,
   },
   {
     title: "Integrity",
     description:
       "Designing ethically and honestly. Ensuring that digital experiences respect user privacy, promote accessibility, and foster trust.",
-    icon: <IntegrityIcon />,
   },
   {
     title: "Impact",
     description: "Measuring success by the positive change created in the real world.",
-    icon: <ImpactIcon />,
   },
   {
     title: "Stewardship",
     description:
       "Taking responsibility for the long-term health of the products and systems I build.",
-    icon: <StewardshipIcon />,
   },
 ];
 
 export default function AboutPage() {
-  const [purpose, excellence, curiosity, integrity, impact, stewardship] = VALUES;
-
   return (
     <div className="theme-dark-fixed -mb-10 bg-paper pb-10 text-ink">
       <Section className="pb-0 pt-16 text-center md:pb-0 md:pt-24">
@@ -124,45 +107,21 @@ export default function AboutPage() {
 
       <Section className="pb-8 pt-0 md:pb-40">
         <SectionHeading centered divider title="What guides my work" />
-        <div className="mt-12 grid auto-rows-[minmax(220px,auto)] grid-cols-1 gap-6 md:grid-cols-3">
-          <ValueCard value={purpose} className="md:col-span-2" />
-          <ValueCard value={excellence} />
-          <ValueCard value={curiosity} />
-          <ValueCard value={integrity} />
-          <div className="grid grid-rows-2 gap-6">
-            <CompactValueCard value={impact} />
-            <CompactValueCard value={stewardship} />
-          </div>
+        <div className="mt-12 border-t border-line">
+          {VALUES.map((value, i) => (
+            <div
+              key={value.title}
+              className="grid gap-2 border-b border-line py-6 md:grid-cols-[80px_1fr_2fr] md:items-baseline md:gap-8"
+            >
+              <span className="font-display text-sm font-semibold text-accent">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <h3 className="font-display text-lg font-bold tracking-tight">{value.title}</h3>
+              <p className="text-sm text-muted">{value.description}</p>
+            </div>
+          ))}
         </div>
       </Section>
-    </div>
-  );
-}
-
-function ValueCard({
-  value,
-  className,
-}: {
-  value: (typeof VALUES)[number];
-  className?: string;
-}) {
-  return (
-    <div className={`rounded-2xl border border-line p-8 transition-colors hover:border-accent/50 ${className ?? ""}`}>
-      <IconBadge>{value.icon}</IconBadge>
-      <h3 className="mt-6 font-display text-lg font-bold tracking-tight">{value.title}</h3>
-      <p className="mt-3 text-muted">{value.description}</p>
-    </div>
-  );
-}
-
-function CompactValueCard({ value }: { value: (typeof VALUES)[number] }) {
-  return (
-    <div className="flex flex-col justify-center rounded-2xl border border-line p-6 transition-colors hover:border-accent/50">
-      <h3 className="flex items-center gap-2 font-display text-lg font-bold tracking-tight">
-        <span className="h-2 w-2 shrink-0 bg-accent" />
-        {value.title}
-      </h3>
-      <p className="mt-2 text-sm text-muted">{value.description}</p>
     </div>
   );
 }
