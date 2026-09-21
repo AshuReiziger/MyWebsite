@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import Image from "next/image";
 import { BuildSidebar } from "@/components/BuildSidebar";
 
 export const metadata: Metadata = {
@@ -81,8 +82,16 @@ export default function BuildPage() {
 
           <div>
             <SectionDivider label="Flagship Venture" />
-            <div className="mt-8 grid gap-8 md:grid-cols-2 md:items-center">
-              <div>
+            <div className="relative mt-8 overflow-hidden rounded-2xl">
+              <Image
+                src="/images/build-sigma-studio-desk.webp"
+                alt=""
+                fill
+                sizes="(min-width: 768px) 1400px, 100vw"
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-black/55" />
+              <div className="relative p-8 md:max-w-lg md:p-12">
                 <span className="inline-block rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-ink">
                   Creative Consultancy
                 </span>
@@ -96,7 +105,6 @@ export default function BuildPage() {
                 </p>
                 <OutlinedLink href="#">Visit Sigma Studio →</OutlinedLink>
               </div>
-              <div className="aspect-[4/3] rounded-2xl bg-gradient-to-br from-line to-muted/20" />
             </div>
           </div>
 
