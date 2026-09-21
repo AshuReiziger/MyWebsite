@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
@@ -27,7 +28,15 @@ export function BuildSidebar() {
   return (
     <aside className="md:sticky md:top-24 md:self-start">
       <div className="flex items-center gap-3">
-        <div className="h-14 w-14 shrink-0 rounded-xl bg-gradient-to-br from-accent/60 to-paper" />
+        <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl">
+          <Image
+            src="/images/reiziger-ashu-build-sidebar.jpg"
+            alt="Reiziger Ashu"
+            fill
+            sizes="56px"
+            className="object-cover"
+          />
+        </div>
         <div>
           <p className="font-display text-base tracking-tight">Reiziger Ashu</p>
           <p className="text-sm text-muted">Designer &amp; Strategist</p>

@@ -2,15 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { Section, SectionHeading } from "@/components/Section";
 import { Timeline, type TimelineEntry } from "@/components/Timeline";
-import { IconBadge } from "@/components/icons";
-import {
-  PurposeIcon,
-  ExcellenceIcon,
-  CuriosityIcon,
-  IntegrityIcon,
-  ImpactIcon,
-  StewardshipIcon,
-} from "@/components/icons";
+import { HeroReveal } from "@/components/HeroReveal";
 
 export const metadata: Metadata = {
   title: "About — Reiziger Ashu",
@@ -54,115 +46,107 @@ const VALUES = [
     title: "Purpose",
     description:
       "Design must have intent. I believe in creating solutions that are not just beautiful, but meaningful — addressing real user needs and driving sustainable business value.",
-    icon: <PurposeIcon />,
   },
   {
     title: "Excellence",
     description:
       "A commitment to the highest standards of craft. Rejecting 'good enough' in favor of rigorous iteration and continuous refinement.",
-    icon: <ExcellenceIcon />,
   },
   {
     title: "Curiosity",
     description:
       "The relentless desire to understand 'why'. Staying open to new paradigms, technologies, and perspectives to inform better design decisions.",
-    icon: <CuriosityIcon />,
   },
   {
     title: "Integrity",
     description:
       "Designing ethically and honestly. Ensuring that digital experiences respect user privacy, promote accessibility, and foster trust.",
-    icon: <IntegrityIcon />,
   },
   {
     title: "Impact",
     description: "Measuring success by the positive change created in the real world.",
-    icon: <ImpactIcon />,
   },
   {
     title: "Stewardship",
     description:
       "Taking responsibility for the long-term health of the products and systems I build.",
-    icon: <StewardshipIcon />,
   },
 ];
 
 export default function AboutPage() {
-  const [purpose, excellence, curiosity, integrity, impact, stewardship] = VALUES;
-
   return (
     <div className="theme-dark-fixed -mb-10 bg-paper pb-10 text-ink">
-      <Section className="pb-0 pt-16 text-center md:pb-0 md:pt-24">
-        <SectionHeading centered divider title="The Designer Behind the Work" />
-        <blockquote className="mx-auto mt-10 max-w-2xl border-l-2 border-accent pl-6 text-left font-display text-xl italic">
-          &ldquo;I didn&apos;t begin designing because I wanted to make things look good. I began
-          because I became fascinated by the power of ideas.&rdquo;
-        </blockquote>
+      <Section className="pb-0 pt-16 md:flex md:h-[calc(100dvh-81px)] md:items-center md:pb-0 md:pt-24">
+        <div className="flex flex-col items-center gap-10 text-center md:w-full md:flex-row md:justify-center md:gap-16 md:text-left">
+          <HeroReveal delay={0.15}>
+            <div className="relative h-56 w-56 shrink-0 overflow-hidden rounded-full md:h-80 md:w-80">
+              <Image
+                src="/images/reiziger-ashu-about-portrait-circle.png"
+                alt="Reiziger Ashu"
+                fill
+                className="object-cover"
+              />
+            </div>
+          </HeroReveal>
+          <div>
+            <HeroReveal delay={0}>
+              <h1 className="font-display text-[3em] font-bold leading-tight tracking-tight">
+                I&apos;m Rei...
+              </h1>
+            </HeroReveal>
+            <HeroReveal delay={0.2}>
+              <blockquote className="mx-auto mt-6 max-w-xl font-display italic text-muted md:mx-0">
+                &ldquo;I didn&apos;t begin designing because I wanted to make things look good. I
+                began because I became fascinated by the power of ideas.&rdquo;
+              </blockquote>
+            </HeroReveal>
+          </div>
+        </div>
       </Section>
 
-      <div className="group relative mt-16 aspect-[4/5] w-full overflow-hidden bg-gradient-to-br from-accent/30 via-paper to-paper md:aspect-auto md:h-screen">
-        <Image
-          src="/images/reiziger-ashu-portrait.jpg"
-          alt="Reiziger Ashu"
-          fill
-          className="object-cover object-[50%_22%] grayscale transition-[filter] duration-700 group-hover:grayscale-0"
-        />
-      </div>
-
-      <Section outerClassName="bg-ink/5 border-y border-line" className="pb-20 pt-[10px] md:pb-40">
+      <Section
+        outerClassName="bg-ink/5 border-y border-line"
+        className="pb-[40px] pt-[40px] md:pb-[40px] md:pt-[40px]"
+      >
         <div className="grid gap-10 md:grid-cols-[1fr_2fr]">
           <div>
-            <h3 className="font-display text-2xl font-bold tracking-tight">The Journey</h3>
+            <h3 className="font-display text-2xl font-bold tracking-tight">My Journey</h3>
             <p className="mt-3 text-muted">
-              A linear progression of mastery, evolving from foundational craft to visionary
-              leadership.
+              A linear progression of my own mastery, evolving from foundational craft to
+              visionary leadership.
             </p>
           </div>
           <Timeline entries={JOURNEY} current="2021 — The Beginning" />
         </div>
       </Section>
 
-      <Section className="pb-8 pt-0 md:pb-40">
-        <SectionHeading centered divider title="What guides my work" />
-        <div className="mt-12 grid auto-rows-[minmax(220px,auto)] grid-cols-1 gap-6 md:grid-cols-3">
-          <ValueCard value={purpose} className="md:col-span-2" />
-          <ValueCard value={excellence} />
-          <ValueCard value={curiosity} />
-          <ValueCard value={integrity} />
-          <div className="grid grid-rows-2 gap-6">
-            <CompactValueCard value={impact} />
-            <CompactValueCard value={stewardship} />
+      <div className="relative overflow-hidden">
+        <Image
+          src="/images/about-values-desk.webp"
+          alt=""
+          fill
+          sizes="100vw"
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-black/40" />
+        <div className="relative mx-auto max-w-[1920px] px-3 pb-[40px] pt-[40px] md:px-10 md:pb-[40px] md:pt-[40px]">
+          <SectionHeading centered divider title="What guides my work" />
+          <div className="mt-12 border-t border-ink/15">
+            {VALUES.map((value, i) => (
+              <div
+                key={value.title}
+                className="grid gap-2 border-b border-ink/15 py-6 md:grid-cols-[80px_1fr_2fr] md:items-baseline md:gap-8"
+              >
+                <span className="font-display text-sm font-semibold text-accent">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <h3 className="font-display text-lg font-bold tracking-tight">{value.title}</h3>
+                <p className="text-sm text-ink/80">{value.description}</p>
+              </div>
+            ))}
           </div>
         </div>
-      </Section>
-    </div>
-  );
-}
-
-function ValueCard({
-  value,
-  className,
-}: {
-  value: (typeof VALUES)[number];
-  className?: string;
-}) {
-  return (
-    <div className={`rounded-2xl border border-line p-8 transition-colors hover:border-accent/50 ${className ?? ""}`}>
-      <IconBadge>{value.icon}</IconBadge>
-      <h3 className="mt-6 font-display text-lg font-bold tracking-tight">{value.title}</h3>
-      <p className="mt-3 text-muted">{value.description}</p>
-    </div>
-  );
-}
-
-function CompactValueCard({ value }: { value: (typeof VALUES)[number] }) {
-  return (
-    <div className="flex flex-col justify-center rounded-2xl border border-line p-6 transition-colors hover:border-accent/50">
-      <h3 className="flex items-center gap-2 font-display text-lg font-bold tracking-tight">
-        <span className="h-2 w-2 shrink-0 bg-accent" />
-        {value.title}
-      </h3>
-      <p className="mt-2 text-sm text-muted">{value.description}</p>
+      </div>
     </div>
   );
 }
