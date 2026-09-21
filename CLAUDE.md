@@ -2648,6 +2648,74 @@ viewport; and the entry — being the most recently added, per the
 last-edited ordering rule (see "Ordering is by last edit" above) —
 correctly renders as the newest hero card on `/work`'s index.
 
+## Dummy work entries removed; home page capped to 3 case studies, each full-bleed on its own row
+
+Per direct request ("Remove the dummy projects from the site ( Sigma
+Studio academy, Aura Financial Platform, Sigma Studio). Let a maximum
+of 3 projects be shown on the home page; each on it's own row."), two
+changes:
+
+1. **The three placeholder case studies were deleted outright** —
+   `src/content/work/sigma-studio-rebrand.mdx` ("Sigma Studio"),
+   `src/content/work/academy-launch-system.mdx` ("Sigma Studio
+   Academy"), and `src/content/work/aura-financial-platform.mdx`
+   ("Aura Financial Platform"), the last of which was already flagged
+   in "Not yet wired up" as placeholder Figma-preview content (see that
+   section above, now updated to drop the stale reference). None of the
+   three were referenced anywhere in code by slug (confirmed via grep)
+   — they were only ever loaded dynamically through `getAllWork()` — and
+   none had any `public/work/<slug>/` image assets to clean up
+   alongside them (per the original migration note under "Case study
+   page rebuilt," all three had no gallery images to begin with). This
+   leaves exactly 3 real case studies sitewide: `house-of-trust-for-
+   peace`, `orbit-interiors`, and `l-and-j-construction`.
+2. **`src/app/page.tsx`'s `selectedWork` is now capped to 3** —
+   `getAllWork().slice(0, 3)` (previously the full, uncapped list),
+   matching the same `.slice(0, 3)` pattern the page's own `latestThink`
+   already used one line above it. With exactly 3 real entries left
+   after the deletions above, this cap currently has no visible effect
+   on which entries show — but it's a real, permanent ceiling on the
+   home page regardless of how many case studies exist later, per the
+   explicit "maximum of 3" ask, not just an incidental match to today's
+   count.
+
+**`SelectedWorkGrid.tsx`'s hero-tile-plus-masonry layout was replaced
+with a uniform one-per-row stack**, per "each on it's own row": the
+component previously split `entries` into `[hero, ...rest]`, rendering
+the first as a wide `sm:col-span-2 lg:col-span-3` tile in a `sm:grid-
+cols-2 lg:grid-cols-3` grid and the rest as smaller `aspect-[4/5]`
+tiles filling in beside/below it (a masonry arrangement, not one row
+per entry) — see "Sitewide dark theme" above for this component's
+original description. It's now a plain `flex flex-col gap-1` stack:
+every entry renders through the same `WorkTile`, at the same size the
+old hero tile used (`aspect-[4/5]` mobile, `sm:aspect-[21/9]` desktop
+— kept, rather than switched to `/work`'s own `aspect-[16/9]` `WorkCard`
+ratio, since this is a full-bleed home-page teaser with its own
+established proportions, not the padded/bordered `/work` index card).
+The `large`/non-large size distinction on `WorkTile` (larger heading
+text and padding for the hero, smaller for the rest) is gone along with
+the hero/rest split — every tile now uses the former "large" treatment
+uniformly (`text-2xl md:text-4xl` heading, `p-6 md:p-10` padding),
+since every entry is now presented the same way. This is a full-bleed
+sitewide component (rendered outside any `Section`'s `max-w-[1920px]`
+container, per its own doc comment, unchanged) — only its internal
+grid/masonry arrangement changed, not its full-bleed positioning on the
+page.
+
+Confirmed via Playwright at 1440×900 and 390×844: the home page's
+`/work/*` links resolve to exactly the 3 remaining entries (`l-and-j-
+construction`, `house-of-trust-for-peace`, `orbit-interiors` — no
+Sigma Studio/Academy/Aura links anywhere on the page), and each tile's
+`getBoundingClientRect()` measures the full viewport width (`left: 0`,
+`width` = viewport width) at both sizes — genuinely one full-width row
+per entry, not a masonry mix. `/work`'s own index (`WorkIndex.tsx`,
+unaffected by this pass beyond having fewer entries to render) also
+confirmed showing only the 3 remaining case studies, with "Show More
+Work" correctly absent since 3 is still under its `INITIAL_VISIBLE = 4`
+threshold (see "Work index: single-row cards with overlaid copy and
+Show More/Less" below). A production build (`npm run build`) confirms
+exactly 3 prerendered `/work/[slug]` paths.
+
 ## Work index: single-row cards with overlaid copy and Show More/Less
 
 Per direct request ("Make the work cards one on a single row, as you did
@@ -3746,9 +3814,7 @@ always used, now applied to all 15.
   platform homepage in the meantime.
 - The `TESTIMONIALS` array in `src/app/page.tsx` is placeholder quote/name/
   role text — replace with real client testimonials before launch.
-- `src/content/work/aura-financial-platform.mdx` is still dummy sample
-  content added to preview the redesigned Work index page (per the Figma
-  mockups) before a real project exists — marked as placeholder in its own
-  body text. Replace or remove once a real case study is ready. All six
-  `src/content/think/*.mdx` entries, by contrast, now carry real long-form
-  essays (from the "Sigma Studio Journal" doc) — not placeholders.
+- All six `src/content/think/*.mdx` entries carry real long-form essays
+  (from the "Sigma Studio Journal" doc) — not placeholders. `src/content/
+  work/*.mdx` is now real-content-only too — see "Dummy work entries
+  removed" below for the three placeholder case studies that were deleted.
