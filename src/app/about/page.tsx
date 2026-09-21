@@ -91,7 +91,7 @@ export default function AboutPage() {
               <br />
               Behind the Work
             </h1>
-            <blockquote className="mx-auto mt-6 max-w-xl font-display text-xl italic text-muted md:mx-0">
+            <blockquote className="mx-auto mt-6 max-w-xl font-display italic text-muted md:mx-0">
               &ldquo;I didn&apos;t begin designing because I wanted to make things look good. I
               began because I became fascinated by the power of ideas.&rdquo;
             </blockquote>
