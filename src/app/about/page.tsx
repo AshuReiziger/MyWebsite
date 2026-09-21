@@ -87,9 +87,7 @@ export default function AboutPage() {
           </div>
           <div>
             <h1 className="font-display text-[3em] font-bold leading-tight tracking-tight">
-              The Designer
-              <br />
-              Behind the Work
+              I&apos;m Rei
             </h1>
             <blockquote className="mx-auto mt-6 max-w-xl font-display italic text-muted md:mx-0">
               &ldquo;I didn&apos;t begin designing because I wanted to make things look good. I
@@ -102,10 +100,10 @@ export default function AboutPage() {
       <Section outerClassName="bg-ink/5 border-y border-line" className="pb-20 pt-[10px] md:pb-40">
         <div className="grid gap-10 md:grid-cols-[1fr_2fr]">
           <div>
-            <h3 className="font-display text-2xl font-bold tracking-tight">The Journey</h3>
+            <h3 className="font-display text-2xl font-bold tracking-tight">My Journey</h3>
             <p className="mt-3 text-muted">
-              A linear progression of mastery, evolving from foundational craft to visionary
-              leadership.
+              A linear progression of my own mastery, evolving from foundational craft to
+              visionary leadership.
             </p>
           </div>
           <Timeline entries={JOURNEY} current="2021 — The Beginning" />
