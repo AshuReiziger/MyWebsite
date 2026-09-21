@@ -110,40 +110,42 @@ export default function BuildPage() {
 
           <div>
             <SectionDivider label="Educational Platform" />
-            <div className="mt-8 rounded-2xl bg-accent/10 p-8 md:p-10">
-              <div className="grid gap-8 md:grid-cols-2 md:items-center">
-                <div>
-                  <h2 className="font-display text-3xl font-bold tracking-tight">
-                    Sigma Studio Academy
-                  </h2>
-                  <p className="mt-4 max-w-md text-muted">
-                    Developing the next generation of strategic designers. An educational
-                    platform equipping creatives with technical excellence, strategic thinking,
-                    entrepreneurial competence, ethical leadership, and purpose-driven character.
-                  </p>
-                  <ul className="mt-5 flex flex-col gap-2">
-                    {[
-                      "Technical Mastery & Execution",
-                      "Strategic Business Alignment",
-                      "Ethical & Purpose-Driven Leadership",
-                    ].map((item) => (
-                      <li key={item} className="flex items-center gap-2 text-muted">
-                        <span className="h-1.5 w-1.5 shrink-0 bg-accent" />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                  <a
-                    href="#"
-                    className="mt-6 inline-block rounded-full bg-ink px-6 py-3 text-sm font-semibold uppercase tracking-wide text-paper transition-opacity hover:opacity-90"
-                  >
-                    Explore the Academy
-                  </a>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="aspect-square rounded-2xl bg-gradient-to-br from-line to-muted/20" />
-                  <div className="aspect-square rounded-2xl bg-gradient-to-br from-muted/20 to-line" />
-                </div>
+            <div className="relative mt-8 overflow-hidden rounded-2xl">
+              <Image
+                src="/images/build-sigma-academy-studio.webp"
+                alt=""
+                fill
+                sizes="(min-width: 768px) 1400px, 100vw"
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-black/55" />
+              <div className="relative p-8 md:max-w-lg md:p-12">
+                <h2 className="font-display text-3xl font-bold tracking-tight">
+                  Sigma Studio Academy
+                </h2>
+                <p className="mt-4 max-w-md text-muted">
+                  Developing the next generation of strategic designers. An educational
+                  platform equipping creatives with technical excellence, strategic thinking,
+                  entrepreneurial competence, ethical leadership, and purpose-driven character.
+                </p>
+                <ul className="mt-5 flex flex-col gap-2">
+                  {[
+                    "Technical Mastery & Execution",
+                    "Strategic Business Alignment",
+                    "Ethical & Purpose-Driven Leadership",
+                  ].map((item) => (
+                    <li key={item} className="flex items-center gap-2 text-muted">
+                      <span className="h-1.5 w-1.5 shrink-0 bg-accent" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+                <a
+                  href="#"
+                  className="mt-6 inline-block rounded-full bg-ink px-6 py-3 text-sm font-semibold uppercase tracking-wide text-paper transition-opacity hover:opacity-90"
+                >
+                  Explore the Academy
+                </a>
               </div>
             </div>
           </div>
