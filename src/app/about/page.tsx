@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { Section, SectionHeading } from "@/components/Section";
 import { Timeline, type TimelineEntry } from "@/components/Timeline";
-import { HeroReveal } from "@/components/HeroReveal";
 
 export const metadata: Metadata = {
   title: "About — Reiziger Ashu",
@@ -76,34 +75,26 @@ const VALUES = [
 export default function AboutPage() {
   return (
     <div className="theme-dark-fixed -mb-10 bg-paper pb-10 text-ink">
-      <Section className="relative overflow-hidden px-[0px] pb-[10px] pt-[10px] md:flex md:h-[calc(100dvh-81px)] md:items-center md:px-[0px] md:pb-[10px] md:pt-[10px]">
-        <div className="grid gap-10 md:h-full md:w-full md:grid-cols-[3fr_2fr] md:grid-rows-1 md:items-center md:gap-0">
-          <HeroReveal delay={0.15} className="md:h-full md:self-stretch">
-            <div className="relative aspect-[4/5] overflow-hidden rounded-2xl md:aspect-auto md:-mt-[10px] md:-mb-[10px] md:h-[calc(100%+20px)]">
-              <Image
-                src="/images/reiziger-ashu-portrait.jpg"
-                alt="Reiziger Ashu"
-                fill
-                priority
-                sizes="(min-width: 768px) 60vw, 100vw"
-                className="object-cover object-[50%_22%]"
-              />
-            </div>
-          </HeroReveal>
-          <div className="md:pr-[80px]">
-            <HeroReveal delay={0}>
-              <h1 className="font-display text-[3em] font-bold leading-tight tracking-tight">
-                The Designer
-                <br />
-                Behind the Work
-              </h1>
-            </HeroReveal>
-            <HeroReveal delay={0.2}>
-              <blockquote className="mt-6 max-w-xl font-display text-xl italic text-muted">
-                &ldquo;I didn&apos;t begin designing because I wanted to make things look good. I
-                began because I became fascinated by the power of ideas.&rdquo;
-              </blockquote>
-            </HeroReveal>
+      <Section className="pb-0 pt-16 md:flex md:h-[calc(100dvh-81px)] md:items-center md:pb-0 md:pt-24">
+        <div className="flex flex-col items-center gap-10 text-center md:w-full md:flex-row md:items-center md:gap-16 md:text-left">
+          <div className="relative h-56 w-56 shrink-0 overflow-hidden rounded-full md:h-80 md:w-80">
+            <Image
+              src="/images/reiziger-ashu-portrait.jpg"
+              alt="Reiziger Ashu"
+              fill
+              className="object-cover object-[50%_22%]"
+            />
+          </div>
+          <div>
+            <h1 className="font-display text-[3em] font-bold leading-tight tracking-tight">
+              The Designer
+              <br />
+              Behind the Work
+            </h1>
+            <blockquote className="mx-auto mt-6 max-w-xl font-display text-xl italic text-muted md:mx-0">
+              &ldquo;I didn&apos;t begin designing because I wanted to make things look good. I
+              began because I became fascinated by the power of ideas.&rdquo;
+            </blockquote>
           </div>
         </div>
       </Section>
