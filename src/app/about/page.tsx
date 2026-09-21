@@ -81,10 +81,10 @@ export default function AboutPage() {
           <HeroReveal delay={0.15}>
             <div className="relative h-56 w-56 shrink-0 overflow-hidden rounded-full md:h-80 md:w-80">
               <Image
-                src="/images/reiziger-ashu-portrait.jpg"
+                src="/images/reiziger-ashu-about-portrait-circle.png"
                 alt="Reiziger Ashu"
                 fill
-                className="object-cover object-[50%_22%]"
+                className="object-cover"
               />
             </div>
           </HeroReveal>
@@ -104,7 +104,10 @@ export default function AboutPage() {
         </div>
       </Section>
 
-      <Section outerClassName="bg-ink/5 border-y border-line" className="pb-20 pt-[10px] md:pb-40">
+      <Section
+        outerClassName="bg-ink/5 border-y border-line"
+        className="pb-[40px] pt-[40px] md:pb-[40px] md:pt-[40px]"
+      >
         <div className="grid gap-10 md:grid-cols-[1fr_2fr]">
           <div>
             <h3 className="font-display text-2xl font-bold tracking-tight">My Journey</h3>
