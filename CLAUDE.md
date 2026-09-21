@@ -2561,6 +2561,93 @@ gap. Screenshots at both sizes confirm the hero copy now sits close
 against the hero photo below it, and the Related Projects heading/cards
 sit closer to both the content above and the final CTA band below.
 
+## New case study: L&J Construction
+
+Per direct request ("I have added another case study to the drive; The
+folder is called "L AND J Construction". Please go ahead and add it on
+the site"), `src/content/work/l-and-j-construction.mdx` was added —
+sourced from a Drive folder the user shared directly (a "Copy of READ ME
+FIRST" doc plus `Hero`/`The Challenge`/`The Identity`/`The System`
+subfolders), following the exact same Drive-connector access path,
+disk-spill download workaround, and `sections`-schema content model
+established for Orbit Interiors (see "New case study: Orbit Interiors"
+and its follow-ups above) — no new tooling or template changes were
+needed this time, just content.
+
+**The READ ME FIRST doc's own page structure** ("01 — Hero... 02 — The
+Challenge... 03 — The Identity... 04 — The System... 05 — The Result")
+maps directly onto `sections` in order — one field simpler than Orbit's
+brief (no separate "Strategy" beat, and a "05 — The Result" closing text
+block instead of Orbit's "06 — Final Statement"). `client`/`year`/
+`category`/`tags` were read directly off the doc's own "Client / Industry
+/ Year / Scope" summary line ("L&J Construction Company Ltd." / 2024 /
+"Construction & Real Estate" — read as `category: "Brand Identity"` per
+the site's brand-identity-project convention, with the doc's own scope
+terms as `tags`, "Visual Identity" / "Art Direction" / "Brand
+Guidelines" — kept distinct from `category`, following the same
+dedup-safe pattern documented for Orbit's chips).
+
+**All 10 source images downloaded successfully on the first attempt**
+(2.35MB–4.73MB each, well under the connector's practical ~9MB ceiling
+documented for Orbit's own downloads) — no blocked files this time, a
+smoother pass than every earlier Drive-sourced case study. Folder
+contents: `Hero` (`Logo Mockup.png`, 1 file — an interior logo-on-wall
+mockup, the doc's own "strongest interior image" for the hero),
+`The Challenge` (`Billboard.png`, `Billboard_02.png` — 2 files),
+`The Identity` (`Identity.png` — 1 file, a brand-book spread), `The
+System` (`Business Card.png`, `Truck_Mockup.png`, `Color.png`,
+`Grid-Pattern.png`, `T-Shirt Mockup.png`, `Roll-Up Mockup.png` — 6
+files).
+
+**Checking each image's aspect ratio determined the section
+grouping**, per the rectangular-vs-square rule established for Orbit
+(landscape → single full-row `aspect-[16/9]` section, square → paired
+into a two-column `aspect-square` section): 6 of the 10 images are
+1920×1080 landscape (`hero`, both Challenge billboards, `identity-1`,
+and 2 of the System images — `Truck_Mockup`/`Roll-Up Mockup`) and 4 are
+genuinely 958×958 square (`Business Card`, `Color`, `Grid-Pattern`,
+`T-Shirt Mockup` — all product/collateral mockups, same shape pattern
+Orbit's own product mockups eventually turned out to have). The 4
+squares were paired into two 2-image sections rather than left as four
+singles: `[system-1 Business Card, system-2 Color]` (both flat
+brand-collateral renders) and `[system-4 Grid-Pattern, system-5
+T-Shirt Mockup]` (both pattern/apparel-adjacent), with the 2 landscape
+System images (`system-3` Truck, `system-6` Roll-Up) staying as their
+own single-row sections in between. **This breaks the System folder's
+strict listing order in one place** — `Color.png` (the folder's 3rd
+file) was pulled forward to pair with `Business Card.png` (the 1st
+file) rather than sitting in its natural 3rd-position slot — the same
+narrow, shape-driven exception to "preserve folder order" already
+established and named for Orbit's own cap-mockup/business-card pairing
+("shape trumps strict folder order," see "Orbit Interiors: 4 of the
+last 7 blocked images finally downloaded" above); every other image in
+this case study, across both the Challenge and System folders, keeps
+its exact folder order.
+
+All 10 images went through the same pipeline as Orbit's rebuilt pass:
+`PIL`, resized to a 1800px-max width, re-encoded as WebP at quality 88.
+Every file landed under 700KB (`challenge-2.webp`, a photographed
+billboard-in-daylight scene, is the largest at 671KB — photography with
+fine detail compresses worse than the flatter brand-book/mockup
+renders). Files live at `public/work/l-and-j-construction/{hero,
+challenge-1,challenge-2,identity-1,system-1..system-6}.webp` — the same
+per-case-study directory and naming convention Orbit Interiors
+established.
+
+Confirmed via Playwright at 1440×900 and 390×844 (scrolling
+incrementally before each screenshot per the established lazy-load
+caveat): every image loads (no broken `img` elements other than
+`house-of-trust-for-peace.mdx`'s pre-existing, unrelated Cloudinary-
+egress limitation in this sandboxed environment); the four section
+headings ("Understanding the Challenge," "Designing the Identity,"
+"Building the Brand System," "The Result") render with no eyebrow
+label above them, matching the sitewide eyebrow-removal pass; every
+landscape image measures `1440×810` (16:9) and every square pair
+measures two genuine `718×718` tiles side by side, at a 1440px
+viewport; and the entry — being the most recently added, per the
+last-edited ordering rule (see "Ordering is by last edit" above) —
+correctly renders as the newest hero card on `/work`'s index.
+
 ## Work index: single-row cards with overlaid copy and Show More/Less
 
 Per direct request ("Make the work cards one on a single row, as you did
