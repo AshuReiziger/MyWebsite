@@ -68,15 +68,28 @@ export default function Home() {
           aria-hidden
           className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-gradient-to-br from-accent/10 via-muted/10 to-transparent blur-3xl"
         />
-        <div className="grid gap-10 md:h-full md:w-full md:grid-cols-[2fr_3fr] md:grid-rows-1 md:items-center md:gap-0">
-          <div className="md:pl-[80px]">
+        <div className="relative isolate grid min-h-[560px] gap-0 md:h-full md:min-h-0 md:w-full md:grid-cols-[2fr_3fr] md:grid-rows-1 md:items-center">
+          <HeroReveal delay={0.15} className="absolute inset-0 -z-10 md:relative md:z-auto md:h-full md:self-stretch">
+            <div className="relative h-full w-full overflow-hidden md:aspect-auto md:-mt-[10px] md:-mb-[10px] md:h-[calc(100%+20px)] md:rounded-2xl">
+              <Image
+                src="/images/reiziger-ashu-hero-portrait.webp"
+                alt="Reiziger Ashu"
+                fill
+                priority
+                sizes="(min-width: 768px) 60vw, 100vw"
+                className="object-cover object-top"
+              />
+              <div className="absolute inset-0 bg-paper/60 md:hidden" />
+            </div>
+          </HeroReveal>
+          <div className="relative z-10 flex flex-col justify-end pb-8 pl-[10px] pr-[10px] md:justify-center md:pb-0 md:pl-[80px] md:pr-[0px]">
             <HeroReveal delay={0}>
-              <h1 className="font-display text-[3em] font-bold leading-tight tracking-tight">
+              <h1 className="font-display text-[2em] font-bold leading-tight tracking-tight md:text-[3em]">
                 Reiziger Ashu
               </h1>
             </HeroReveal>
             <HeroReveal delay={0.2}>
-              <p className="mt-6 max-w-2xl text-muted">
+              <p className="mt-6 max-w-2xl text-ink/80 md:text-muted">
                 Designer, strategist, educator, and creative leader passionate about using
                 design to help people and organizations discover who they are, communicate
                 what they believe, and build what they envision.
@@ -99,18 +112,6 @@ export default function Home() {
               </div>
             </HeroReveal>
           </div>
-          <HeroReveal delay={0.15} className="md:h-full md:self-stretch">
-            <div className="relative aspect-[4/5] overflow-hidden rounded-2xl md:aspect-auto md:-mt-[10px] md:-mb-[10px] md:h-[calc(100%+20px)]">
-              <Image
-                src="/images/reiziger-ashu-hero-portrait.webp"
-                alt="Reiziger Ashu"
-                fill
-                priority
-                sizes="(min-width: 768px) 60vw, 100vw"
-                className="object-cover object-top"
-              />
-            </div>
-          </HeroReveal>
         </div>
       </Section>
 

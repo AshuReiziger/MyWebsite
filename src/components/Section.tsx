@@ -57,7 +57,7 @@ export function SectionHeading({
   divider?: boolean;
 }) {
   return (
-    <Reveal className={clsx("max-w-2xl", centered && "mx-auto text-center")}>
+    <Reveal className={clsx("max-w-2xl", centered && "md:mx-auto md:text-center")}>
       {eyebrow && (
         <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-accent">
           {eyebrow}
@@ -65,7 +65,7 @@ export function SectionHeading({
       )}
       <h2 className="font-display text-3xl font-bold tracking-tight md:text-4xl">{title}</h2>
       {divider && (
-        <hr className={clsx("mt-6 w-16 border-line", centered && "mx-auto")} />
+        <hr className={clsx("mt-6 w-16 border-line", centered && "md:mx-auto")} />
       )}
       {description && <p className="mt-4 text-lg text-muted">{description}</p>}
     </Reveal>

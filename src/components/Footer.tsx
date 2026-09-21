@@ -47,7 +47,7 @@ export function Footer() {
             </div>
           </div>
 
-          <div className="flex gap-16 md:justify-end">
+          <div className="flex justify-between gap-16 md:justify-end">
             <nav className="flex flex-col gap-2">
               {NAV_LINKS.map((link) => (
                 <Link
