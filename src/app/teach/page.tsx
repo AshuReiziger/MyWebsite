@@ -64,23 +64,9 @@ export default function TeachPage() {
   return (
     <div className="theme-dark-fixed -mb-10 bg-paper pb-10 text-ink">
       <Section className="relative overflow-hidden px-[0px] pb-[10px] pt-[10px] md:flex md:h-[calc(100dvh-81px)] md:items-center md:px-[0px] md:pb-[10px] md:pt-[10px]">
-        <div className="grid gap-10 md:h-full md:w-full md:grid-cols-[2fr_3fr] md:grid-rows-1 md:items-center md:gap-0">
-          <div className="md:pl-[80px]">
-            <HeroReveal delay={0}>
-              <h1 className="font-display text-[3em] font-bold leading-tight tracking-tight">
-                I believe knowledge should multiply.
-              </h1>
-            </HeroReveal>
-            <HeroReveal delay={0.2}>
-              <p className="mt-6 max-w-md text-muted">
-                Everything I learn shouldn&apos;t end with me. Part of my work is helping other
-                creatives develop the thinking, skills, systems, and character required to use
-                their gifts meaningfully.
-              </p>
-            </HeroReveal>
-          </div>
-          <HeroReveal delay={0.15} className="md:h-full md:self-stretch">
-            <div className="relative aspect-[4/5] overflow-hidden rounded-2xl md:aspect-auto md:-mt-[10px] md:-mb-[10px] md:h-[calc(100%+20px)]">
+        <div className="relative isolate grid min-h-[560px] gap-0 md:h-full md:min-h-0 md:w-full md:grid-cols-[2fr_3fr] md:grid-rows-1 md:items-center">
+          <HeroReveal delay={0.15} className="absolute inset-0 -z-10 md:relative md:z-auto md:h-full md:self-stretch">
+            <div className="relative h-full w-full overflow-hidden md:aspect-auto md:-mt-[10px] md:-mb-[10px] md:h-[calc(100%+20px)] md:rounded-2xl">
               <Image
                 src="/images/teach-hero-portrait.webp"
                 alt=""
@@ -89,8 +75,23 @@ export default function TeachPage() {
                 sizes="(min-width: 768px) 60vw, 100vw"
                 className="object-cover object-top"
               />
+              <div className="absolute inset-0 bg-paper/60 md:hidden" />
             </div>
           </HeroReveal>
+          <div className="relative z-10 flex flex-col justify-end pb-8 md:justify-center md:pb-0 md:pl-[80px]">
+            <HeroReveal delay={0}>
+              <h1 className="font-display text-[3em] font-bold leading-tight tracking-tight">
+                I believe knowledge should multiply.
+              </h1>
+            </HeroReveal>
+            <HeroReveal delay={0.2}>
+              <p className="mt-6 max-w-md text-ink/80 md:text-muted">
+                Everything I learn shouldn&apos;t end with me. Part of my work is helping other
+                creatives develop the thinking, skills, systems, and character required to use
+                their gifts meaningfully.
+              </p>
+            </HeroReveal>
+          </div>
         </div>
       </Section>
 
