@@ -76,7 +76,7 @@ const VALUES = [
 export default function AboutPage() {
   return (
     <div className="theme-dark-fixed -mb-10 bg-paper pb-10 text-ink">
-      <Section className="pb-0 pt-16 md:flex md:h-[calc(100dvh-81px)] md:items-center md:pb-0 md:pt-24">
+      <Section className="pb-[10px] pt-16 md:flex md:h-[calc(100dvh-81px)] md:items-center md:pb-0 md:pt-24">
         <div className="flex flex-col items-center gap-10 text-center md:w-full md:flex-row md:justify-center md:gap-16 md:text-left">
           <HeroReveal delay={0.15}>
             <div className="relative h-56 w-56 shrink-0 overflow-hidden rounded-full md:h-80 md:w-80">
@@ -128,7 +128,7 @@ export default function AboutPage() {
           sizes="100vw"
           className="object-cover"
         />
-        <div className="absolute inset-0 bg-black/40" />
+        <div className="absolute inset-0 bg-black/70 md:bg-black/40" />
         <div className="relative mx-auto max-w-[1920px] px-3 pb-[40px] pt-[40px] md:px-10 md:pb-[40px] md:pt-[40px]">
           <SectionHeading centered divider title="What guides my work" />
           <div className="mt-12 border-t border-ink/15">
