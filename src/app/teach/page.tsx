@@ -78,9 +78,9 @@ export default function TeachPage() {
               <div className="absolute inset-0 bg-paper/60 md:hidden" />
             </div>
           </HeroReveal>
-          <div className="relative z-10 flex flex-col justify-end pb-8 md:justify-center md:pb-0 md:pl-[80px]">
+          <div className="relative z-10 flex flex-col justify-end pb-8 pl-[10px] pr-[10px] md:justify-center md:pb-0 md:pl-[80px] md:pr-[0px]">
             <HeroReveal delay={0}>
-              <h1 className="font-display text-[3em] font-bold leading-tight tracking-tight">
+              <h1 className="font-display text-[2em] font-bold leading-tight tracking-tight md:text-[3em]">
                 I believe knowledge should multiply.
               </h1>
             </HeroReveal>
