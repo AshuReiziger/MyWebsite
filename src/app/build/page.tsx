@@ -90,7 +90,7 @@ export default function BuildPage() {
                 sizes="(min-width: 768px) 1400px, 100vw"
                 className="object-cover"
               />
-              <div className="absolute inset-0 bg-black/55" />
+              <div className="absolute inset-0 bg-black/70" />
               <div className="relative p-8 md:max-w-lg md:p-12">
                 <span className="inline-block rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-ink">
                   Creative Consultancy
@@ -98,7 +98,7 @@ export default function BuildPage() {
                 <h2 className="mt-4 font-display text-3xl font-bold tracking-tight">
                   Sigma Studio
                 </h2>
-                <p className="mt-4 max-w-md text-muted">
+                <p className="mt-4 max-w-md text-ink/80">
                   A design-driven creative studio helping organizations clarify their identity,
                   communicate their vision, and build meaningful brands. We bridge the gap
                   between high-level business strategy and rigorous visual execution.
@@ -118,12 +118,12 @@ export default function BuildPage() {
                 sizes="(min-width: 768px) 1400px, 100vw"
                 className="object-cover"
               />
-              <div className="absolute inset-0 bg-black/55" />
+              <div className="absolute inset-0 bg-black/70" />
               <div className="relative p-8 md:max-w-lg md:p-12">
                 <h2 className="font-display text-3xl font-bold tracking-tight">
                   Sigma Studio Academy
                 </h2>
-                <p className="mt-4 max-w-md text-muted">
+                <p className="mt-4 max-w-md text-ink/80">
                   Developing the next generation of strategic designers. An educational
                   platform equipping creatives with technical excellence, strategic thinking,
                   entrepreneurial competence, ethical leadership, and purpose-driven character.
@@ -134,7 +134,7 @@ export default function BuildPage() {
                     "Strategic Business Alignment",
                     "Ethical & Purpose-Driven Leadership",
                   ].map((item) => (
-                    <li key={item} className="flex items-center gap-2 text-muted">
+                    <li key={item} className="flex items-center gap-2 text-ink/80">
                       <span className="h-1.5 w-1.5 shrink-0 bg-accent" />
                       {item}
                     </li>
