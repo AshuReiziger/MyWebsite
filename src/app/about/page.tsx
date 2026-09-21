@@ -76,7 +76,7 @@ export default function AboutPage() {
   return (
     <div className="theme-dark-fixed -mb-10 bg-paper pb-10 text-ink">
       <Section className="pb-0 pt-16 md:flex md:h-[calc(100dvh-81px)] md:items-center md:pb-0 md:pt-24">
-        <div className="flex flex-col items-center gap-10 text-center md:w-full md:flex-row md:justify-center md:gap-16">
+        <div className="flex flex-col items-center gap-10 text-center md:w-full md:flex-row md:justify-center md:gap-16 md:text-left">
           <div className="relative h-56 w-56 shrink-0 overflow-hidden rounded-full md:h-80 md:w-80">
             <Image
               src="/images/reiziger-ashu-portrait.jpg"
@@ -91,7 +91,7 @@ export default function AboutPage() {
               <br />
               Behind the Work
             </h1>
-            <blockquote className="mx-auto mt-6 max-w-xl font-display text-xl italic text-muted">
+            <blockquote className="mx-auto mt-6 max-w-xl font-display text-xl italic text-muted md:mx-0">
               &ldquo;I didn&apos;t begin designing because I wanted to make things look good. I
               began because I became fascinated by the power of ideas.&rdquo;
             </blockquote>
