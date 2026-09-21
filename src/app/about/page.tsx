@@ -75,22 +75,29 @@ const VALUES = [
 export default function AboutPage() {
   return (
     <div className="theme-dark-fixed -mb-10 bg-paper pb-10 text-ink">
-      <Section className="pb-0 pt-16 text-center md:pb-0 md:pt-24">
-        <SectionHeading centered divider title="The Designer Behind the Work" />
-        <blockquote className="mx-auto mt-10 max-w-2xl border-l-2 border-accent pl-6 text-left font-display text-xl italic">
-          &ldquo;I didn&apos;t begin designing because I wanted to make things look good. I began
-          because I became fascinated by the power of ideas.&rdquo;
-        </blockquote>
+      <Section className="pb-0 pt-16 md:pb-0 md:pt-24">
+        <div className="flex flex-col items-center gap-10 text-center md:flex-row md:items-center md:gap-16 md:text-left">
+          <div className="relative h-56 w-56 shrink-0 overflow-hidden rounded-full md:h-80 md:w-80">
+            <Image
+              src="/images/reiziger-ashu-portrait.jpg"
+              alt="Reiziger Ashu"
+              fill
+              className="object-cover object-[50%_22%]"
+            />
+          </div>
+          <div>
+            <h1 className="font-display text-[3em] font-bold leading-tight tracking-tight">
+              The Designer
+              <br />
+              Behind the Work
+            </h1>
+            <blockquote className="mx-auto mt-6 max-w-xl font-display text-xl italic text-muted md:mx-0">
+              &ldquo;I didn&apos;t begin designing because I wanted to make things look good. I
+              began because I became fascinated by the power of ideas.&rdquo;
+            </blockquote>
+          </div>
+        </div>
       </Section>
-
-      <div className="group relative mt-16 aspect-[4/5] w-full overflow-hidden bg-gradient-to-br from-accent/30 via-paper to-paper md:aspect-auto md:h-screen">
-        <Image
-          src="/images/reiziger-ashu-portrait.jpg"
-          alt="Reiziger Ashu"
-          fill
-          className="object-cover object-[50%_22%] grayscale transition-[filter] duration-700 group-hover:grayscale-0"
-        />
-      </div>
 
       <Section outerClassName="bg-ink/5 border-y border-line" className="pb-20 pt-[10px] md:pb-40">
         <div className="grid gap-10 md:grid-cols-[1fr_2fr]">
