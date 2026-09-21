@@ -59,7 +59,7 @@ const CAPABILITIES: Capability[] = [
 export default function Home() {
   const latestThink = getAllThink().slice(0, 3);
   const featuredResource = getFeaturedResource();
-  const selectedWork = getAllWork();
+  const selectedWork = getAllWork().slice(0, 3);
 
   return (
     <div className="theme-dark-fixed -mb-10 bg-paper pb-10 text-ink">
