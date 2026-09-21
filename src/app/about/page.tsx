@@ -105,23 +105,33 @@ export default function AboutPage() {
         </div>
       </Section>
 
-      <Section className="pb-8 pt-0 md:pb-40">
-        <SectionHeading centered divider title="What guides my work" />
-        <div className="mt-12 border-t border-line">
-          {VALUES.map((value, i) => (
-            <div
-              key={value.title}
-              className="grid gap-2 border-b border-line py-6 md:grid-cols-[80px_1fr_2fr] md:items-baseline md:gap-8"
-            >
-              <span className="font-display text-sm font-semibold text-accent">
-                {String(i + 1).padStart(2, "0")}
-              </span>
-              <h3 className="font-display text-lg font-bold tracking-tight">{value.title}</h3>
-              <p className="text-sm text-muted">{value.description}</p>
-            </div>
-          ))}
+      <div className="relative overflow-hidden">
+        <Image
+          src="/images/about-values-desk.webp"
+          alt=""
+          fill
+          sizes="100vw"
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-black/40" />
+        <div className="relative mx-auto max-w-[1920px] px-3 pb-[40px] pt-[40px] md:px-10 md:pb-[40px] md:pt-[40px]">
+          <SectionHeading centered divider title="What guides my work" />
+          <div className="mt-12 border-t border-ink/15">
+            {VALUES.map((value, i) => (
+              <div
+                key={value.title}
+                className="grid gap-2 border-b border-ink/15 py-6 md:grid-cols-[80px_1fr_2fr] md:items-baseline md:gap-8"
+              >
+                <span className="font-display text-sm font-semibold text-accent">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <h3 className="font-display text-lg font-bold tracking-tight">{value.title}</h3>
+                <p className="text-sm text-ink/80">{value.description}</p>
+              </div>
+            ))}
+          </div>
         </div>
-      </Section>
+      </div>
     </div>
   );
 }
