@@ -28,7 +28,7 @@ interface CompanionPayload {
 }
 
 const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
-const MODEL = process.env.SIGMA_COMPANION_MODEL || "claude-sonnet-4-5-20250929";
+const MODEL = process.env.SIGMA_COMPANION_MODEL || "claude-sonnet-5-5";
 const MAX_HISTORY_MESSAGES = 20; // keep request payloads and cost bounded
 const MAX_MESSAGE_LENGTH = 4000;
 
