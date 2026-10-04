@@ -211,7 +211,7 @@ export default function Home() {
               Design Education
             </p>
             <h3 className="mt-2 font-display text-xl font-bold tracking-tight">
-              Sigma Studio Academy
+              Sigma School of Creative Leadership
             </h3>
             <p className="mt-3 text-ink/70">
               An educational platform dedicated to teaching the strategic, non-aesthetic
