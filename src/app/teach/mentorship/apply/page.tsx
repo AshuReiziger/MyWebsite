@@ -1,11 +1,4 @@
-import type { Metadata } from "next";
-import { Section, SectionHeading } from "@/components/Section";
-import { MentorshipApplicationForm } from "@/components/MentorshipApplicationForm";
-
-export const metadata: Metadata = {
-  title: "Apply for Mentorship — Reiziger Ashu",
-  description: "Apply for 1-on-1 or small-group mentorship with Reiziger Ashu.",
-};
+import { redirect } from "next/navigation";
 
 export default async function MentorshipApplyPage({
   searchParams,
@@ -13,18 +6,5 @@ export default async function MentorshipApplyPage({
   const params = await searchParams;
   const track = typeof params.track === "string" ? params.track : undefined;
 
-  return (
-    <div className="theme-dark-fixed -mb-10 bg-paper pb-10 text-ink">
-      <Section className="pt-16 md:pt-24">
-        <SectionHeading
-          eyebrow="Teach"
-          title="Apply for Mentorship"
-          description="Tell me where you are right now and what you're hoping to work through — we'll take it from there."
-        />
-        <div className="mt-12 max-w-2xl">
-          <MentorshipApplicationForm initialTrackSlug={track} />
-        </div>
-      </Section>
-    </div>
-  );
+  redirect(track ? `/teach/mentorship/${track}` : "/teach/mentorship");
 }

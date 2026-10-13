@@ -16,7 +16,13 @@ const sectionClass = "text-xs font-semibold uppercase tracking-widest text-accen
 
 const STEP_LABELS = ["About You", "Logistics & Commitment"];
 
-export function MentorshipApplicationForm({ initialTrackSlug }: { initialTrackSlug?: string }) {
+export function MentorshipApplicationForm({
+  initialTrackSlug,
+  onSuccess,
+}: {
+  initialTrackSlug?: string;
+  onSuccess?: () => void;
+}) {
   const [status, setStatus] = useState<Status>("idle");
   const [step, setStep] = useState<1 | 2>(1);
   const formRef = useRef<HTMLFormElement>(null);
@@ -58,6 +64,7 @@ export function MentorshipApplicationForm({ initialTrackSlug }: { initialTrackSl
       setPreferredFormat("");
       setPreferredDelivery("");
       setCommitment("");
+      onSuccess?.();
     } catch {
       setStatus("error");
     }

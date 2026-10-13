@@ -20,7 +20,13 @@ const sectionClass = "text-xs font-semibold uppercase tracking-widest text-accen
 
 const STEP_LABELS = ["The Basics", "A Few More Details"];
 
-export function WorkshopBookingForm({ initialWorkshopSlug }: { initialWorkshopSlug?: string }) {
+export function WorkshopBookingForm({
+  initialWorkshopSlug,
+  onSuccess,
+}: {
+  initialWorkshopSlug?: string;
+  onSuccess?: () => void;
+}) {
   const [status, setStatus] = useState<Status>("idle");
   const [step, setStep] = useState<1 | 2>(1);
   const formRef = useRef<HTMLFormElement>(null);
@@ -64,6 +70,7 @@ export function WorkshopBookingForm({ initialWorkshopSlug }: { initialWorkshopSl
       setBookingType("");
       setSeats(1);
       setDiscounts([]);
+      onSuccess?.();
     } catch {
       setStatus("error");
     }

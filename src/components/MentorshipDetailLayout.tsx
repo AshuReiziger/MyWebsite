@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { MentorshipDetail } from "@/content/mentorship";
 import { Section } from "@/components/Section";
 import { HeroReveal } from "@/components/HeroReveal";
+import { ApplyMentorshipButton } from "@/components/ApplyMentorshipButton";
 
 export function MentorshipDetailLayout({ track }: { track: MentorshipDetail }) {
   return (
@@ -20,12 +21,7 @@ export function MentorshipDetailLayout({ track }: { track: MentorshipDetail }) {
             <p className="mt-6 text-muted">{track.subhead}</p>
           </HeroReveal>
           <HeroReveal delay={0.3}>
-            <Link
-              href={`/teach/mentorship/apply?track=${track.slug}`}
-              className="mt-8 inline-block rounded-full bg-ink px-6 py-3 text-sm font-semibold uppercase tracking-wide text-paper transition-opacity hover:opacity-90"
-            >
-              Apply for Mentorship →
-            </Link>
+            <ApplyMentorshipButton trackSlug={track.slug} />
           </HeroReveal>
         </div>
       </Section>
@@ -110,12 +106,7 @@ export function MentorshipDetailLayout({ track }: { track: MentorshipDetail }) {
             Tell me where you are right now and what you&apos;re hoping to work through — we&apos;ll take it
             from there.
           </p>
-          <Link
-            href={`/teach/mentorship/apply?track=${track.slug}`}
-            className="mt-8 inline-block rounded-full bg-ink px-6 py-3 text-sm font-semibold uppercase tracking-wide text-paper transition-opacity hover:opacity-90"
-          >
-            Apply for Mentorship →
-          </Link>
+          <ApplyMentorshipButton trackSlug={track.slug} />
         </div>
       </Section>
 
