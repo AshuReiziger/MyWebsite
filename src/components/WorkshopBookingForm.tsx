@@ -4,6 +4,7 @@ import { useRef, useState, type FormEvent } from "react";
 import { WORKSHOPS } from "@/content/workshops";
 import { PillToggle, PillMultiToggle } from "@/components/PillToggle";
 import { StepProgress } from "@/components/StepProgress";
+import { CustomSelect } from "@/components/CustomSelect";
 
 const DISCOUNT_OPTIONS = [
   "Early Bird — booking 2+ weeks ahead",
@@ -15,8 +16,11 @@ type Status = "idle" | "submitting" | "success" | "error";
 
 const inputClass =
   "border-b border-line bg-transparent px-0 py-2 outline-none focus:border-ink";
+const selectTriggerClass = "border-b bg-transparent px-0 py-2 peer-focus:border-ink";
 const labelClass = "text-xs font-semibold uppercase tracking-widest text-ink";
 const sectionClass = "text-xs font-semibold uppercase tracking-widest text-accent";
+const dropdownPopupClass =
+  "absolute inset-x-0 top-full z-20 mt-2 max-h-60 overflow-auto rounded-2xl border border-white/10 bg-black/80 shadow-xl backdrop-blur-sm";
 
 const STEP_LABELS = ["The Basics", "A Few More Details"];
 
@@ -97,21 +101,16 @@ export function WorkshopBookingForm({
           <p className={sectionClass}>Workshop Selection</p>
           <label className="flex flex-col gap-2">
             <span className={labelClass}>Which Workshop?</span>
-            <select
+            <CustomSelect
+              name="workshop"
+              options={WORKSHOPS.map((item) => item.title)}
+              placeholder="Select a workshop"
               required
-              value={workshop}
-              onChange={(event) => setWorkshop(event.target.value)}
-              className={inputClass}
-            >
-              <option value="" disabled>
-                Select a workshop
-              </option>
-              {WORKSHOPS.map((item) => (
-                <option key={item.slug} value={item.title}>
-                  {item.title}
-                </option>
-              ))}
-            </select>
+              defaultValue={workshop}
+              className={selectTriggerClass}
+              popupClassName={dropdownPopupClass}
+              onChange={setWorkshop}
+            />
           </label>
 
           <label className="flex flex-col gap-2">

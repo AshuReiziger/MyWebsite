@@ -4,6 +4,7 @@ import { useRef, useState, type FormEvent } from "react";
 import { MENTORSHIP_TRACKS } from "@/content/mentorship";
 import { PillToggle } from "@/components/PillToggle";
 import { StepProgress } from "@/components/StepProgress";
+import { CustomSelect } from "@/components/CustomSelect";
 
 const HEARD_ABOUT_OPTIONS = ["Instagram", "Referral", "Sigma School", "Search", "Other"];
 
@@ -11,8 +12,11 @@ type Status = "idle" | "submitting" | "success" | "error";
 
 const inputClass =
   "border-b border-line bg-transparent px-0 py-2 outline-none focus:border-ink";
+const selectTriggerClass = "border-b bg-transparent px-0 py-2 peer-focus:border-ink";
 const labelClass = "text-xs font-semibold uppercase tracking-widest text-ink";
 const sectionClass = "text-xs font-semibold uppercase tracking-widest text-accent";
+const dropdownPopupClass =
+  "absolute inset-x-0 top-full z-20 mt-2 max-h-60 overflow-auto rounded-2xl border border-white/10 bg-black/80 shadow-xl backdrop-blur-sm";
 
 const STEP_LABELS = ["About You", "Logistics & Commitment"];
 
@@ -111,14 +115,14 @@ export function MentorshipApplicationForm({
           <p className={sectionClass}>Your Goals</p>
           <label className="flex flex-col gap-2">
             <span className={labelClass}>Which Track Are You Applying For?</span>
-            <select name="track" defaultValue={initialTrack} className={inputClass}>
-              <option value="">Select a track</option>
-              {MENTORSHIP_TRACKS.map((track) => (
-                <option key={track.slug} value={track.title}>
-                  {track.title}
-                </option>
-              ))}
-            </select>
+            <CustomSelect
+              name="track"
+              options={MENTORSHIP_TRACKS.map((track) => track.title)}
+              placeholder="Select a track"
+              defaultValue={initialTrack}
+              className={selectTriggerClass}
+              popupClassName={dropdownPopupClass}
+            />
           </label>
 
           <label className="flex flex-col gap-2">
@@ -183,11 +187,13 @@ export function MentorshipApplicationForm({
 
           <label className="flex flex-col gap-2">
             <span className={labelClass}>Preferred Cadence</span>
-            <select name="cadence" defaultValue="" className={inputClass}>
-              <option value="">Select a cadence</option>
-              <option value="Weekly">Weekly</option>
-              <option value="Biweekly">Biweekly</option>
-            </select>
+            <CustomSelect
+              name="cadence"
+              options={["Weekly", "Biweekly"]}
+              placeholder="Select a cadence"
+              className={selectTriggerClass}
+              popupClassName={dropdownPopupClass}
+            />
           </label>
 
           <div className="flex flex-col gap-2">
@@ -227,14 +233,13 @@ export function MentorshipApplicationForm({
 
           <label className="flex flex-col gap-2">
             <span className={labelClass}>How Did You Hear About Sigma Studio?</span>
-            <select name="heardAbout" defaultValue="" className={inputClass}>
-              <option value="">Select an option</option>
-              {HEARD_ABOUT_OPTIONS.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
+            <CustomSelect
+              name="heardAbout"
+              options={HEARD_ABOUT_OPTIONS}
+              placeholder="Select an option"
+              className={selectTriggerClass}
+              popupClassName={dropdownPopupClass}
+            />
           </label>
         </div>
 

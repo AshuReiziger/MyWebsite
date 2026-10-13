@@ -40,7 +40,7 @@ export function Modal({
       aria-label={title}
     >
       <div className="absolute inset-0 bg-black/55" onClick={onClose} aria-hidden />
-      <div className="relative max-h-full w-full max-w-2xl overflow-y-auto rounded-[32px] bg-paper p-8 shadow-2xl md:p-10">
+      <div className="scrollbar-subtle relative max-h-full w-full max-w-2xl overflow-y-auto rounded-[32px] bg-paper/90 p-8 shadow-2xl backdrop-blur-sm md:p-10">
         <button
           type="button"
           onClick={onClose}

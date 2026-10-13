@@ -15,6 +15,8 @@ export function CustomSelect({
   className,
   error,
   onChange,
+  defaultValue,
+  popupClassName,
 }: {
   name: string;
   options: string[];
@@ -23,9 +25,12 @@ export function CustomSelect({
   className?: string;
   error?: boolean;
   onChange?: (value: string) => void;
+  defaultValue?: string;
+  /** Overrides the popup's default `rounded-b-2xl border-line bg-paper/80` treatment. */
+  popupClassName?: string;
 }) {
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState(defaultValue ?? "");
   const wrapperRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const listboxId = useId();
@@ -91,7 +96,10 @@ export function CustomSelect({
         <div
           id={listboxId}
           role="listbox"
-          className="absolute inset-x-0 top-full z-20 max-h-60 overflow-auto rounded-b-2xl border border-t-0 border-line bg-paper/80 shadow-xl backdrop-blur-sm"
+          className={
+            popupClassName ??
+            "absolute inset-x-0 top-full z-20 max-h-60 overflow-auto rounded-b-2xl border border-t-0 border-line bg-paper/80 shadow-xl backdrop-blur-sm"
+          }
         >
           {options.map((option) => (
             <button
