@@ -5,7 +5,7 @@ import { BuildSidebar } from "@/components/BuildSidebar";
 
 export const metadata: Metadata = {
   title: "Build — Reiziger Ashu",
-  description: "Sigma Studio, Sigma Studio Academy, and other initiatives.",
+  description: "Sigma Studio, Sigma School of Creative Leadership, and other initiatives.",
 };
 
 const OTHER_INITIATIVES = [
@@ -121,7 +121,7 @@ export default function BuildPage() {
               <div className="absolute inset-0 bg-black/70" />
               <div className="relative p-8 md:max-w-lg md:p-12">
                 <h2 className="font-display text-3xl font-bold tracking-tight">
-                  Sigma Studio Academy
+                  Sigma School of Creative Leadership
                 </h2>
                 <p className="mt-4 max-w-md text-ink/80">
                   Developing the next generation of strategic designers. An educational
