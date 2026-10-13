@@ -82,8 +82,10 @@ export function ResourceDetailLayout({ entry }: { entry: ContentEntry<ResourceFr
 
       {entry.content.trim() && (
         <Section className="pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]">
-          <p className="text-xs font-semibold uppercase tracking-widest text-accent">Preview</p>
-          <h2 className="mt-2 font-display text-2xl font-bold tracking-tight md:text-3xl">
+          <p className="text-center text-xs font-semibold uppercase tracking-widest text-accent">
+            Preview
+          </p>
+          <h2 className="mt-2 text-center font-display text-2xl font-bold tracking-tight md:text-3xl">
             Read the full {frontmatter.type.toLowerCase()} before you download it.
           </h2>
           <div className="prose prose-invert mx-auto mt-10 max-w-2xl text-justify">
