@@ -34,13 +34,13 @@ export function Modal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-6"
+      className="fixed inset-0 z-50 flex items-center justify-center p-6 md:p-16"
       role="dialog"
       aria-modal="true"
       aria-label={title}
     >
       <div className="absolute inset-0 bg-black/55" onClick={onClose} aria-hidden />
-      <div className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-paper p-8 shadow-2xl md:p-10">
+      <div className="relative max-h-full w-full max-w-2xl overflow-y-auto rounded-[32px] bg-paper p-8 shadow-2xl md:p-10">
         <button
           type="button"
           onClick={onClose}
