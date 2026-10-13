@@ -7,7 +7,7 @@ import { BookWorkshopButton } from "@/components/BookWorkshopButton";
 export function WorkshopDetailLayout({ workshop }: { workshop: WorkshopDetail }) {
   return (
     <div className="theme-dark-fixed -mb-10 bg-paper pb-10 text-ink">
-      <Section className="pt-16 md:pt-24">
+      <Section className="pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]">
         <div className="mx-auto max-w-2xl text-center">
           <HeroReveal delay={0}>
             <p className="text-sm font-semibold uppercase tracking-widest text-accent">Workshop</p>
@@ -26,7 +26,7 @@ export function WorkshopDetailLayout({ workshop }: { workshop: WorkshopDetail })
         </div>
       </Section>
 
-      <Section className="pt-0">
+      <Section className="pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]">
         <div className="mx-auto max-w-2xl">
           <p className="text-xs font-semibold uppercase tracking-widest text-accent">
             Why This Workshop
@@ -35,7 +35,7 @@ export function WorkshopDetailLayout({ workshop }: { workshop: WorkshopDetail })
         </div>
       </Section>
 
-      <Section className="pt-0">
+      <Section className="pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]">
         <p className="text-xs font-semibold uppercase tracking-widest text-accent">
           What You&apos;ll Learn
         </p>
@@ -52,7 +52,7 @@ export function WorkshopDetailLayout({ workshop }: { workshop: WorkshopDetail })
         </div>
       </Section>
 
-      <Section className="pt-0">
+      <Section className="pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]">
         <div className="panel-tint rounded-2xl border-l-2 border-accent p-10 md:p-14">
           <p className="text-xs font-semibold uppercase tracking-widest text-accent">
             Format &amp; Details
@@ -82,7 +82,7 @@ export function WorkshopDetailLayout({ workshop }: { workshop: WorkshopDetail })
         </div>
       </Section>
 
-      <Section className="pt-0">
+      <Section className="pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]">
         <div className="grid gap-10 md:grid-cols-2">
           <div>
             <p className="text-xs font-semibold uppercase tracking-widest text-accent">
@@ -99,7 +99,7 @@ export function WorkshopDetailLayout({ workshop }: { workshop: WorkshopDetail })
         </div>
       </Section>
 
-      <Section className="pt-0">
+      <Section className="pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]">
         <div className="rounded-3xl border border-line p-12 text-center md:p-20">
           <h2 className="font-display text-3xl font-bold tracking-tight md:text-4xl">
             Ready to book {workshop.title}?
@@ -111,7 +111,7 @@ export function WorkshopDetailLayout({ workshop }: { workshop: WorkshopDetail })
         </div>
       </Section>
 
-      <Section className="pt-0">
+      <Section className="pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]">
         <p className="text-center text-sm text-muted">
           Looking for something else?{" "}
           <Link href="/teach/workshops" className="font-semibold text-accent hover:underline">
