@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Section, SectionHeading } from "@/components/Section";
 import { OfferingCard } from "@/components/OfferingCard";
+import { BookWorkshopButton } from "@/components/BookWorkshopButton";
 import { WORKSHOPS, WORKSHOP_DISCOUNTS } from "@/content/workshops";
 
 export const metadata: Metadata = {
@@ -55,12 +55,7 @@ export default function WorkshopsPage() {
             Workshops can run for a single team or a whole organization, in person or remote. Tell me what your
             team needs and we&apos;ll figure out the right session together.
           </p>
-          <Link
-            href="/teach/workshops/book"
-            className="mt-8 inline-block rounded-full bg-ink px-6 py-3 text-sm font-semibold uppercase tracking-wide text-paper transition-opacity hover:opacity-90"
-          >
-            Book a Workshop →
-          </Link>
+          <BookWorkshopButton label="Book a Workshop →" />
         </div>
       </Section>
     </div>

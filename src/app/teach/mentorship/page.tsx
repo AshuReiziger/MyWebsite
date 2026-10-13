@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Section, SectionHeading } from "@/components/Section";
 import { OfferingCard } from "@/components/OfferingCard";
+import { ApplyMentorshipButton } from "@/components/ApplyMentorshipButton";
 import { MENTORSHIP_TRACKS } from "@/content/mentorship";
 
 export const metadata: Metadata = {
@@ -41,12 +41,7 @@ export default function MentorshipPage() {
             Tell me which track fits where you are right now, and what you&apos;re hoping to work through — we&apos;ll
             take it from there.
           </p>
-          <Link
-            href="/teach/mentorship/apply"
-            className="mt-8 inline-block rounded-full bg-ink px-6 py-3 text-sm font-semibold uppercase tracking-wide text-paper transition-opacity hover:opacity-90"
-          >
-            Start Mentorship →
-          </Link>
+          <ApplyMentorshipButton label="Start Mentorship →" />
         </div>
       </Section>
     </div>

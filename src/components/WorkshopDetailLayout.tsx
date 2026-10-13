@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { WorkshopDetail } from "@/content/workshops";
 import { Section } from "@/components/Section";
 import { HeroReveal } from "@/components/HeroReveal";
+import { BookWorkshopButton } from "@/components/BookWorkshopButton";
 
 export function WorkshopDetailLayout({ workshop }: { workshop: WorkshopDetail }) {
   return (
@@ -20,12 +21,7 @@ export function WorkshopDetailLayout({ workshop }: { workshop: WorkshopDetail })
             <p className="mt-6 text-muted">{workshop.subhead}</p>
           </HeroReveal>
           <HeroReveal delay={0.3}>
-            <Link
-              href={`/teach/workshops/book?workshop=${workshop.slug}`}
-              className="mt-8 inline-block rounded-full bg-ink px-6 py-3 text-sm font-semibold uppercase tracking-wide text-paper transition-opacity hover:opacity-90"
-            >
-              Book This Workshop →
-            </Link>
+            <BookWorkshopButton workshopSlug={workshop.slug} />
           </HeroReveal>
         </div>
       </Section>
@@ -111,12 +107,7 @@ export function WorkshopDetailLayout({ workshop }: { workshop: WorkshopDetail })
           <p className="mx-auto mt-4 max-w-xl text-muted">
             Tell me a bit about your team and timeline, and we&apos;ll find the right date.
           </p>
-          <Link
-            href={`/teach/workshops/book?workshop=${workshop.slug}`}
-            className="mt-8 inline-block rounded-full bg-ink px-6 py-3 text-sm font-semibold uppercase tracking-wide text-paper transition-opacity hover:opacity-90"
-          >
-            Book This Workshop →
-          </Link>
+          <BookWorkshopButton workshopSlug={workshop.slug} />
         </div>
       </Section>
 
