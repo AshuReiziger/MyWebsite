@@ -19,6 +19,7 @@ const hankenGrotesk = Hanken_Grotesk({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://reizigerashu.com"),
   title: "Reiziger Ashu — Designer. Strategist. Educator. Creative Leader.",
   description:
     "I use design to spark identity, clarify ideas, and build systems that move people and organizations toward meaningful impact.",
