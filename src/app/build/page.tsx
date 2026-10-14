@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import type { ReactNode } from "react";
 import Image from "next/image";
 import { BuildSidebar } from "@/components/BuildSidebar";
+import { WorkInProgressLink } from "@/components/WorkInProgressLink";
 
 export const metadata: Metadata = {
   title: "Build — Reiziger Ashu",
@@ -48,16 +48,8 @@ function SectionDivider({ label }: { label: string }) {
   );
 }
 
-function OutlinedLink({ href, children }: { href: string; children: ReactNode }) {
-  return (
-    <a
-      href={href}
-      className="mt-6 inline-block rounded-full border border-line px-6 py-3 text-sm font-semibold uppercase tracking-wide transition-colors hover:border-ink"
-    >
-      {children}
-    </a>
-  );
-}
+const outlinedLinkClassName =
+  "mt-6 inline-block rounded-full border border-line px-6 py-3 text-sm font-semibold uppercase tracking-wide transition-colors hover:border-ink";
 
 export default function BuildPage() {
   return (
@@ -103,7 +95,9 @@ export default function BuildPage() {
                   communicate their vision, and build meaningful brands. We bridge the gap
                   between high-level business strategy and rigorous visual execution.
                 </p>
-                <OutlinedLink href="#">Visit Sigma Studio →</OutlinedLink>
+                <WorkInProgressLink className={outlinedLinkClassName}>
+                  Visit Sigma Studio →
+                </WorkInProgressLink>
               </div>
             </div>
           </div>
@@ -140,12 +134,9 @@ export default function BuildPage() {
                     </li>
                   ))}
                 </ul>
-                <a
-                  href="#"
-                  className="mt-6 inline-block rounded-full bg-ink px-6 py-3 text-sm font-semibold uppercase tracking-wide text-paper transition-opacity hover:opacity-90"
-                >
+                <WorkInProgressLink className="mt-6 inline-block rounded-full bg-ink px-6 py-3 text-sm font-semibold uppercase tracking-wide text-paper transition-opacity hover:opacity-90">
                   Explore the Academy
-                </a>
+                </WorkInProgressLink>
               </div>
             </div>
           </div>

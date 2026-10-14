@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Section, SectionHeading } from "@/components/Section";
 import { HeroReveal } from "@/components/HeroReveal";
 import { ArrowRightIcon } from "@/components/icons";
+import { WorkInProgressLink } from "@/components/WorkInProgressLink";
 
 export const metadata: Metadata = {
   title: "Teach — Reiziger Ashu",
@@ -16,12 +17,16 @@ const OFFERINGS: {
   href?: string;
   cta?: string;
   image?: string;
+  isWip?: boolean;
 }[] = [
   {
     title: "Design Training",
     description:
       "Structured programs designed to elevate technical mastery and conceptual thinking for mid-level designers aiming for senior roles.",
+    href: "/work-in-progress",
+    cta: "Coming Soon",
     image: "/images/teach/design-training.jpg",
+    isWip: true,
   },
   {
     title: "Workshops",
@@ -130,6 +135,14 @@ export default function TeachPage() {
             ) : (
               content
             );
+
+            if (offering.isWip) {
+              return (
+                <WorkInProgressLink key={offering.title} className={cardClassName}>
+                  {inner}
+                </WorkInProgressLink>
+              );
+            }
 
             if (offering.href) {
               return (
