@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import clsx from "clsx";
@@ -26,8 +27,15 @@ export function Nav() {
   return (
     <header className="theme-dark-fixed sticky top-0 z-50 border-b border-line bg-paper/90 text-ink backdrop-blur">
       <div className="relative mx-auto flex h-20 max-w-[1920px] items-center justify-between px-3 md:px-10">
-        <Link href="/" className="font-display text-lg tracking-tight">
-          Reiziger Ashu
+        <Link href="/" className="flex items-center" aria-label="Reiziger Ashu — Home">
+          <Image
+            src="/images/logo/reiziger-ashu-wordmark.svg"
+            alt="Reiziger Ashu"
+            width={186}
+            height={69}
+            priority
+            className="h-8 w-auto"
+          />
         </Link>
 
         <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-8 md:flex">
