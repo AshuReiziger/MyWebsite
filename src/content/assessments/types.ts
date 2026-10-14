@@ -38,6 +38,8 @@ export interface ScoreBand {
   min: number;
   label: string;
   description: string;
+  /** Concrete next-step bullets for this band, shown alongside the description (e.g. in the results PDF). */
+  recommendations?: string[];
 }
 
 export interface Assessment {

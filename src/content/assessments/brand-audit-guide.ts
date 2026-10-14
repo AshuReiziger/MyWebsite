@@ -259,4 +259,50 @@ const QUESTIONS: AssessmentQuestion[] = [
 export const brandAuditAssessment: Assessment = {
   areas: AREAS,
   questions: QUESTIONS,
+  scoreBands: [
+    {
+      min: 76,
+      label: "Strong & Consistent",
+      description:
+        "Your brand is in genuinely good shape. The highest-leverage move now is protecting that consistency as you grow, not rebuilding anything.",
+      recommendations: [
+        "Document what's working today so it survives you stepping away or the team growing.",
+        "Look for the one or two lowest-scoring areas above and close those remaining gaps.",
+        "Start turning your brand consistency into a visible asset — testimonials, case studies, referrals.",
+      ],
+    },
+    {
+      min: 51,
+      label: "Developing Brand",
+      description:
+        "You have real foundations in place, but they're not yet consistent enough to carry the business on their own.",
+      recommendations: [
+        "Pick the single lowest-scoring area above and fix that first — it's your highest-leverage move.",
+        "Write down whatever is still only \"in your head\" (positioning, messaging, visual rules) so others can apply it correctly.",
+        "Revisit this audit in 60-90 days to confirm the gap is actually closing.",
+      ],
+    },
+    {
+      min: 26,
+      label: "Early Foundation",
+      description:
+        "The basics exist but depend heavily on you personally. That's normal this early, but it's also fragile.",
+      recommendations: [
+        "Start with one clear, written positioning statement — nearly every other score here improves once that exists.",
+        "Don't try to fix everything at once: tackle positioning and messaging before visual identity.",
+        "Get outside eyes on how your brand is actually perceived — your own view is the least reliable one right now.",
+      ],
+    },
+    {
+      min: 0,
+      label: "Needs Attention",
+      description:
+        "Right now, your brand is hard to describe consistently — even to yourself. That's costing you more than it looks like.",
+      recommendations: [
+        "Before spending anything on marketing or design, nail down one sentence that explains why someone should choose you.",
+        "Write that sentence down and use it everywhere — website, sales conversations, social — for 30 days before changing it again.",
+        "Consider working with someone outside the business to run this positioning exercise; it's hard to do for yourself.",
+      ],
+    },
+  ],
 };

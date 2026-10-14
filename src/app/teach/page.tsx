@@ -65,7 +65,7 @@ export default function TeachPage() {
     <div className="theme-dark-fixed -mb-10 bg-paper pb-10 text-ink">
       <Section className="relative overflow-hidden px-[0px] pb-[10px] pt-[10px] md:flex md:h-[calc(100dvh-81px)] md:items-center md:px-[0px] md:pb-[10px] md:pt-[10px]">
         <div className="relative isolate grid min-h-[560px] gap-0 md:h-full md:min-h-0 md:w-full md:grid-cols-[2fr_3fr] md:grid-rows-1 md:items-center">
-          <HeroReveal delay={0.15} className="absolute inset-0 -z-10 md:relative md:z-auto md:h-full md:self-stretch">
+          <HeroReveal delay={0.15} className="absolute inset-0 -z-10 md:relative md:z-auto md:order-2 md:h-full md:self-stretch">
             <div className="relative h-full w-full overflow-hidden md:aspect-auto md:-mt-[10px] md:-mb-[10px] md:h-[calc(100%+20px)] md:rounded-2xl">
               <Image
                 src="/images/teach-hero-portrait.webp"
@@ -78,7 +78,7 @@ export default function TeachPage() {
               <div className="absolute inset-0 bg-paper/60 md:hidden" />
             </div>
           </HeroReveal>
-          <div className="relative z-10 flex flex-col justify-end pb-8 pl-[10px] pr-[10px] md:justify-center md:pb-0 md:pl-[80px] md:pr-[0px]">
+          <div className="relative z-10 flex flex-col justify-end pb-8 pl-[10px] pr-[10px] md:order-1 md:justify-center md:pb-0 md:pl-[80px] md:pr-[0px]">
             <HeroReveal delay={0}>
               <h1 className="font-display text-[2em] font-bold leading-tight tracking-tight md:text-[3em]">
                 I believe knowledge should multiply.

@@ -19,7 +19,7 @@ export function ResourceDetailLayout({ entry }: { entry: ContentEntry<ResourceFr
     <div className="theme-dark-fixed -mb-10 bg-paper pb-10 text-ink">
       <AnalyticsPageView event="resource_page_view" properties={{ resource: slug }} />
 
-      <Section className="pt-16 md:pt-24">
+      <Section className="pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]">
         <div className="grid gap-10 md:grid-cols-2 md:items-center">
           <div>
             <HeroReveal delay={0}>
@@ -39,19 +39,12 @@ export function ResourceDetailLayout({ entry }: { entry: ContentEntry<ResourceFr
             </HeroReveal>
             <HeroReveal delay={0.3}>
               {frontmatter.hasAssessment ? (
-                <>
-                  <Link
-                    href={`/resources/${slug}/assessment`}
-                    className="mt-8 inline-block rounded-full bg-ink px-6 py-3 text-sm font-semibold uppercase tracking-wide text-paper transition-opacity hover:opacity-90"
-                  >
-                    Take the 3-Minute Assessment →
-                  </Link>
-                  <div className="mt-4">
-                    <a href="#get-guide" className="text-sm font-semibold text-accent hover:underline">
-                      Prefer to just get the PDF? Jump to email signup ↓
-                    </a>
-                  </div>
-                </>
+                <Link
+                  href={`/resources/${slug}/assessment`}
+                  className="mt-8 inline-block rounded-full bg-ink px-6 py-3 text-sm font-semibold uppercase tracking-wide text-paper transition-opacity hover:opacity-90"
+                >
+                  Take the 3-Minute Assessment →
+                </Link>
               ) : (
                 <a
                   href="#get-guide"
@@ -70,7 +63,7 @@ export function ResourceDetailLayout({ entry }: { entry: ContentEntry<ResourceFr
         </div>
       </Section>
 
-      <Section className="pt-0">
+      <Section className="pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]">
         <p className="text-xs font-semibold uppercase tracking-widest text-accent">
           What the {frontmatter.type.toLowerCase()} covers
         </p>
@@ -88,18 +81,20 @@ export function ResourceDetailLayout({ entry }: { entry: ContentEntry<ResourceFr
       </Section>
 
       {entry.content.trim() && (
-        <Section className="pt-0">
-          <p className="text-xs font-semibold uppercase tracking-widest text-accent">Preview</p>
-          <h2 className="mt-2 font-display text-2xl font-bold tracking-tight md:text-3xl">
+        <Section className="pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]">
+          <p className="text-center text-xs font-semibold uppercase tracking-widest text-accent">
+            Preview
+          </p>
+          <h2 className="mt-2 text-center font-display text-2xl font-bold tracking-tight md:text-3xl">
             Read the full {frontmatter.type.toLowerCase()} before you download it.
           </h2>
-          <div className="prose prose-invert mt-10 max-w-2xl">
+          <div className="prose prose-invert mx-auto mt-10 max-w-2xl text-justify">
             <MDXRemote source={entry.content} />
           </div>
         </Section>
       )}
 
-      <Section className="pt-0">
+      <Section className="pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]">
         <div className="grid gap-10 md:grid-cols-2">
           <div>
             <p className="text-xs font-semibold uppercase tracking-widest text-accent">
@@ -123,22 +118,24 @@ export function ResourceDetailLayout({ entry }: { entry: ContentEntry<ResourceFr
         </div>
       </Section>
 
-      <Section className="pt-0" id="get-guide">
-        <div className="panel-tint rounded-2xl border-l-2 border-accent p-10 md:p-14">
-          <h2 className="font-display text-2xl font-bold tracking-tight md:text-3xl">
-            Get the Free {frontmatter.type}
-          </h2>
-          <p className="mt-3 max-w-xl text-muted">
-            Enter your details below and I&apos;ll send the {frontmatter.title} straight to your
-            inbox — no spam, unsubscribe anytime.
-          </p>
-          <div className="mt-8 max-w-xl">
-            <ResourceLeadForm resourceSlug={slug} resourceTitle={frontmatter.title} />
+      {!frontmatter.hasAssessment && (
+        <Section className="pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]" id="get-guide">
+          <div className="panel-tint rounded-2xl border-l-2 border-accent p-10 md:p-14">
+            <h2 className="font-display text-2xl font-bold tracking-tight md:text-3xl">
+              Get the Free {frontmatter.type}
+            </h2>
+            <p className="mt-3 max-w-xl text-muted">
+              Enter your details below and I&apos;ll send the {frontmatter.title} straight to your
+              inbox — no spam, unsubscribe anytime.
+            </p>
+            <div className="mt-8 max-w-xl">
+              <ResourceLeadForm resourceSlug={slug} resourceTitle={frontmatter.title} />
+            </div>
           </div>
-        </div>
-      </Section>
+        </Section>
+      )}
 
-      <Section className="pt-0">
+      <Section className="pt-[40px] pb-[40px] md:pt-[40px] md:pb-[40px]">
         <p className="text-center text-sm text-muted">
           Looking for something else?{" "}
           <Link href="/resources" className="font-semibold text-accent hover:underline">

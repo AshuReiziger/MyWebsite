@@ -18,7 +18,6 @@ import {
   HeartIcon,
   EyeIcon,
   LockIcon,
-  DownloadIcon,
   LightbulbIcon,
   BriefcaseIcon,
   ImpactIcon,
@@ -237,6 +236,21 @@ export function AssessmentFlow({
                         {band.label}
                       </p>
                       <p className="mt-2 text-sm text-muted">{band.description}</p>
+                      {band.recommendations && band.recommendations.length > 0 && (
+                        <>
+                          <p className="mt-6 text-xs font-semibold uppercase tracking-widest">
+                            Recommended Next Steps
+                          </p>
+                          <ul className="mt-3 flex flex-col gap-2 text-left text-sm text-muted">
+                            {band.recommendations.map((step) => (
+                              <li key={step} className="flex gap-2">
+                                <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
+                                {step}
+                              </li>
+                            ))}
+                          </ul>
+                        </>
+                      )}
                     </>
                   );
                 })()}
@@ -289,8 +303,8 @@ export function AssessmentFlow({
               </span>
               <h3 className="font-display text-xl font-bold tracking-tight">Unlock Your Full Results</h3>
               <p className="mx-auto mt-2 max-w-sm text-sm text-muted">
-                Get your complete breakdown, personalized recommendations for each area, and the full{" "}
-                {frontmatter.title} PDF &mdash; sent straight to your inbox.
+                Get your complete breakdown, personalized recommendations for each area, and your
+                full results as a PDF &mdash; sent straight to your inbox.
               </p>
               <button
                 type="button"
@@ -308,7 +322,8 @@ export function AssessmentFlow({
                 Want help closing these gaps?
               </h2>
               <p className="mx-auto mt-3 max-w-sm text-muted">
-                I help brands turn audits like this into a clear, prioritized action plan.
+                I help brands turn audits like this into a clear, prioritized action plan. Your
+                full results breakdown is already on its way to your inbox as a PDF.
               </p>
               <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
                 <Link
@@ -317,13 +332,6 @@ export function AssessmentFlow({
                 >
                   Work With Me <ArrowRightIcon className="h-4 w-4" />
                 </Link>
-                <a
-                  href={frontmatter.downloadFile}
-                  download
-                  className="inline-flex items-center gap-2 rounded-full border border-line px-6 py-3 text-sm font-semibold uppercase tracking-wide transition-colors hover:border-ink"
-                >
-                  <DownloadIcon className="h-4 w-4" /> Download Full PDF Guide
-                </a>
               </div>
             </div>
           )}
@@ -343,8 +351,8 @@ export function AssessmentFlow({
             </span>
             <h3 className="font-display text-xl font-bold tracking-tight">Unlock Your Full Results</h3>
             <p className="mt-2 text-sm text-muted">
-              Enter your email to see your full breakdown, personalized recommendations, and get the complete{" "}
-              {frontmatter.title} PDF.
+              Enter your email to see your full breakdown, personalized recommendations, and get
+              your results as a PDF.
             </p>
             <div className="mt-7 text-left">
               <ResourceLeadForm

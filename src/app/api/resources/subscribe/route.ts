@@ -4,6 +4,7 @@ import { getResourceBySlug } from "@/lib/content";
 import { subscribeToList } from "@/lib/email-provider";
 import { getAssessmentBySlug } from "@/lib/assessments";
 import type { AssessmentResult } from "@/lib/assessment-scoring";
+import { generateAssessmentResultsPdf } from "@/lib/generateAssessmentResultsPdf";
 import { CONTACT_EMAIL, SITE_URL } from "@/lib/constants";
 
 interface ResourceSubscribePayload {
@@ -49,23 +50,56 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Email delivery is not configured." }, { status: 500 });
   }
 
-  const downloadUrl = new URL(resource.frontmatter.downloadFile, SITE_URL).toString();
   const resend = new Resend(apiKey);
 
-  const { subject, text } = buildDeliveryEmail({
-    firstName,
-    resourceTitle: resource.frontmatter.title,
-    resourceSlug: resource.slug,
-    downloadUrl,
-    assessmentScore,
-  });
+  // Resources with an on-site assessment never hand out the static guide
+  // PDF — the visitor's own scored results are generated on the fly and
+  // emailed as a PDF attachment instead.
+  if (assessmentScore) {
+    const assessment = getAssessmentBySlug(resource.slug);
+    if (!assessment) {
+      return NextResponse.json({ error: "Unknown assessment." }, { status: 404 });
+    }
+
+    const pdfBytes = await generateAssessmentResultsPdf({
+      resourceTitle: resource.frontmatter.title,
+      firstName,
+      assessment,
+      result: assessmentScore,
+    });
+
+    const { subject, text } = buildAssessmentEmail({ firstName, resourceTitle: resource.frontmatter.title, assessment, assessmentScore });
+
+    const { error } = await resend.emails.send({
+      from: "Reiziger Ashu <hello@reizigerashu.com>",
+      to: email,
+      replyTo: CONTACT_EMAIL,
+      subject,
+      text,
+      attachments: [
+        {
+          filename: `${resource.slug}-results.pdf`,
+          content: Buffer.from(pdfBytes),
+        },
+      ],
+    });
+
+    if (error) {
+      console.error("Resend error:", error);
+      return NextResponse.json({ error: "Failed to send results." }, { status: 502 });
+    }
+
+    return NextResponse.json({ ok: true });
+  }
+
+  const downloadUrl = new URL(resource.frontmatter.downloadFile, SITE_URL).toString();
 
   const { error } = await resend.emails.send({
     from: "Reiziger Ashu <hello@reizigerashu.com>",
     to: email,
     replyTo: CONTACT_EMAIL,
-    subject,
-    text,
+    subject: `Your ${resource.frontmatter.title} is on its way`,
+    text: `Hi ${firstName},\n\nHere's your copy of the ${resource.frontmatter.title}:\n${downloadUrl}\n\nIf you have any questions, just reply to this email.\n\n— Reiziger Ashu`,
   });
 
   if (error) {
@@ -76,27 +110,17 @@ export async function POST(request: Request) {
   return NextResponse.json({ ok: true });
 }
 
-function buildDeliveryEmail({
+function buildAssessmentEmail({
   firstName,
   resourceTitle,
-  resourceSlug,
-  downloadUrl,
+  assessment,
   assessmentScore,
 }: {
   firstName: string;
   resourceTitle: string;
-  resourceSlug: string;
-  downloadUrl: string;
-  assessmentScore?: AssessmentResult;
+  assessment: ReturnType<typeof getAssessmentBySlug>;
+  assessmentScore: AssessmentResult;
 }): { subject: string; text: string } {
-  if (!assessmentScore) {
-    return {
-      subject: `Your ${resourceTitle} is on its way`,
-      text: `Hi ${firstName},\n\nHere's your copy of the ${resourceTitle}:\n${downloadUrl}\n\nIf you have any questions, just reply to this email.\n\n— Reiziger Ashu`,
-    };
-  }
-
-  const assessment = getAssessmentBySlug(resourceSlug);
   const breakdown = assessmentScore.byArea
     .map(({ area, score }) => {
       const label = assessment?.areas.find((a) => a.id === area)?.label ?? area;
@@ -105,7 +129,7 @@ function buildDeliveryEmail({
     .join("\n");
 
   return {
-    subject: `Your Brand Audit Score: ${Math.round(assessmentScore.overall)} / 100`,
-    text: `Hi ${firstName},\n\nHere's your full Brand Audit breakdown:\n\nOverall: ${Math.round(assessmentScore.overall)} / 100\n${breakdown}\n\nAnd here's your copy of the ${resourceTitle}:\n${downloadUrl}\n\nIf you have any questions, just reply to this email.\n\n— Reiziger Ashu`,
+    subject: `Your ${resourceTitle} score: ${Math.round(assessmentScore.overall)} / 100`,
+    text: `Hi ${firstName},\n\nHere's your full ${resourceTitle} breakdown:\n\nOverall: ${Math.round(assessmentScore.overall)} / 100\n${breakdown}\n\nYour full results are attached as a PDF.\n\nIf you have any questions, just reply to this email.\n\n— Reiziger Ashu`,
   };
 }
