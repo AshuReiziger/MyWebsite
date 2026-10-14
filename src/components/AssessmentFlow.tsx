@@ -236,6 +236,21 @@ export function AssessmentFlow({
                         {band.label}
                       </p>
                       <p className="mt-2 text-sm text-muted">{band.description}</p>
+                      {band.recommendations && band.recommendations.length > 0 && (
+                        <>
+                          <p className="mt-6 text-xs font-semibold uppercase tracking-widest">
+                            Recommended Next Steps
+                          </p>
+                          <ul className="mt-3 flex flex-col gap-2 text-left text-sm text-muted">
+                            {band.recommendations.map((step) => (
+                              <li key={step} className="flex gap-2">
+                                <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
+                                {step}
+                              </li>
+                            ))}
+                          </ul>
+                        </>
+                      )}
                     </>
                   );
                 })()}

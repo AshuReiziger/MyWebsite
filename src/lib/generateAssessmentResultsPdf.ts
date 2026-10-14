@@ -82,6 +82,14 @@ export async function generateAssessmentResultsPdf({
     if (band) {
       drawText(band.label, { font: bold, size: 12, color: ACCENT, gap: 16 });
       drawText(band.description, { size: 11, color: MUTED, gap: 20 });
+
+      if (band.recommendations?.length) {
+        drawText("Recommended next steps", { font: bold, size: 12, gap: 18 });
+        for (const step of band.recommendations) {
+          drawText(`•  ${step}`, { size: 11, color: MUTED, gap: 16 });
+        }
+        y -= 4;
+      }
     }
   }
 
