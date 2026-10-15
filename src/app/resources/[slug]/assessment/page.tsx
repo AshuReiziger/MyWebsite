@@ -17,11 +17,13 @@ export async function generateMetadata({ params }: PageProps<"/resources/[slug]/
 
   const title = `${entry.frontmatter.title} — Interactive Assessment | Reiziger Ashu`;
   const description = `Take the interactive ${entry.frontmatter.title} and get your personalized score across ${assessment.areas.length} areas of your brand.`;
+  const images = entry.frontmatter.coverImage ? [entry.frontmatter.coverImage] : undefined;
 
   return {
     title,
     description,
-    openGraph: { title, description },
+    openGraph: { title, description, images },
+    twitter: { card: "summary_large_image", title, description, images },
   };
 }
 
